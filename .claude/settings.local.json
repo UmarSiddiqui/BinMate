@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 /Users/umarsiddiqui/.claude/skills/ui-ux-pro-max/scripts/search.py \"utility app brand guidelines dark minimal functional\" --design-system -p \"BinMate\")",
+      "mcp__mcp-registry__search_mcp_registry",
+      "WebSearch",
+      "WebFetch(domain:www.aitmpl.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)"
+    ]
+  }
+}

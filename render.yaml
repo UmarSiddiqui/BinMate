@@ -1,0 +1,39 @@
+# BinMate API — Render Blueprint
+# Deploy via: Connect GitHub repo → Render auto-detects this file
+# Or: Dashboard → New → Blueprint → Connect repo
+
+services:
+  - type: web
+    name: binmate-api
+    runtime: node
+    plan: free
+
+    # Backend lives in backend/ subdirectory
+    rootDir: backend
+
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+
+    healthCheckPath: /api/v1/health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Required — set in Render Dashboard:
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: CRON_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: REVENUECAT_WEBHOOK_AUTH_HEADER
+        sync: false
+      # Optional — add when ready:
+      # - key: FCM_SERVICE_ACCOUNT_KEY
+      #   sync: false
+      # - key: ADMIN_PASSWORD
+      #   sync: false
+      # - key: GEOCODING_CONTACT_EMAIL
+      #   value: contact@binmate.app

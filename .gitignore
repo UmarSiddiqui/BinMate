@@ -1,0 +1,45 @@
+# ===== Secrets (never commit) =====
+.env
+.env.local
+.env.production
+*.p8
+*.p12
+*.mobileprovision
+GoogleService-Info.plist
+Config.xcconfig
+
+# ===== Xcode =====
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+.DS_Store
+
+# ===== Swift Package Manager =====
+.build/
+*.resolved
+Packages/
+
+# ===== Node / Backend =====
+node_modules/
+dist/
+.npm
+*.log
+npm-debug.log*
+
+# ===== Prisma =====
+# (keep schema.prisma and migrations committed)
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== IDEs =====
+.vscode/
+.cursor/
+*.swp
+*.swo

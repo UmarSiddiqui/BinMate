@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // transaction pooler (port 6543) — app queries
+  directUrl = env("DIRECT_URL")     // session pooler (port 5432) — prisma migrate
+}
+
+// ─── Councils ────────────────────────────────────────────────────────────────
+
+model Council {
+  id            String   @id @default(uuid())
+  name          String
+  slug          String   @unique
+  platformType  String   @map("platform_type") // 'pdf' | 'arcgis' | 't1cloud' | 'salesforce' | 'widget'
+  apiEndpoint   String?  @map("api_endpoint")
+  lastScrapedAt DateTime? @map("last_scraped_at")
+  isActive      Boolean  @default(true) @map("is_active")
+
+  zones         CollectionZone[]
+  addressCaches AddressCache[]
+
+  @@map("councils")
+}
+
+// ─── Collection Zones ─────────────────────────────────────────────────────────
+
+model CollectionZone {
+  id               String  @id @default(uuid())
+  councilId        String  @map("council_id")
+
+  zoneName         String  @map("zone_name")
+  zoneCode         String? @map("zone_code")
+
+  generalDay       String  @map("general_day")       // 'monday'|'tuesday'|...'friday'
+  generalFrequency String  @default("weekly") @map("general_frequency")
+
+  recyclingDay     String  @map("recycling_day")
+  recyclingWeek    String  @map("recycling_week")    // 'A' | 'B'
+
+  greenWasteDay    String? @map("green_waste_day")
+  greenWasteWeek   String? @map("green_waste_week")  // 'A' | 'B' | null
+
+  vergeDates       Json?   @map("verge_dates")        // JSONB array of ISO date strings
+
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt     @map("updated_at")
+
+  council          Council        @relation(fields: [councilId], references: [id])
+  userZones        UserZone[]
+  addressCaches    AddressCache[]
+
+  @@map("collection_zones")
+}
+
+// ─── Address Cache ────────────────────────────────────────────────────────────
+
+model AddressCache {
+  id            String   @id @default(uuid())
+  addressString String   @map("address_string")
+  lat           Float
+  lng           Float
+  councilId     String   @map("council_id")
+  zoneId        String   @map("zone_id")
+  cachedAt      DateTime @default(now()) @map("cached_at")
+  expiresAt     DateTime @map("expires_at")
+
+  council       Council        @relation(fields: [councilId], references: [id])
+  zone          CollectionZone @relation(fields: [zoneId], references: [id])
+
+  @@index([addressString])
+  @@map("address_cache")
+}
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+
+model User {
+  id                 String   @id @default(uuid())
+  pushToken          String?  @map("push_token")
+  notificationHour   Int      @default(18) @map("notification_hour") // 0–23
+  createdAt          DateTime @default(now()) @map("created_at")
+  subscriptionStatus String   @default("free") @map("subscription_status") // 'free'|'trial'|'active'|'expired'
+  deletedAt          DateTime? @map("deleted_at") // soft-delete
+
+  zones              UserZone[]
+
+  @@map("users")
+}
+
+// ─── User Zones ───────────────────────────────────────────────────────────────
+
+model UserZone {
+  userId       String   @map("user_id")
+  zoneId       String   @map("zone_id")
+  addressLabel String   @map("address_label") // human-readable label (suburb only — no full address)
+  isPrimary    Boolean  @default(false) @map("is_primary")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user         User           @relation(fields: [userId], references: [id])
+  zone         CollectionZone @relation(fields: [zoneId], references: [id])
+
+  @@id([userId, zoneId])
+  @@index([zoneId])
+  @@map("user_zones")
+}
+
+// ─── WA Public Holidays ───────────────────────────────────────────────────────
+
+model WaPublicHoliday {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime @db.Date
+  shiftDays Int      @default(1) @map("shift_days") // always 1 — collection moves to next day
+
+  @@map("wa_public_holidays")
+}

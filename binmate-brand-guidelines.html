@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BinMate — Brand Guidelines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark light;
+
+    --midnight: #0D0F12;
+    --charcoal: #1A1D22;
+    --surface: #22262D;
+    --surface-2: #2B3038;
+    --border: rgba(255,255,255,0.07);
+    --border-light: rgba(255,255,255,0.12);
+
+    --lime: #B8F04A;
+    --lime-dim: #8EC438;
+    --lime-faint: rgba(184,240,74,0.12);
+    --lime-faint-2: rgba(184,240,74,0.06);
+
+    --amber: #F5A623;
+    --amber-faint: rgba(245,166,35,0.12);
+    --red: #E84848;
+    --red-faint: rgba(232,72,72,0.10);
+    --yellow: #F5E642;
+    --yellow-faint: rgba(245,230,66,0.10);
+    --teal: #4DCEBC;
+    --teal-faint: rgba(77,206,188,0.10);
+
+    --text-primary: #F0F2F5;
+    --text-secondary: #9BA3AD;
+    --text-muted: #6B7480;
+
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--midnight);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+
+  /* ── Nav ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,15,18,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex; align-items: center; gap: 32px;
+  }
+  .nav-logo {
+    font-family: var(--font-display);
+    font-weight: 800; font-size: 18px;
+    color: var(--lime);
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .nav-links {
+    display: flex; gap: 4px; flex-wrap: wrap;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 5px 12px;
+    border-radius: 20px;
+    transition: all 0.15s;
+  }
+  .nav-links a:hover { color: var(--text-primary); background: var(--surface); }
+
+  /* ── Section ── */
+  section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    color: var(--lime);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 20px; height: 1px;
+    background: var(--lime);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+  h1 span { color: var(--lime); }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 36px; font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  h4 {
+    font-family: var(--font-body);
+    font-size: 13px; font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  p { color: var(--text-secondary); line-height: 1.7; }
+  p + p { margin-top: 12px; }
+
+  .lead {
+    font-size: 18px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 620px;
+    margin-top: 16px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .card-sm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  /* ── Grid helpers ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── Tags ── */
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .tag-lime { background: var(--lime-faint); color: var(--lime); }
+  .tag-amber { background: var(--amber-faint); color: var(--amber); }
+  .tag-red { background: var(--red-faint); color: var(--red); }
+
+  /* ── Dividers ── */
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mt-32 { margin-top: 32px; }
+  .mt-40 { margin-top: 40px; }
+  .mt-48 { margin-top: 48px; }
+
+  /* ─────────────────────────────────────
+     HERO
+  ───────────────────────────────────── */
+  .hero {
+    padding: 100px 0 80px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(184,240,74,0.10) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero-subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin-top: 24px;
+    line-height: 1.65;
+  }
+  .hero-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--lime-faint);
+    border: 1px solid rgba(184,240,74,0.2);
+    border-radius: 20px;
+    padding: 6px 14px;
+    margin-top: 32px;
+    font-size: 12px; font-weight: 500;
+    color: var(--lime);
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+  .hero-pill::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--lime);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-pill::before { animation: none; }
+    * { transition-duration: 0.01ms !important; }
+  }
+
+  /* ─────────────────────────────────────
+     LOGO
+  ───────────────────────────────────── */
+  .logo-display {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .logo-mark {
+    width: 56px; height: 56px;
+    background: var(--lime);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 32px; height: 32px; }
+  .logo-wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .logo-wordmark span { color: var(--lime); }
+
+  .logo-variants {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-top: 24px;
+  }
+  .logo-variant {
+    padding: 40px 24px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+  }
+  .lv-dark {
+    background: #1A1D22;
+    --text-primary: #F0F2F5;
+    --text-muted: #6B7480;
+  }
+  .lv-light { background: #F5F5F0; }
+  .lv-lime { background: var(--lime); }
+  .lv-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  /* Logo on light bg */
+  .lv-light .logo-wordmark { color: var(--midnight); }
+  .lv-light .logo-wordmark span { color: #5A8A1A; }
+  .lv-light .lv-label { color: var(--midnight); }
+  .lv-light .logo-mark { background: #5A8A1A; }
+
+  /* Logo on lime bg */
+  .lv-lime .logo-wordmark { color: var(--midnight); }
+  .lv-lime .logo-wordmark span { color: var(--midnight); }
+  .lv-lime .lv-label { color: var(--midnight); opacity: 0.5; }
+  .lv-lime .logo-mark { background: var(--midnight); }
+
+  /* Icon logo mark only */
+  .logo-icon-only {
+    display: grid;
+    grid-template-columns: repeat(4, 60px);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .lio {
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 14px;
+  }
+  .lio-dark { background: var(--charcoal); border: 1px solid var(--border); }
+  .lio-lime { background: var(--lime); }
+  .lio-midnight { background: var(--midnight); border: 1px solid var(--border); }
+  .lio-white { background: #fff; }
+
+  /* ─────────────────────────────────────
+     COLOURS
+  ───────────────────────────────────── */
+  .colour-primary {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .colour-swatch {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .swatch-block { height: 100px; }
+  .swatch-info {
+    background: var(--charcoal);
+    padding: 14px 16px;
+  }
+  .swatch-name {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+  }
+  .swatch-hex {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .swatch-use {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .colour-system {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .sys-swatch {
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .sys-block { height: 56px; }
+  .sys-label {
+    background: var(--surface);
+    padding: 8px 10px;
+  }
+  .sys-name { font-family: var(--font-mono); font-size: 10px; color: var(--text-secondary); font-weight: 500; }
+  .sys-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  /* bin colours reference */
+  .bin-colours {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .bin-c {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .bin-c-block { height: 72px; display: flex; align-items: center; justify-content: center; }
+  .bin-c-info { background: var(--charcoal); padding: 12px 14px; }
+  .bin-c-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; }
+  .bin-c-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ─────────────────────────────────────
+     TYPOGRAPHY
+  ───────────────────────────────────── */
+  .type-specimen { margin-top: 32px; }
+  .type-row {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 28px;
+    background: var(--charcoal);
+    margin-bottom: 12px;
+  }
+  .type-meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .t-display { font-family: var(--font-display); font-size: 48px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .t-h1 { font-family: var(--font-display); font-size: 32px; font-weight: 700; letter-spacing: -0.025em; }
+  .t-h2 { font-family: var(--font-display); font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .t-h3 { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+  .t-body-lg { font-family: var(--font-body); font-size: 17px; font-weight: 400; line-height: 1.65; color: var(--text-secondary); }
+  .t-body { font-family: var(--font-body); font-size: 15px; font-weight: 400; line-height: 1.6; color: var(--text-secondary); }
+  .t-small { font-family: var(--font-body); font-size: 13px; font-weight: 400; color: var(--text-muted); }
+  .t-label { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime); }
+  .t-mono { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); }
+
+  /* ─────────────────────────────────────
+     VOICE
+  ───────────────────────────────────── */
+  .voice-compare {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 24px;
+  }
+  .vc-card {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+  }
+  .vc-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .vc-label.yes { color: var(--lime); }
+  .vc-label.no { color: var(--red); }
+  .vc-label::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .vc-label.yes::before { background: var(--lime); }
+  .vc-label.no::before { background: var(--red); }
+  .vc-example {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .vc-example:last-child { margin-bottom: 0; }
+
+  .word-bank {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 20px;
+  }
+  .word {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .word:hover { border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+  .word.highlight {
+    background: var(--lime-faint);
+    border-color: rgba(184,240,74,0.2);
+    color: var(--lime);
+  }
+  .word.highlight:hover { border-color: rgba(184,240,74,0.4); }
+
+  .never-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 16px;
+  }
+  .never-word {
+    background: var(--red-faint);
+    border: 1px solid rgba(232,72,72,0.2);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--red);
+    text-decoration: line-through;
+    text-decoration-color: rgba(232,72,72,0.4);
+  }
+
+  /* ─────────────────────────────────────
+     ICONS & UI ELEMENTS
+  ───────────────────────────────────── */
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-top: 24px;
+  }
+  .icon-item {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 12px 14px;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+    text-align: center;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: default;
+  }
+  .icon-item:hover { border-color: var(--border-light); background: var(--surface); }
+  .icon-item svg { width: 28px; height: 28px; }
+  .icon-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .button-demo {
+    display: flex; flex-wrap: wrap; gap: 12px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    border-radius: 10px;
+    border: none; cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--lime);
+    color: var(--midnight);
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+  .btn-primary:hover { background: var(--lime-dim); }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-light);
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+  .btn-secondary:hover { background: var(--surface-2); border-color: rgba(255,255,255,0.2); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--lime);
+    border: 1px solid rgba(184,240,74,0.25);
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+  .btn-ghost:hover { background: var(--lime-faint); border-color: rgba(184,240,74,0.4); }
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .btn-lg {
+    padding: 16px 28px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* notification component */
+  .notif-demo {
+    max-width: 340px;
+    margin-top: 24px;
+  }
+  .notif-card {
+    background: var(--charcoal);
+    border: 1px solid var(--border-light);
+    border-radius: 18px;
+    padding: 16px 18px;
+    display: flex; gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .notif-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .notif-lime::before { background: var(--lime); }
+  .notif-yellow::before { background: var(--yellow); }
+  .notif-teal::before { background: var(--teal); }
+  .notif-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .notif-icon-lime { background: var(--lime-faint); }
+  .notif-icon-yellow { background: var(--yellow-faint); }
+  .notif-icon-teal { background: var(--teal-faint); }
+  .notif-content {}
+  .notif-title {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  .notif-body {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .notif-time {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ─────────────────────────────────────
+     MOCK SCREENS
+  ───────────────────────────────────── */
+  .screens-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 40px;
+    align-items: start;
+  }
+  .phone-frame {
+    background: var(--charcoal);
+    border: 1.5px solid var(--border-light);
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+  }
+  .phone-notch {
+    width: 90px; height: 28px;
+    background: var(--charcoal);
+    border-radius: 0 0 18px 18px;
+    margin: 0 auto;
+    border-bottom: 1.5px solid var(--border-light);
+    border-left: 1.5px solid var(--border-light);
+    border-right: 1.5px solid var(--border-light);
+    position: relative;
+    z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+  }
+  .notch-dot { width: 8px; height: 8px; background: var(--surface-2); border-radius: 50%; }
+  .notch-pill { width: 36px; height: 4px; background: var(--surface-2); border-radius: 2px; }
+  .phone-screen {
+    background: #0D0F12;
+    padding: 0;
+    min-height: 580px;
+    /* Always dark — isolate from page theme */
+    --midnight: #0D0F12;
+    --charcoal: #1A1D22;
+    --surface: #22262D;
+    --surface-2: #2B3038;
+    --border: rgba(255,255,255,0.07);
+    --border-light: rgba(255,255,255,0.12);
+    --text-primary: #F0F2F5;
+    --text-secondary: #9BA3AD;
+    --text-muted: #6B7480;
+    --lime: #B8F04A;
+    --lime-faint: rgba(184,240,74,0.12);
+    --lime-faint-2: rgba(184,240,74,0.06);
+    --amber-faint: rgba(245,166,35,0.12);
+    --yellow-faint: rgba(245,230,66,0.10);
+    --teal-faint: rgba(77,206,188,0.10);
+    --red-faint: rgba(232,72,72,0.10);
+  }
+
+  /* Home Screen */
+  .app-header {
+    padding: 20px 20px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .app-greeting {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+  .app-location {
+    font-family: var(--font-display);
+    font-size: 17px; font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2px;
+  }
+  .app-avatar {
+    width: 32px; height: 32px;
+    background: var(--lime-faint);
+    border: 1px solid rgba(184,240,74,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+
+  .next-collection {
+    margin: 16px 16px 0;
+    background: var(--lime);
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .nc-bg-circle {
+    position: absolute;
+    right: -20px; top: -20px;
+    width: 100px; height: 100px;
+    background: rgba(0,0,0,0.08);
+    border-radius: 50%;
+  }
+  .nc-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(13,15,18,0.6);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .nc-title {
+    font-family: var(--font-display);
+    font-size: 22px; font-weight: 800;
+    color: var(--midnight);
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+    line-height: 1;
+  }
+  .nc-subtitle {
+    font-size: 12px;
+    color: rgba(13,15,18,0.6);
+    margin-top: 4px;
+  }
+  .nc-bins {
+    display: flex; gap: 8px;
+    margin-top: 14px;
+  }
+  .nc-bin {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(13,15,18,0.12);
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-size: 11px; font-weight: 600;
+    color: var(--midnight);
+  }
+  .bin-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .upcoming-title {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+    padding: 16px 16px 8px;
+  }
+  .upcoming-list { padding: 0 16px; }
+  .upcoming-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .upcoming-item:last-child { border-bottom: none; }
+  .upcoming-date-col {
+    width: 36px;
+    text-align: center;
+  }
+  .upd-day {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  .upd-num {
+    font-family: var(--font-display);
+    font-size: 18px; font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .upcoming-bins {
+    flex: 1;
+    display: flex; gap: 6px;
+  }
+  .upd-bin-tag {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  .bottom-nav {
+    background: var(--charcoal);
+    border-top: 1px solid var(--border);
+    padding: 12px 0 8px;
+    display: flex;
+    margin-top: 16px;
+  }
+  .bnav-item {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+  .bnav-item.active { color: var(--lime); }
+  .bnav-icon { width: 22px; height: 22px; }
+
+  /* Onboarding Screen */
+  .onboard-screen { padding: 32px 20px; }
+  .onboard-step {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex; gap: 6px;
+  }
+  .step-dot { width: 18px; height: 3px; background: var(--border); border-radius: 2px; }
+  .step-dot.active { background: var(--lime); }
+  .onboard-icon {
+    width: 64px; height: 64px;
+    background: var(--lime-faint);
+    border: 1px solid rgba(184,240,74,0.2);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  .onboard-h {
+    font-family: var(--font-display);
+    font-size: 26px; font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+  .onboard-p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+  .address-input-mock {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .input-icon { color: var(--text-muted); font-size: 16px; }
+  .input-text { font-size: 13px; color: var(--text-muted); flex: 1; }
+  .onboard-btn {
+    background: var(--lime);
+    color: var(--midnight);
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 700;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    margin-top: 16px;
+    cursor: pointer;
+  }
+  .onboard-skip {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.05em;
+  }
+
+  /* Paywall Screen */
+  .paywall-screen { padding: 24px 20px; }
+  .paywall-h {
+    font-family: var(--font-display);
+    font-size: 24px; font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .paywall-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+  .plan-option {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .plan-option:not(.selected):hover { border-color: var(--border-light); background: var(--surface-2); }
+  .plan-option.selected {
+    border-color: var(--lime);
+    background: var(--lime-faint);
+  }
+  .plan-badge {
+    position: absolute;
+    top: -10px; right: 12px;
+    background: var(--lime);
+    color: var(--midnight);
+    font-family: var(--font-mono);
+    font-size: 9px; font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  .plan-name {
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    color: var(--text-primary);
+  }
+  .plan-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .plan-price {
+    font-family: var(--font-display);
+    font-size: 16px; font-weight: 800;
+    color: var(--lime);
+    text-align: right;
+  }
+  .plan-period {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 1px;
+  }
+  .plan-radio {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border-light);
+    flex-shrink: 0;
+    margin-right: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .plan-radio.checked { border-color: var(--lime); }
+  .plan-radio.checked::after {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--lime);
+    border-radius: 50%;
+  }
+  .plan-row { display: flex; align-items: center; flex: 1; }
+  .paywall-features {
+    margin: 14px 0;
+  }
+  .paywall-feat {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    padding: 4px 0;
+  }
+  .feat-check {
+    width: 16px; height: 16px;
+    background: var(--lime-faint);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--lime);
+    font-size: 9px;
+    font-weight: 700;
+  }
+  .paywall-cta {
+    background: var(--lime);
+    color: var(--midnight);
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 800;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .paywall-legal {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+    line-height: 1.4;
+    font-family: var(--font-mono);
+  }
+
+  /* ─────────────────────────────────────
+     MONETISATION
+  ───────────────────────────────────── */
+  .pricing-cards {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 12px;
+    margin-top: 32px;
+    align-items: start;
+  }
+  .pricing-card {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px 24px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .pricing-card:not(.featured):hover { border-color: var(--border-light); }
+  .pricing-card.featured {
+    background: var(--lime);
+    border-color: var(--lime);
+  }
+  .pricing-card.featured * { color: var(--midnight) !important; }
+  .pricing-tier {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+  .pricing-amount {
+    font-family: var(--font-display);
+    font-size: 40px; font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .pricing-amount sup {
+    font-size: 20px;
+    vertical-align: super;
+  }
+  .pricing-period {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .pricing-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 20px 0;
+  }
+  .pricing-card.featured .pricing-divider { background: rgba(13,15,18,0.15); }
+  .pricing-feature {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .pf-check {
+    color: var(--lime);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .pricing-card.featured .pf-check { color: var(--midnight); }
+  .pricing-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-family: var(--font-display);
+    font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer;
+    margin-top: 20px;
+    text-align: center;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .pricing-btn:hover { opacity: 0.85; }
+  .pb-outline {
+    background: transparent;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-secondary);
+  }
+  .pb-solid { background: var(--midnight); color: var(--lime); }
+  .pb-lime { background: var(--lime); color: var(--midnight); }
+
+  /* Revenue projections */
+  .rev-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 13px;
+  }
+  .rev-table th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .rev-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+  .rev-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+  .rev-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .rev-table tr:last-child td { border-bottom: none; }
+  .rev-table td:first-child { font-weight: 500; color: var(--text-primary); }
+  .rev-highlight { color: var(--lime) !important; font-weight: 700 !important; font-family: var(--font-mono) !important; }
+
+  /* ─────────────────────────────────────
+     APP STORE PRESENCE
+  ───────────────────────────────────── */
+  .aso-demo {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    margin-top: 24px;
+  }
+  .aso-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 20px; }
+  .aso-icon {
+    width: 72px; height: 72px;
+    background: var(--midnight);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .aso-name {
+    font-family: var(--font-display);
+    font-size: 20px; font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+  }
+  .aso-sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  .aso-rating {
+    display: flex; align-items: center; gap: 6px;
+    margin-top: 8px;
+  }
+  .stars { color: var(--amber); font-size: 13px; }
+  .rating-num { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+  .aso-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+  .aso-keywords {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 14px;
+  }
+  .aso-kw {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  /* ─────────────────────────────────────
+     TONE SAMPLES — NOTIFICATION COPY
+  ───────────────────────────────────── */
+  .copy-samples {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 24px;
+  }
+  .copy-card {
+    background: var(--charcoal);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+  }
+  .cc-trigger {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--lime);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .cc-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .cc-body { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+
+  /* ─────────────────────────────────────
+     FOOTER
+  ───────────────────────────────────── */
+  .footer {
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo {
+    font-family: var(--font-display);
+    font-weight: 800; font-size: 20px;
+    letter-spacing: -0.03em;
+    color: var(--lime);
+  }
+  .footer-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* ─────────────────────────────────────
+     THEME TOGGLE BUTTON
+  ───────────────────────────────────── */
+  .theme-toggle {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .theme-toggle:hover { background: var(--surface-2); color: var(--text-primary); border-color: rgba(184,240,74,0.3); }
+  .icon-sun { display: block; }
+  .icon-moon { display: none; }
+  [data-theme="light"] .icon-sun { display: none; }
+  [data-theme="light"] .icon-moon { display: block; }
+
+  /* ─────────────────────────────────────
+     LIGHT MODE
+  ───────────────────────────────────── */
+  [data-theme="light"] {
+    --midnight: #F5F7F2;
+    --charcoal: #FFFFFF;
+    --surface: #EDF0EA;
+    --surface-2: #E3E7DF;
+    --border: rgba(0,0,0,0.09);
+    --border-light: rgba(0,0,0,0.15);
+    --text-primary: #0D0F12;
+    --text-secondary: #3E434D;
+    --text-muted: #717880;
+    --lime-faint: rgba(77,122,10,0.10);
+    --lime-faint-2: rgba(77,122,10,0.06);
+    --amber-faint: rgba(180,110,0,0.10);
+    --red-faint: rgba(190,20,20,0.08);
+    --yellow-faint: rgba(170,150,0,0.09);
+    --teal-faint: rgba(20,140,120,0.09);
+  }
+
+  /* Nav */
+  [data-theme="light"] nav {
+    background: rgba(245,247,242,0.94);
+  }
+
+  /* Hero */
+  [data-theme="light"] .hero::before {
+    background: radial-gradient(circle, rgba(77,122,10,0.12) 0%, transparent 70%);
+  }
+
+  /* ── Lime text on light backgrounds → dark lime for contrast ── */
+  [data-theme="light"] .nav-logo { color: #4D7A0A; }
+  [data-theme="light"] h1 span { color: #4D7A0A; }
+  [data-theme="light"] .logo-wordmark span { color: #4D7A0A; }
+  [data-theme="light"] .section-label { color: #4D7A0A; }
+  [data-theme="light"] .section-label::before { background: #4D7A0A; }
+  [data-theme="light"] .hero-pill {
+    color: #4D7A0A;
+    background: rgba(77,122,10,0.08);
+    border-color: rgba(77,122,10,0.22);
+  }
+  [data-theme="light"] .hero-pill::before { background: #4D7A0A; }
+  [data-theme="light"] .t-label { color: #4D7A0A; }
+  [data-theme="light"] .tag-lime { background: rgba(77,122,10,0.10); color: #4D7A0A; }
+  [data-theme="light"] .word.highlight { background: rgba(77,122,10,0.10); border-color: rgba(77,122,10,0.22); color: #4D7A0A; }
+  [data-theme="light"] .word.highlight:hover { border-color: rgba(77,122,10,0.40); }
+  [data-theme="light"] .vc-label.yes { color: #4D7A0A; }
+  [data-theme="light"] .vc-label.yes::before { background: #4D7A0A; }
+  [data-theme="light"] .cc-trigger { color: #4D7A0A; }
+  [data-theme="light"] .footer-logo { color: #4D7A0A; }
+  [data-theme="light"] .rev-highlight { color: #4D7A0A !important; }
+  [data-theme="light"] .pf-check { color: #4D7A0A; }
+
+  /* ── Buttons on light bg ── */
+  [data-theme="light"] .btn-primary { color: #0D0F12; }
+  [data-theme="light"] .btn-primary:hover { color: #0D0F12; }
+  [data-theme="light"] .btn-ghost { color: #4D7A0A; border-color: rgba(77,122,10,0.28); }
+  [data-theme="light"] .btn-ghost:hover { background: rgba(77,122,10,0.08); border-color: rgba(77,122,10,0.44); }
+  [data-theme="light"] .pb-solid { background: #0D0F12 !important; color: var(--lime) !important; }
+  [data-theme="light"] .pb-lime { color: #0D0F12 !important; }
+
+  /* ── Logo variants ── */
+  [data-theme="light"] .lv-light .logo-wordmark { color: #0D0F12; }
+  [data-theme="light"] .lv-light .lv-label { color: #0D0F12; }
+  [data-theme="light"] .lv-lime .logo-wordmark { color: #0D0F12; }
+  [data-theme="light"] .lv-lime .lv-label { color: rgba(13,15,18,0.5); opacity: 1; }
+  [data-theme="light"] .lv-lime .logo-mark { background: #0D0F12; }
+  [data-theme="light"] .lv-dark .logo-wordmark { color: #F0F2F5; }
+  [data-theme="light"] .lv-dark .logo-wordmark span { color: #B8F04A; }
+  [data-theme="light"] .lv-dark .lv-label { color: #6B7480; opacity: 1; }
+
+  /* ── Pricing featured card ── */
+  [data-theme="light"] .pricing-card.featured * { color: #0D0F12 !important; }
+  [data-theme="light"] .pricing-card.featured .pricing-divider { background: rgba(13,15,18,0.15) !important; }
+
+  /* ── Colour swatches ── */
+  [data-theme="light"] .swatch-info { background: var(--surface); border-top: 1px solid var(--border); }
+  [data-theme="light"] .sys-label { background: var(--surface); }
+  [data-theme="light"] .bin-c-info { background: var(--surface); }
+
+  /* ── Notification cards ── */
+  [data-theme="light"] .notif-card { background: #FFFFFF; border-color: rgba(0,0,0,0.12); }
+
+  /* ── Focus ring ── */
+  [data-theme="light"] :focus-visible { outline-color: #4D7A0A; }
+
+  /* ── Smooth theme transition ── */
+  body { transition: background-color 0.25s ease, color 0.25s ease; }
+  nav { transition: background 0.25s ease, border-color 0.25s ease; }
+
+  /* responsive helpers */
+  @media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .screens-row { grid-template-columns: 1fr; }
+    .pricing-cards { grid-template-columns: 1fr; }
+    .colour-primary { grid-template-columns: 1fr; }
+    .colour-system { grid-template-columns: repeat(3, 1fr); }
+    .icon-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">BinMate.</div>
+  <ul class="nav-links">
+    <li><a href="#brand">Brand</a></li>
+    <li><a href="#logo">Logo</a></li>
+    <li><a href="#colours">Colours</a></li>
+    <li><a href="#typography">Typography</a></li>
+    <li><a href="#voice">Voice</a></li>
+    <li><a href="#icons">UI Elements</a></li>
+    <li><a href="#screens">Screens</a></li>
+    <li><a href="#monetisation">Monetisation</a></li>
+    <li><a href="#copy">Copy</a></li>
+    <li><a href="#aso">App Store</a></li>
+  </ul>
+  <button class="theme-toggle" aria-label="Toggle light/dark mode">
+    <!-- Sun icon: shown in dark mode -->
+    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+    </svg>
+    <!-- Moon icon: shown in light mode -->
+    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</nav>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero" id="brand">
+    <p class="hero-meta">Brand Guidelines · v1.0 · Perth WA · 2026</p>
+    <h1>Bin<span>Mate</span>.<br>Brand System.</h1>
+    <p class="hero-subtitle">A complete design language for Perth's most useful household app. Every decision — from the lime green to the dry wit — is intentional, local, and built to last.</p>
+    <div class="hero-pill">Live Brand Document</div>
+  </div>
+
+  <!-- BRAND ESSENCE -->
+  <section>
+    <p class="section-label">Brand Essence</p>
+    <h2>What BinMate stands for</h2>
+    <p class="lead">BinMate is the app that quietly makes Perth life smoother. Not flashy. Not trying to be your best friend. Just reliably, calmly useful — like a good neighbour who leaves a note on your door: "Recycling goes out tonight."</p>
+
+    <div class="grid-3 mt-40">
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px">Mission</p>
+        <h3>Never miss a bin day again.</h3>
+        <p class="mt-12">Simple as that. Every Perth household has missed a bin day. Every time it happens, you feel mildly stupid and have to wait another week. BinMate fixes that permanently, for $1.49 a month.</p>
+      </div>
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px">Position</p>
+        <h3>The Perth-first utility app.</h3>
+        <p class="mt-12">Not national. Not generic. Not a "bin reminder widget." BinMate knows Perth's 30 councils, WA's public holidays, the difference between Week A and Week B, and when your verge collection is.</p>
+      </div>
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px">Promise</p>
+        <h3>Set it up once. Forget about it.</h3>
+        <p class="mt-12">The app works silently in the background. It notifies you. It adjusts for public holidays. It handles FIFO schedules. You never have to think about bins again.</p>
+      </div>
+    </div>
+
+    <div class="grid-2 mt-16">
+      <div class="card">
+        <h4>Brand Personality</h4>
+        <div class="word-bank">
+          <span class="word highlight">Reliable</span>
+          <span class="word highlight">Dry</span>
+          <span class="word highlight">Local</span>
+          <span class="word highlight">Calm</span>
+          <span class="word">Practical</span>
+          <span class="word">Confident</span>
+          <span class="word">Straight-talking</span>
+          <span class="word">Unfussy</span>
+          <span class="word">A little bit funny</span>
+          <span class="word">Perth-proud</span>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Brand Archetype</h4>
+        <h3 class="mt-8">The Reliable Neighbour</h3>
+        <p class="mt-8">Not the tech bro. Not the life coach. The neighbour who's lived in Scarborough for 15 years, knows exactly when the yellow bin goes out, and just tells you — no app subscription pitch, no upsell. Just useful information, delivered on time.</p>
+        <p class="mt-8">BinMate speaks like that neighbour. Warm, dry, knows Perth, never tries too hard.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGO -->
+  <section id="logo">
+    <p class="section-label">Logo System</p>
+    <h2>The BinMate mark</h2>
+    <p class="lead">Clean, bold, unmistakably functional. The wordmark uses Syne 800 — the same weight as confidence. The icon is a stylised bin silhouette inside a rounded square. The dot after "BinMate." is intentional — it's a full stop. Done. Sorted.</p>
+
+    <div class="mt-32">
+      <h4>Primary Lockup</h4>
+      <div class="card mt-16" style="padding:40px">
+        <div class="logo-display">
+          <div class="logo-mark">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="7" y="12" width="18" height="16" rx="2" fill="#0D0F12"/>
+              <path d="M5 12H27M12 12V9C12 8.44772 12.4477 8 13 8H19C19.5523 8 20 8.44772 20 9V12" stroke="#0D0F12" stroke-width="2" stroke-linecap="round"/>
+              <path d="M13 16V24M16 16V24M19 16V24" stroke="#B8F04A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="logo-wordmark">Bin<span>Mate</span>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-24">
+      <h4>Colour Variants</h4>
+      <div class="logo-variants">
+        <div class="logo-variant lv-dark">
+          <div class="logo-display" style="flex-direction:column;gap:8px;align-items:center">
+            <div class="logo-mark">
+              <svg viewBox="0 0 32 32" fill="none">
+                <rect x="7" y="12" width="18" height="16" rx="2" fill="#0D0F12"/>
+                <path d="M5 12H27M12 12V9C12 8.44772 12.4477 8 13 8H19C19.5523 8 20 8.44772 20 9V12" stroke="#0D0F12" stroke-width="2" stroke-linecap="round"/>
+                <path d="M13 16V24M16 16V24M19 16V24" stroke="#B8F04A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="logo-wordmark" style="font-size:18px">Bin<span>Mate</span>.</div>
+          </div>
+          <span class="lv-label" style="color:var(--text-muted)">On Dark</span>
+        </div>
+        <div class="logo-variant lv-light">
+          <div class="logo-display" style="flex-direction:column;gap:8px;align-items:center">
+            <div class="logo-mark" style="background:#5A8A1A">
+              <svg viewBox="0 0 32 32" fill="none">
+                <rect x="7" y="12" width="18" height="16" rx="2" fill="#fff"/>
+                <path d="M5 12H27M12 12V9C12 8.44772 12.4477 8 13 8H19C19.5523 8 20 8.44772 20 9V12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                <path d="M13 16V24M16 16V24M19 16V24" stroke="#5A8A1A" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="logo-wordmark" style="font-size:18px;color:#0D0F12">Bin<span style="color:#5A8A1A">Mate</span>.</div>
+          </div>
+          <span class="lv-label" style="color:#0D0F12;opacity:0.4">On Light</span>
+        </div>
+        <div class="logo-variant lv-lime">
+          <div class="logo-display" style="flex-direction:column;gap:8px;align-items:center">
+            <div class="logo-mark" style="background:#0D0F12">
+              <svg viewBox="0 0 32 32" fill="none">
+                <rect x="7" y="12" width="18" height="16" rx="2" fill="#B8F04A"/>
+                <path d="M5 12H27M12 12V9C12 8.44772 12.4477 8 13 8H19C19.5523 8 20 8.44772 20 9V12" stroke="#B8F04A" stroke-width="2" stroke-linecap="round"/>
+                <path d="M13 16V24M16 16V24M19 16V24" stroke="#0D0F12" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="logo-wordmark" style="font-size:18px;color:#0D0F12">BinMate.</div>
+          </div>
+          <span class="lv-label" style="color:#0D0F12;opacity:0.4">On Lime</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 mt-24">
+      <div>
+        <h4>Clear Space Rule</h4>
+        <div class="card-sm mt-12">
+          <p>Always maintain clear space equal to the height of the capital "B" in BinMate on all sides of the logo. Never place the logo on a busy background. Never use on mid-tone grey — it gets muddy.</p>
+        </div>
+      </div>
+      <div>
+        <h4>Never Do This</h4>
+        <div class="card-sm mt-12">
+          <p style="color:var(--red)">✕ Don't stretch or distort the logo<br>✕ Don't change the lime to another colour<br>✕ Don't use the wordmark without the dot<br>✕ Don't use the logo on a mid-grey background<br>✕ Don't add drop shadows or effects</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOURS -->
+  <section id="colours">
+    <p class="section-label">Colour System</p>
+    <h2>Colour palette</h2>
+    <p class="lead">Dark, calm, and punctuated with lime. The colour system mirrors Perth itself — long warm nights, dark suburban streets, the occasional flash of something alive. Lime is the only true accent. Everything else steps back.</p>
+
+    <div class="colour-primary">
+      <div class="colour-swatch">
+        <div class="swatch-block" style="background:#B8F04A"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">BinMate Lime</div>
+          <div class="swatch-hex">#B8F04A</div>
+          <div class="swatch-use">Primary brand colour. Buttons, key actions, highlights. The lime of a bin lid that's doing its job.</div>
+        </div>
+      </div>
+      <div class="colour-swatch">
+        <div class="swatch-block" style="background:#0D0F12"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Midnight</div>
+          <div class="swatch-hex">#0D0F12</div>
+          <div class="swatch-use">App background. Pure dark. Perth at 11pm.</div>
+        </div>
+      </div>
+      <div class="colour-swatch">
+        <div class="swatch-block" style="background:#1A1D22"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Charcoal</div>
+          <div class="swatch-hex">#1A1D22</div>
+          <div class="swatch-use">Cards, panels, modal backgrounds.</div>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="mt-32">Supporting System</h4>
+    <div class="colour-system">
+      <div class="sys-swatch">
+        <div class="sys-block" style="background:#22262D"></div>
+        <div class="sys-label"><div class="sys-name">Surface</div><div class="sys-hex">#22262D</div></div>
+      </div>
+      <div class="sys-swatch">
+        <div class="sys-block" style="background:#2B3038"></div>
+        <div class="sys-label"><div class="sys-name">Surface 2</div><div class="sys-hex">#2B3038</div></div>
+      </div>
+      <div class="sys-swatch">
+        <div class="sys-block" style="background:#F5A623"></div>
+        <div class="sys-label"><div class="sys-name">Amber</div><div class="sys-hex">#F5A623</div></div>
+      </div>
+      <div class="sys-swatch">
+        <div class="sys-block" style="background:#F5E642"></div>
+        <div class="sys-label"><div class="sys-name">Yellow</div><div class="sys-hex">#F5E642</div></div>
+      </div>
+      <div class="sys-swatch">
+        <div class="sys-block" style="background:#E84848"></div>
+        <div class="sys-label"><div class="sys-name">Red</div><div class="sys-hex">#E84848</div></div>
+      </div>
+    </div>
+
+    <h4 class="mt-32">Bin Colour Reference</h4>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:6px">These colours map directly to Perth's physical bin lid colours. Used consistently in-app so residents can instantly identify their bins.</p>
+    <div class="bin-colours">
+      <div class="bin-c">
+        <div class="bin-c-block" style="background:#D32F2F">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="7" y="12" width="18" height="16" rx="2" fill="rgba(255,255,255,0.9)"/><path d="M5 12H27M12 12V9C12 8 12.5 8 13 8H19C19.5 8 20 8 20 9V12" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bin-c-info">
+          <div class="bin-c-name" style="color:#F56565">Red Lid</div>
+          <div class="bin-c-desc">General waste · Weekly</div>
+        </div>
+      </div>
+      <div class="bin-c">
+        <div class="bin-c-block" style="background:#F5E642">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="7" y="12" width="18" height="16" rx="2" fill="rgba(13,15,18,0.7)"/><path d="M5 12H27M12 12V9C12 8 12.5 8 13 8H19C19.5 8 20 8 20 9V12" stroke="rgba(13,15,18,0.7)" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bin-c-info">
+          <div class="bin-c-name" style="color:#F5E642">Yellow Lid</div>
+          <div class="bin-c-desc">Recycling · Fortnightly</div>
+        </div>
+      </div>
+      <div class="bin-c">
+        <div class="bin-c-block" style="background:#4CAF50">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="7" y="12" width="18" height="16" rx="2" fill="rgba(255,255,255,0.9)"/><path d="M5 12H27M12 12V9C12 8 12.5 8 13 8H19C19.5 8 20 8 20 9V12" stroke="rgba(255,255,255,0.9)" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bin-c-info">
+          <div class="bin-c-name" style="color:#66BB6A">Lime Green Lid</div>
+          <div class="bin-c-desc">Garden organics · Fortnightly</div>
+        </div>
+      </div>
+      <div class="bin-c">
+        <div class="bin-c-block" style="background:#37474F">
+          <svg width="28" height="28" viewBox="0 0 32 32" fill="none"><rect x="7" y="12" width="18" height="16" rx="2" fill="rgba(255,255,255,0.4)"/><path d="M5 12H27M12 12V9C12 8 12.5 8 13 8H19C19.5 8 20 8 20 9V12" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div class="bin-c-info">
+          <div class="bin-c-name" style="color:#90A4AE">Dark Green Body</div>
+          <div class="bin-c-desc">Bin body (most councils)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-sm mt-24">
+      <h4>Colour Usage Rules</h4>
+      <div class="grid-2 mt-12">
+        <div>
+          <p style="font-size:13px"><strong style="color:var(--lime)">Lime</strong> — primary action only. CTA buttons, selected states, active indicators, links. Never use for decorative purposes. If everything is lime, nothing is.</p>
+          <p style="font-size:13px;margin-top:8px"><strong style="color:var(--amber)">Amber</strong> — verge collection alerts, "coming up soon" states, warning notices. Warm urgency.</p>
+        </div>
+        <div>
+          <p style="font-size:13px"><strong style="color:var(--red)">Red</strong> — only for errors, missed collections, or destructive actions. Never for decoration.</p>
+          <p style="font-size:13px;margin-top:8px"><strong style="color:var(--teal)">Teal</strong> — informational states, tips, onboarding hints. Calm and secondary.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPOGRAPHY -->
+  <section id="typography">
+    <p class="section-label">Typography</p>
+    <h2>Type system</h2>
+    <p class="lead">Two families. One for structure, one for reading. Syne carries the personality — geometric, confident, slightly odd in the best way. DM Sans does the work — legible, neutral, comfortable at small sizes on a phone screen.</p>
+
+    <div class="grid-2 mt-32">
+      <div class="card">
+        <h4>Display & Headings</h4>
+        <div class="mt-16" style="font-family:var(--font-display);font-size:40px;font-weight:800;letter-spacing:-0.03em;line-height:1">Syne</div>
+        <p class="mt-12" style="font-size:13px">Syne 800 (ExtraBold) for display headings and the wordmark. Syne 700 (Bold) for screen titles. Syne 600 for section headers. Always tight tracking. Never light weight.</p>
+        <div class="mt-16" style="font-family:var(--font-display);font-size:14px;font-weight:400;letter-spacing:0.1em;color:var(--text-muted);text-transform:uppercase">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz 0–9</div>
+      </div>
+      <div class="card">
+        <h4>Body & UI</h4>
+        <div class="mt-16" style="font-family:var(--font-body);font-size:40px;font-weight:300;letter-spacing:-0.01em;line-height:1">DM Sans</div>
+        <p class="mt-12" style="font-size:13px">DM Sans for all body copy, labels, form fields, descriptions. 400 (Regular) for reading. 500 (Medium) for emphasis and interactive elements. DM Mono for data, times, and technical labels.</p>
+        <div class="mt-16" style="font-family:var(--font-body);font-size:14px;font-weight:400;color:var(--text-muted)">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz 0–9</div>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <h4>Type Scale</h4>
+      <div class="type-row">
+        <div class="type-meta">Display / Hero — Syne 800 / 48–80px / tracking -0.03em</div>
+        <div class="t-display">Never miss bin day.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Heading 1 — Syne 700 / 32px / tracking -0.025em</div>
+        <div class="t-h1">Tomorrow: Yellow + Red bins</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Heading 2 — Syne 700 / 24px / tracking -0.02em</div>
+        <div class="t-h2">City of Stirling · Scarborough</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Heading 3 — Syne 600 / 18px</div>
+        <div class="t-h3">Next verge collection: 3 June</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Body Large — DM Sans 400 / 17px / leading 1.65</div>
+        <div class="t-body-lg">Your recycling bin (yellow lid) goes out this Tuesday, along with your general waste (red lid). They'll be collected from 6am. Make sure they're out the night before.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Body — DM Sans 400 / 15px / leading 1.6</div>
+        <div class="t-body">BinMate automatically adjusts your schedule for public holidays including WA Day, Good Friday, Christmas Day, and New Year's Day.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Label — DM Mono 500 / 11px / tracking 0.1em / uppercase</div>
+        <div class="t-label">Week A · Fortnightly Collection</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">Mono Data — DM Mono 400 / 13px</div>
+        <div class="t-mono">Next collection: Tuesday 18 Mar · 06:00 AWST</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE & TONE -->
+  <section id="voice">
+    <p class="section-label">Voice & Tone</p>
+    <h2>How BinMate speaks</h2>
+    <p class="lead">Dry. Direct. A little bit Perth. We don't perform helpfulness — we just are helpful. We never explain ourselves twice. We never apologise for being a bin app. We're comfortable in our lane.</p>
+
+    <div class="grid-3 mt-32">
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px;font-size:10px">Pillar 01</p>
+        <h3>Plain-spoken</h3>
+        <p class="mt-8">No jargon. No marketing fluff. "Yellow bin tonight" is better than "Your recycling collection service is scheduled for this evening." Perth people are direct. So is BinMate.</p>
+      </div>
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px;font-size:10px">Pillar 02</p>
+        <h3>Dry wit</h3>
+        <p class="mt-8">We're allowed one eyebrow raise. Not comedy, not memes — just the mild satisfaction of a well-timed understatement. "Bins out tonight. You know the drill." That's enough.</p>
+      </div>
+      <div class="card">
+        <p class="section-label" style="margin-bottom:8px;font-size:10px">Pillar 03</p>
+        <h3>Earned confidence</h3>
+        <p class="mt-8">We know Perth. We know the councils. We don't say "we think" or "this might be." Either we know it or we don't show it. Confidence is quiet, not loud.</p>
+      </div>
+    </div>
+
+    <div class="voice-compare mt-32">
+      <div class="vc-card">
+        <div class="vc-label yes">BinMate sounds like this</div>
+        <div class="vc-example">Yellow bin goes out tonight. Don't forget.</div>
+        <div class="vc-example">Red and yellow tomorrow. Both of them.</div>
+        <div class="vc-example">Good Friday — your Tuesday bins shift to Wednesday this year.</div>
+        <div class="vc-example">Verge collection starts in your area next Monday. Time to raid the shed.</div>
+        <div class="vc-example">All set. We'll remind you the night before, every time.</div>
+      </div>
+      <div class="vc-card">
+        <div class="vc-label no">Not like this</div>
+        <div class="vc-example">🎉 Exciting news! Your waste collection is coming up!</div>
+        <div class="vc-example">We've detected that your scheduled recycling collection service is imminent. Please ensure your bins are presented at the kerb in accordance with your council's guidelines.</div>
+        <div class="vc-example">Hi there! Just a friendly reminder that it's almost time to take your bins out! Have a wonderful day! 😊</div>
+        <div class="vc-example">Oops! Looks like you might have missed your bin day! That's okay though!</div>
+        <div class="vc-example">Unlock Premium to access real-time bin day notifications and more!!!</div>
+      </div>
+    </div>
+
+    <div class="mt-32">
+      <h4>Word Bank — use these freely</h4>
+      <div class="word-bank">
+        <span class="word highlight">tonight</span>
+        <span class="word highlight">tomorrow</span>
+        <span class="word highlight">sorted</span>
+        <span class="word highlight">all set</span>
+        <span class="word">heads up</span>
+        <span class="word">this week</span>
+        <span class="word">fortnightly</span>
+        <span class="word">verge collection</span>
+        <span class="word">goes out</span>
+        <span class="word">bin day</span>
+        <span class="word">kerb</span>
+        <span class="word">council</span>
+        <span class="word">public holiday shift</span>
+        <span class="word">Week A / Week B</span>
+        <span class="word">6am</span>
+        <span class="word">AWST</span>
+        <span class="word">suburb</span>
+      </div>
+    </div>
+
+    <div class="mt-24">
+      <h4>Never use these words</h4>
+      <div class="never-list">
+        <span class="never-word">synergy</span>
+        <span class="never-word">seamless</span>
+        <span class="never-word">game-changer</span>
+        <span class="never-word">unlock</span>
+        <span class="never-word">supercharge</span>
+        <span class="never-word">exciting</span>
+        <span class="never-word">amazing</span>
+        <span class="never-word">delighted</span>
+        <span class="never-word">leverage</span>
+        <span class="never-word">empower</span>
+        <span class="never-word">ecosystem</span>
+        <span class="never-word">frictionless</span>
+        <span class="never-word">journey</span>
+        <span class="never-word">solution</span>
+        <span class="never-word">utilize</span>
+        <span class="never-word">touch base</span>
+        <span class="never-word">circle back</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ICONS & UI ELEMENTS -->
+  <section id="icons">
+    <p class="section-label">UI Elements</p>
+    <h2>Icons & components</h2>
+    <p class="lead">Minimal, functional iconography. SF Symbols on iOS for native consistency. No skeuomorphic bin illustrations. The bin icon lives in the brand mark — in the interface, abstract symbols do the job.</p>
+
+    <div class="mt-32">
+      <h4>Core Icon Set (SF Symbols)</h4>
+      <div class="icon-grid">
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <rect x="5" y="10" width="18" height="15" rx="2"/><path d="M2 10h24M10 10V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/>
+            <path d="M11 14v7M14 14v7M17 14v7"/>
+          </svg>
+          <span class="icon-label">trash</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 2L14 22M14 2L9 7M14 2L19 7"/><circle cx="14" cy="22" r="2" fill="currentColor"/>
+          </svg>
+          <span class="icon-label">arrow.up</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <rect x="3" y="4" width="22" height="20" rx="2"/><path d="M8 4V2M20 4V2M3 10h22"/>
+            <path d="M8 15h2M13 15h2M18 15h2M8 20h2M13 20h2"/>
+          </svg>
+          <span class="icon-label">calendar</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 3a11 11 0 1 0 0 22A11 11 0 0 0 14 3zM14 8v6l4 2"/>
+          </svg>
+          <span class="icon-label">clock</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 3C8.477 3 4 7.477 4 13c0 3.1 1.4 5.87 3.6 7.73L7 25l4.27-.6A9.9 9.9 0 0 0 14 25c5.523 0 10-4.477 10-10S19.523 3 14 3z"/>
+            <path d="M9 13h2M13 13h2M17 13h2"/>
+          </svg>
+          <span class="icon-label">bubble</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 2L4 8v12l10 6 10-6V8L14 2z"/><path d="M14 2v18M4 8l10 6 10-6"/>
+          </svg>
+          <span class="icon-label">cube</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 2C8 2 3 7 3 14s5 12 11 12 11-5 11-12S20 2 14 2z"/><path d="M14 7v5l3 3"/>
+          </svg>
+          <span class="icon-label">timer</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M14 3a7 7 0 0 1 7 7c0 5-7 15-7 15S7 15 7 10a7 7 0 0 1 7-7z"/><circle cx="14" cy="10" r="2.5"/>
+          </svg>
+          <span class="icon-label">location</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M5 14a9 9 0 1 0 18 0 9 9 0 0 0-18 0z"/><path d="M14 10v4l3 2"/>
+          </svg>
+          <span class="icon-label">alarm</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <path d="M6 8l8-4 8 4v12l-8 4-8-4V8z"/><path d="M6 8l8 4m0 0l8-4m-8 4v12"/>
+          </svg>
+          <span class="icon-label">house</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <circle cx="14" cy="9" r="4"/><path d="M5 24c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+          </svg>
+          <span class="icon-label">person</span>
+        </div>
+        <div class="icon-item">
+          <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" color="var(--lime)">
+            <circle cx="14" cy="14" r="3"/><path d="M14 3v3M14 22v3M3 14h3M22 14h3M6.22 6.22l2.12 2.12M19.66 19.66l2.12 2.12M6.22 21.78l2.12-2.12M19.66 8.34l2.12-2.12"/>
+          </svg>
+          <span class="icon-label">gear</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-40">
+      <h4>Button System</h4>
+      <div class="button-demo">
+        <button class="btn btn-primary btn-lg">Put bins out tonight</button>
+        <button class="btn btn-primary">Got it</button>
+        <button class="btn btn-primary btn-sm">Confirm</button>
+        <button class="btn btn-secondary">View schedule</button>
+        <button class="btn btn-ghost">Skip for now</button>
+      </div>
+      <div class="card-sm mt-12">
+        <p style="font-size:12px">Primary (lime on midnight): All CTAs, confirmations, and key actions. One per screen maximum.<br>
+        Secondary (surface): Supplementary actions that don't require emphasis.<br>
+        Ghost (transparent + lime border): Dismissals, skips, and low-stakes optional actions.</p>
+      </div>
+    </div>
+
+    <div class="mt-40">
+      <h4>Notification Cards</h4>
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">These are how BinMate's push notifications look on iOS lock screen and in-app.</p>
+      <div class="notif-demo">
+        <div class="notif-card notif-lime">
+          <div class="notif-icon notif-icon-lime">
+            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="var(--lime)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <rect x="5" y="10" width="18" height="15" rx="2"/><path d="M2 10h24M10 10V7a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3"/>
+              <path d="M11 14v7M14 14v7M17 14v7"/>
+            </svg>
+          </div>
+          <div class="notif-content">
+            <div class="notif-title">Bins out tonight</div>
+            <div class="notif-body">Yellow + Red bins. Stirling Council. Out by 6am tomorrow.</div>
+            <div class="notif-time">BinMate · Now</div>
+          </div>
+        </div>
+        <div class="notif-card notif-yellow">
+          <div class="notif-icon notif-icon-yellow">
+            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="var(--amber)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <path d="M14 3a7 7 0 0 1 7 7c0 5-7 15-7 15S7 15 7 10a7 7 0 0 1 7-7z"/><circle cx="14" cy="10" r="2.5"/>
+            </svg>
+          </div>
+          <div class="notif-content">
+            <div class="notif-title">Verge collection soon</div>
+            <div class="notif-body">Your area starts Monday 17 Mar. Time to clear the garage.</div>
+            <div class="notif-time">BinMate · 3 days away</div>
+          </div>
+        </div>
+        <div class="notif-card notif-teal">
+          <div class="notif-icon notif-icon-teal">
+            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" stroke="var(--teal)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <rect x="3" y="4" width="22" height="20" rx="2"/><path d="M8 4V2M20 4V2M3 10h22"/>
+              <path d="M8 15h2M13 15h2M18 15h2M8 20h2M13 20h2"/>
+            </svg>
+          </div>
+          <div class="notif-content">
+            <div class="notif-title">Holiday shift: Good Friday</div>
+            <div class="notif-body">Your Friday collection moves to Saturday this week.</div>
+            <div class="notif-time">BinMate · 2 days away</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCREENS -->
+  <section id="screens">
+    <p class="section-label">App Screens</p>
+    <h2>Interface design</h2>
+    <p class="lead">Three key screens. Home — your weekly truth. Onboarding — the 90-second setup. Paywall — the honest ask. Every screen earns trust through clarity, not decoration.</p>
+
+    <div class="screens-row">
+
+      <!-- HOME SCREEN -->
+      <div>
+        <h4 style="text-align:center;margin-bottom:12px">Home · Today View</h4>
+        <div class="phone-frame">
+          <div class="phone-notch">
+            <div class="notch-pill"></div>
+            <div class="notch-dot"></div>
+          </div>
+          <div class="phone-screen">
+            <div class="app-header">
+              <div>
+                <div class="app-greeting">TUESDAY, 18 MAR</div>
+                <div class="app-location">Scarborough · Stirling</div>
+              </div>
+              <div class="app-avatar" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 28 28" fill="none" stroke="var(--lime)" stroke-width="1.5" stroke-linecap="round">
+                  <circle cx="14" cy="9" r="4"/><path d="M5 24c0-4.97 4.03-9 9-9s9 4.03 9 9"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="next-collection">
+              <div class="nc-bg-circle"></div>
+              <div class="nc-label">TOMORROW MORNING</div>
+              <div class="nc-title">Bins out<br>tonight</div>
+              <div class="nc-subtitle">Out by 6am Wednesday</div>
+              <div class="nc-bins">
+                <div class="nc-bin">
+                  <div class="bin-dot" style="background:#D32F2F"></div>
+                  Red lid
+                </div>
+                <div class="nc-bin">
+                  <div class="bin-dot" style="background:#F5E642"></div>
+                  Yellow lid
+                </div>
+              </div>
+            </div>
+
+            <div class="upcoming-title">Upcoming</div>
+            <div class="upcoming-list">
+              <div class="upcoming-item">
+                <div class="upcoming-date-col">
+                  <div class="upd-day">WED</div>
+                  <div class="upd-num">19</div>
+                </div>
+                <div class="upcoming-bins">
+                  <div class="upd-bin-tag"><div class="bin-dot" style="background:#D32F2F;width:6px;height:6px"></div>Red</div>
+                  <div class="upd-bin-tag"><div class="bin-dot" style="background:#F5E642;width:6px;height:6px"></div>Yellow</div>
+                </div>
+              </div>
+              <div class="upcoming-item">
+                <div class="upcoming-date-col">
+                  <div class="upd-day">WED</div>
+                  <div class="upd-num">26</div>
+                </div>
+                <div class="upcoming-bins">
+                  <div class="upd-bin-tag"><div class="bin-dot" style="background:#D32F2F;width:6px;height:6px"></div>Red</div>
+                  <div class="upd-bin-tag"><div class="bin-dot" style="background:#4CAF50;width:6px;height:6px"></div>Green</div>
+                </div>
+              </div>
+              <div class="upcoming-item">
+                <div class="upcoming-date-col">
+                  <div class="upd-day">APR</div>
+                  <div class="upd-num">8</div>
+                </div>
+                <div class="upcoming-bins">
+                  <div class="upd-bin-tag" style="background:var(--amber-faint);color:var(--amber)">
+                    <svg width="8" height="8" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                      <path d="M14 3a7 7 0 0 1 7 7c0 5-7 15-7 15S7 15 7 10a7 7 0 0 1 7-7z"/>
+                    </svg>
+                    Verge
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-nav">
+              <div class="bnav-item active">
+                <svg class="bnav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <path d="M3 10.5L11 3l8 7.5V19a1 1 0 0 1-1 1H14v-5H8v5H4a1 1 0 0 1-1-1v-8.5z"/>
+                </svg>
+                Home
+              </div>
+              <div class="bnav-item">
+                <svg class="bnav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <rect x="2" y="3" width="18" height="17" rx="2"/><path d="M7 3V1M15 3V1M2 9h18"/>
+                </svg>
+                Calendar
+              </div>
+              <div class="bnav-item">
+                <svg class="bnav-icon" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                  <circle cx="11" cy="11" r="3"/><path d="M11 1v3M11 18v3M1 11h3M18 11h3M4.22 4.22l2.12 2.12M15.66 15.66l2.12 2.12"/>
+                </svg>
+                Settings
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ONBOARDING -->
+      <div>
+        <h4 style="text-align:center;margin-bottom:12px">Onboarding · Step 1 of 3</h4>
+        <div class="phone-frame">
+          <div class="phone-notch">
+            <div class="notch-pill"></div>
+            <div class="notch-dot"></div>
+          </div>
+          <div class="phone-screen">
+            <div class="onboard-screen">
+              <div class="onboard-step">
+                <div class="step-dot active"></div>
+                <div class="step-dot"></div>
+                <div class="step-dot"></div>
+              </div>
+              <div class="onboard-icon">
+                <svg width="32" height="32" viewBox="0 0 28 28" fill="none" stroke="var(--lime)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                  <path d="M3 10.5L11 3l8 7.5V19a1 1 0 0 1-1 1H14v-5H8v5H4a1 1 0 0 1-1-1v-8.5z"/>
+                </svg>
+              </div>
+              <div class="onboard-h">Where do you live?</div>
+              <p class="onboard-p">We need your address to find your council, your bin schedule, and your verge collection dates. Takes about 10 seconds.</p>
+              <div class="address-input-mock">
+                <div class="input-icon">
+                  <svg width="14" height="14" viewBox="0 0 28 28" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+                    <path d="M14 3a7 7 0 0 1 7 7c0 5-7 15-7 15S7 15 7 10a7 7 0 0 1 7-7z"/><circle cx="14" cy="10" r="2.5"/>
+                  </svg>
+                </div>
+                <div class="input-text">Start typing your address...</div>
+              </div>
+              <div style="margin-top:12px;font-size:11px;color:var(--text-muted);font-family:var(--font-mono);letter-spacing:0.05em">E.g. 14 Scarborough Beach Rd, Scarborough</div>
+              <div class="onboard-btn">Find my council →</div>
+              <div class="onboard-skip">or enter manually</div>
+
+              <div style="margin-top:24px;background:var(--surface);border-radius:12px;padding:14px 16px;">
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--lime);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">Privacy</div>
+                <div style="font-size:12px;color:var(--text-secondary);line-height:1.5">Your address stays on your device. We only use it to determine your council and waste zone. We never sell or share it.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYWALL -->
+      <div>
+        <h4 style="text-align:center;margin-bottom:12px">Paywall · After Free Trial</h4>
+        <div class="phone-frame">
+          <div class="phone-notch">
+            <div class="notch-pill"></div>
+            <div class="notch-dot"></div>
+          </div>
+          <div class="phone-screen">
+            <div class="paywall-screen">
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--lime);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">Your free trial ends Sunday</div>
+              <div class="paywall-h">Never miss a<br>bin day. Ever.</div>
+              <div class="paywall-sub">Less than a coffee per month.</div>
+
+              <div class="paywall-features">
+                <div class="paywall-feat"><div class="feat-check">✓</div>Automatic WA public holiday shifts</div>
+                <div class="paywall-feat"><div class="feat-check">✓</div>All 30 Perth metro councils covered</div>
+                <div class="paywall-feat"><div class="feat-check">✓</div>Verge & kerbside collection alerts</div>
+                <div class="paywall-feat"><div class="feat-check">✓</div>FIFO swing roster support</div>
+                <div class="paywall-feat"><div class="feat-check">✓</div>Multiple addresses (rental, family)</div>
+              </div>
+
+              <div class="plan-option selected" style="margin-bottom:10px">
+                <div class="plan-badge">BEST VALUE</div>
+                <div class="plan-row">
+                  <div class="plan-radio checked"></div>
+                  <div>
+                    <div class="plan-name">Annual</div>
+                    <div class="plan-desc">Save 44% vs monthly</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="plan-price">$9.99</div>
+                  <div class="plan-period">per year</div>
+                </div>
+              </div>
+
+              <div class="plan-option">
+                <div class="plan-row">
+                  <div class="plan-radio"></div>
+                  <div>
+                    <div class="plan-name">Monthly</div>
+                    <div class="plan-desc">Cancel anytime</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="plan-price" style="color:var(--text-secondary)">$1.49</div>
+                  <div class="plan-period">per month</div>
+                </div>
+              </div>
+
+              <div class="paywall-cta">Get BinMate Premium →</div>
+              <div class="paywall-legal">7-day free trial. Cancel anytime in Settings. Auto-renews. No bin day excuses after this.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MONETISATION -->
+  <section id="monetisation">
+    <p class="section-label">Monetisation Strategy</p>
+    <h2>How BinMate makes money</h2>
+    <p class="lead">Honest, frictionless, and priced so low that cancelling takes more effort than paying. The model is freemium with a hard limit — free gets you one council, one address, one week's preview. Everything else requires Premium.</p>
+
+    <div class="pricing-cards">
+      <!-- Free -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-amount"><sup></sup>$0</div>
+        <div class="pricing-period">Forever free · limited</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>One address only</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>7-day schedule preview</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>In-app check only — no push notifications</div>
+        <div class="pricing-feature" style="opacity:0.35"><span class="pf-check">—</span>Push reminders</div>
+        <div class="pricing-feature" style="opacity:0.35"><span class="pf-check">—</span>Public holiday auto-shift</div>
+        <div class="pricing-feature" style="opacity:0.35"><span class="pf-check">—</span>Verge collection alerts</div>
+        <div class="pricing-feature" style="opacity:0.35"><span class="pf-check">—</span>Multiple addresses</div>
+        <button class="pricing-btn pb-outline">Current plan</button>
+      </div>
+
+      <!-- Premium Monthly — FEATURED -->
+      <div class="pricing-card featured">
+        <div class="pricing-tier">Premium · Monthly</div>
+        <div class="pricing-amount"><sup>$</sup>1.49</div>
+        <div class="pricing-period">per month · cancel anytime</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Unlimited addresses</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Full year schedule view</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Push notifications — eve + morning</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Automatic WA public holiday shifts</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Verge & kerbside alerts</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>All 30 Perth metro councils</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>7-day free trial on first install</div>
+        <button class="pricing-btn pb-solid">Start free trial</button>
+      </div>
+
+      <!-- Annual -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Premium · Annual</div>
+        <div class="pricing-amount"><sup>$</sup>9.99</div>
+        <div class="pricing-period">per year · saves 44%</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Everything in Monthly</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Best value — $0.83/month effective</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Priority support</div>
+        <div class="pricing-feature"><span class="pf-check">✓</span>Early access to new features</div>
+        <div class="pricing-feature"><span class="pf-check" style="color:var(--lime)">→</span>Equivalent to 1 coffee per year</div>
+        <div class="pricing-feature" style="opacity:0.5"><span class="pf-check">·</span>Future: household sharing</div>
+        <button class="pricing-btn pb-lime">Get Annual Plan</button>
+      </div>
+    </div>
+
+    <div class="mt-40">
+      <h4>Why this pricing works</h4>
+      <div class="grid-3 mt-16">
+        <div class="card-sm">
+          <h3 style="font-size:16px">$1.49 is psychologically unthreatening</h3>
+          <p class="mt-8" style="font-size:12px">It's less than a coffee. Less than a parking meter. It doesn't require a conversation. People approve recurring payments at this price without asking anyone's permission. Cancellation friction exceeds the payment friction — most users just keep it.</p>
+        </div>
+        <div class="card-sm">
+          <h3 style="font-size:16px">Annual is the real money-maker</h3>
+          <p class="mt-8" style="font-size:12px">$9.99/year feels like a "deal" vs $1.49/month. Crucially, annual subscribers churn at 3–5x lower rates than monthly. Target 40% annual uptake. At 5,000 users with 40% annual: ~$26k/year from annual + ~$54k/year from monthly = ~$80k gross. After Apple's 15%: ~$68k net.</p>
+        </div>
+        <div class="card-sm">
+          <h3 style="font-size:16px">Free tier drives installs, not revenue</h3>
+          <p class="mt-8" style="font-size:12px">Free tier exists to reduce install friction — particularly for new Perth arrivals who aren't sure if they need the app. The 7-day trial does the conversion. Free tier is permanently hobbled (no push, no holiday shifts) so upgrading is obvious, not coerced.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-32">
+      <h4>Revenue Projections</h4>
+      <table class="rev-table">
+        <thead>
+          <tr>
+            <th>Milestone</th>
+            <th>Monthly users</th>
+            <th>Paying users</th>
+            <th>Avg ARPU</th>
+            <th>Gross MRR</th>
+            <th>Net (after Apple 15%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Beta launch</td>
+            <td>500</td>
+            <td>200 (40%)</td>
+            <td>$1.20</td>
+            <td>$240</td>
+            <td class="rev-highlight">$204</td>
+          </tr>
+          <tr>
+            <td>3 months post-launch</td>
+            <td>2,000</td>
+            <td>900 (45%)</td>
+            <td>$1.25</td>
+            <td>$1,125</td>
+            <td class="rev-highlight">$956</td>
+          </tr>
+          <tr>
+            <td>6 months — word of mouth</td>
+            <td>5,000</td>
+            <td>2,500 (50%)</td>
+            <td>$1.30</td>
+            <td>$3,250</td>
+            <td class="rev-highlight">$2,762</td>
+          </tr>
+          <tr>
+            <td>12 months</td>
+            <td>12,000</td>
+            <td>6,500 (54%)</td>
+            <td>$1.35</td>
+            <td>$8,775</td>
+            <td class="rev-highlight">$7,459</td>
+          </tr>
+          <tr>
+            <td>Steady state (yr 2)</td>
+            <td>25,000</td>
+            <td>14,000 (56%)</td>
+            <td>$1.40</td>
+            <td>$19,600</td>
+            <td class="rev-highlight">$16,660 / mo</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:10px;font-family:var(--font-mono)">Projections based on conservative 1–2% Perth iOS market capture over 24 months. ARPU blended from monthly ($1.49) + annual ($0.83/month effective). Apple small developer rate (15%) applied after year 1.</p>
+    </div>
+
+    <div class="grid-2 mt-32">
+      <div class="card">
+        <h4>Future Monetisation (Year 2+)</h4>
+        <div class="pricing-feature mt-12"><span class="pf-check" style="color:var(--lime)">→</span><div><strong style="font-size:13px">Household sharing</strong><p style="font-size:12px;margin-top:2px">One premium account, two addresses (same household). $2.49/month. Targets FIFO households with a partner at home who also needs notifications.</p></div></div>
+        <div class="pricing-feature mt-8"><span class="pf-check" style="color:var(--lime)">→</span><div><strong style="font-size:13px">Council white-label</strong><p style="font-size:12px;margin-top:2px">License the data layer to smaller WA councils who want a resident-facing bin reminder tool without building one. B2B SaaS, $300–800/month per council.</p></div></div>
+        <div class="pricing-feature mt-8"><span class="pf-check" style="color:var(--lime)">→</span><div><strong style="font-size:13px">Regional WA expansion</strong><p style="font-size:12px;margin-top:2px">Mandurah, Bunbury, Geraldton, Kalgoorlie. Same product, new data. Incremental revenue from existing infrastructure.</p></div></div>
+      </div>
+      <div class="card">
+        <h4>What we will never do</h4>
+        <div class="pricing-feature mt-12"><span style="color:var(--red)">✕</span><div><p style="font-size:13px">Ads. No. A bin reminder app showing ads is a broken trust statement. BinMate is ad-free, forever.</p></div></div>
+        <div class="pricing-feature mt-8"><span style="color:var(--red)">✕</span><div><p style="font-size:13px">Sell location data. Your address never leaves your device except to resolve your council zone. We don't build profiles. We don't work with data brokers.</p></div></div>
+        <div class="pricing-feature mt-8"><span style="color:var(--red)">✕</span><div><p style="font-size:13px">Freemium dark patterns. No fake countdowns. No "your data will be deleted" threats. No guilt-trip paywalls. Just a clean offer at a fair price.</p></div></div>
+        <div class="pricing-feature mt-8"><span style="color:var(--red)">✕</span><div><p style="font-size:13px">Enterprise bloat. BinMate stays a simple consumer iOS app. We will not pivot to "smart waste management solutions for municipalities."</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COPY SAMPLES -->
+  <section id="copy">
+    <p class="section-label">Copy Library</p>
+    <h2>Notification & UI copy</h2>
+    <p class="lead">Every line of BinMate copy is written to feel like it came from a person, not a system. Functional first, personality second. Never decorated.</p>
+
+    <div class="copy-samples">
+      <div class="copy-card">
+        <div class="cc-trigger">Push · Night before (7pm)</div>
+        <div class="cc-title">Bins out tonight</div>
+        <div class="cc-body">Yellow + Red bins. Stirling Council. Out by 6am tomorrow.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Push · Morning of (6am)</div>
+        <div class="cc-title">Bin day</div>
+        <div class="cc-body">Red lid goes out today. Yellow next week.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Push · Verge collection (3 days out)</div>
+        <div class="cc-title">Verge collection soon</div>
+        <div class="cc-body">Your area: starts Monday 17 Mar. Time to sort that pile in the garage.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Push · Public holiday shift</div>
+        <div class="cc-title">Schedule change — Good Friday</div>
+        <div class="cc-body">Your Friday collection shifts to Saturday this week. Nothing else changes.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Onboarding complete</div>
+        <div class="cc-title">You're sorted.</div>
+        <div class="cc-body">BinMate has your Scarborough schedule. We'll remind you the night before, every time. You won't miss another bin day.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Empty state · no upcoming</div>
+        <div class="cc-title">Nothing due this week</div>
+        <div class="cc-body">Next collection is Tuesday 25 Mar — yellow and red. We'll remind you Sunday night.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Paywall headline</div>
+        <div class="cc-title">Never miss a bin day. Ever.</div>
+        <div class="cc-body">Less than a coffee per month. No ads, no nonsense. Just a reliable nudge the night before, every week, adjusted for every WA public holiday.</div>
+      </div>
+      <div class="copy-card">
+        <div class="cc-trigger">Subscription confirmed</div>
+        <div class="cc-title">Cheers.</div>
+        <div class="cc-body">Premium is active. You'll never have to think about bins again. That's the whole point.</div>
+      </div>
+    </div>
+
+    <div class="grid-2 mt-24">
+      <div class="card">
+        <h4>App Store Taglines</h4>
+        <div class="word-bank mt-8" style="flex-direction:column;gap:6px">
+          <div style="font-size:14px;font-style:italic;color:var(--text-secondary)">"Perth's bin reminder. Finally done right."</div>
+          <div style="font-size:14px;font-style:italic;color:var(--text-secondary)">"All 30 Perth councils. One app. $1.49."</div>
+          <div style="font-size:14px;font-style:italic;color:var(--text-secondary)">"Set it up once. Never miss bin day again."</div>
+          <div style="font-size:14px;font-style:italic;color:var(--text-secondary)">"Knows Perth. Knows your council. Knows which bin."</div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Error Message Style</h4>
+        <div class="card-sm mt-12" style="border-color:rgba(232,72,72,0.2)">
+          <p style="color:var(--red);font-size:13px;font-weight:500">Couldn't find your address</p>
+          <p style="font-size:12px;margin-top:6px">We searched but couldn't match that address to a Perth council. Check the spelling or try a nearby street. If you're in a new estate, you might need to select your council manually.</p>
+          <p style="font-size:12px;margin-top:6px;color:var(--lime)">Try again / Select council manually</p>
+        </div>
+        <p style="font-size:11px;color:var(--text-muted);margin-top:10px">Errors are direct, never apologetic, never vague. We tell the user exactly what happened and exactly what to do.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP STORE PRESENCE -->
+  <section id="aso">
+    <p class="section-label">App Store Presence</p>
+    <h2>App Store optimisation</h2>
+    <p class="lead">The App Store listing is a sales page. Every word is optimised for search AND for conversion. Perth residents search for "bin day reminder Perth" — we rank for that term and we close the install.</p>
+
+    <div class="aso-demo">
+      <div class="aso-header">
+        <div class="aso-icon">
+          <div class="logo-mark" style="width:56px;height:56px;border-radius:14px">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="7" y="12" width="18" height="16" rx="2" fill="#0D0F12"/>
+              <path d="M5 12H27M12 12V9C12 8 12.5 8 13 8H19C19.5 8 20 8 20 9V12" stroke="#0D0F12" stroke-width="2" stroke-linecap="round"/>
+              <path d="M13 16V24M16 16V24M19 16V24" stroke="#B8F04A" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="aso-name">BinMate – Perth Bin Reminder</div>
+          <div class="aso-sub">Bin day reminders for all Perth councils</div>
+          <div class="aso-rating">
+            <div class="stars">★★★★★</div>
+            <div class="rating-num">4.8 · 1.2K ratings</div>
+          </div>
+        </div>
+      </div>
+      <div class="aso-desc">
+        <strong style="color:var(--text-primary)">Never miss a Perth bin day again.</strong>
+        <br><br>
+        BinMate covers all 30 Perth metro councils — from Stirling and Wanneroo to Fremantle and Armadale. Enter your address, and we handle the rest: weekly reminders, fortnightly rotation tracking, public holiday shifts, and verge collection alerts.
+        <br><br>
+        ✓ All Perth metro councils covered<br>
+        ✓ Automatic WA public holiday adjustments<br>
+        ✓ Red, yellow, and green bin tracking<br>
+        ✓ Verge and kerbside collection alerts<br>
+        ✓ FIFO roster-friendly scheduling<br>
+        ✓ Multiple addresses for family or renters
+        <br><br>
+        <em style="color:var(--text-muted)">Premium: $1.49/month or $9.99/year. 7-day free trial. No ads, ever.</em>
+        <div class="aso-keywords">
+          <div class="aso-kw">bin day Perth</div>
+          <div class="aso-kw">Perth bin reminder</div>
+          <div class="aso-kw">WA bin collection</div>
+          <div class="aso-kw">rubbish day reminder</div>
+          <div class="aso-kw">recycling reminder</div>
+          <div class="aso-kw">Stirling bins</div>
+          <div class="aso-kw">Wanneroo bin day</div>
+          <div class="aso-kw">council waste Perth</div>
+          <div class="aso-kw">bin notification</div>
+          <div class="aso-kw">FIFO Perth</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3 mt-24">
+      <div class="card-sm">
+        <h4>App Icon Rules</h4>
+        <p style="font-size:12px">The app icon is the bin mark on midnight background with a lime accent. No text in the icon. Readable at 29×29px (Spotlight). The lime must read clearly at small sizes — test at 1x on an actual device before finalising.</p>
+      </div>
+      <div class="card-sm">
+        <h4>Screenshots (6 total)</h4>
+        <p style="font-size:12px">1. Home screen with "Bins out tonight" card<br>2. Upcoming schedule view<br>3. Public holiday shift notification<br>4. Verge collection alert<br>5. Address setup (onboarding)<br>6. Multiple address support</p>
+      </div>
+      <div class="card-sm">
+        <h4>Primary Category</h4>
+        <p style="font-size:12px">Utilities (primary)<br>Lifestyle (secondary)<br><br>Not "Productivity" — BinMate is infrastructure, not self-improvement. The Utilities category has less competition and higher conversion intent.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>
+      <div class="footer-logo">BinMate.</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:4px">Brand Guidelines · Version 1.0</p>
+    </div>
+    <div class="footer-meta">
+      Built for Perth, Western Australia<br>
+      Designed 2026 · UMAZEN<br>
+      All assets, copy & system proprietary
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    var html = document.documentElement;
+    var saved = localStorage.getItem('binmate-theme');
+    if (saved) html.setAttribute('data-theme', saved);
+
+    document.querySelector('.theme-toggle').addEventListener('click', function() {
+      var current = html.getAttribute('data-theme');
+      var next = current === 'light' ? 'dark' : 'light';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('binmate-theme', next);
+    });
+  })();
+</script>
+</body>
+</html>

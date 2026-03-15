@@ -1,0 +1,7 @@
+// BinMate — Configuration Template
+// Copy this file to Config.xcconfig (gitignored) and fill in real values.
+// Link Config.xcconfig in Xcode: Project → Info → Configurations
+
+REVENUECAT_API_KEY = your_revenuecat_api_key_here
+API_BASE_URL = http://localhost:3000
+SENTRY_DSN = your_sentry_dsn_here
