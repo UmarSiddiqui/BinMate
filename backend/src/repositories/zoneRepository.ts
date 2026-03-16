@@ -18,6 +18,13 @@ export async function findZonesByCouncil(councilId: string): Promise<CollectionZ
   });
 }
 
+/** Return all collection zones. */
+export async function listAllZones(): Promise<CollectionZone[]> {
+  return prisma.collectionZone.findMany({
+    orderBy: { zoneName: 'asc' },
+  });
+}
+
 /** Find a zone by council slug and zone code. */
 export async function findZoneByCode(
   councilId: string,

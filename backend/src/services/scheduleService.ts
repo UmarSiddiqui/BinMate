@@ -1,4 +1,4 @@
-import { findZoneById } from '../repositories/zoneRepository';
+import { findZoneById, listAllZones } from '../repositories/zoneRepository';
 import { getHolidaysBetween } from '../repositories/holidayRepository';
 import { computeSchedule, type Collection } from './zoneScheduleComputer';
 import { logger } from '../utils/logger';
@@ -65,9 +65,7 @@ export async function getZonesCollectingTomorrow(): Promise<
   const holidays = await getHolidaysBetween(tomorrow, dayAfter);
 
   // Fetch all zones and check each one — suitable for current zone count (<200)
-  const zones = await import('../repositories/zoneRepository').then((r) =>
-    r.findZonesByCouncil('').catch(() => [])
-  );
+  const zones = await listAllZones();
 
   const result: Array<{ zoneId: string; collections: Collection[] }> = [];
 
