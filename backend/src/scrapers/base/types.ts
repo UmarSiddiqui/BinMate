@@ -18,9 +18,9 @@ export interface ZoneScheduleData {
   generalDay: string;        // 'monday'|'tuesday'|...'friday'
   generalFrequency: string;  // 'weekly'
   recyclingDay: string;
-  recyclingWeek: 'A' | 'B';
+  recyclingWeek: 'A' | 'B' | 'weekly';
   greenWasteDay: string | null;
-  greenWasteWeek: 'A' | 'B' | null;
+  greenWasteWeek: 'A' | 'B' | 'weekly' | null;
   vergeDates: string[] | null;
 }
 

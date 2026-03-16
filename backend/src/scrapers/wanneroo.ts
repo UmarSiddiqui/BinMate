@@ -178,3 +178,8 @@ class WannerooScraper implements CouncilScraper {
 
 /** Singleton export — import this in routes and the scraper runner. */
 export const wannerooScraper = new WannerooScraper();
+
+/** Return true if a (lowercase-trimmed) suburb falls within the Wanneroo service area. */
+export function wannerooCanHandle(suburb: string): boolean {
+  return Object.prototype.hasOwnProperty.call(SUBURB_ZONE, suburb.toLowerCase().trim());
+}

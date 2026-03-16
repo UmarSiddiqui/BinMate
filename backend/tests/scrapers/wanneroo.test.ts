@@ -4,11 +4,26 @@
  * Test addresses chosen as suburb-level queries — Nominatim reliably resolves these.
  *   - Girrawheen WA 6064          → MON-A (Group 1, Monday)
  *   - Clarkson WA 6030            → WED-A (Group 2, Wednesday)
- *   - Wanneroo WA 6065            → FRI-A (Group 2, Friday)
+ *   - Sinagra WA 6065             → FRI-A (Group 2, Friday)
  *
- * NOTE: resolveAddress calls Nominatim. Tests have a 15s timeout.
+ * Geocoding is mocked to avoid hitting production APIs (CLAUDE.md §12).
  * Run with: npm test -- tests/scrapers/wanneroo.test.ts
  */
+
+import type { GeocodeResult } from '../../src/services/geocoding';
+
+const mockGeocodeResults: Record<string, GeocodeResult | null> = {
+  'Girrawheen WA 6064': { lat: -31.77, lng: 115.95, suburb: 'Girrawheen', state: 'WA', postcode: '6064', displayName: 'Girrawheen, WA' },
+  'Clarkson WA 6030': { lat: -31.69, lng: 115.72, suburb: 'Clarkson', state: 'WA', postcode: '6030', displayName: 'Clarkson, WA' },
+  'Sinagra WA 6065': { lat: -31.85, lng: 115.88, suburb: 'Sinagra', state: 'WA', postcode: '6065', displayName: 'Sinagra, WA' },
+  'Fremantle WA 6160': { lat: -32.06, lng: 115.74, suburb: 'Fremantle', state: 'WA', postcode: '6160', displayName: 'Fremantle, WA' },
+};
+
+jest.mock('../../src/services/geocoding', () => ({
+  geocodeAddress: jest.fn((address: string) =>
+    Promise.resolve(mockGeocodeResults[address] ?? null)
+  ),
+}));
 
 import { wannerooScraper } from '../../src/scrapers/wanneroo';
 
@@ -84,7 +99,7 @@ describe('WannerooScraper', () => {
 
   describe('healthCheck', () => {
 
-    it('passes against live Nominatim', async () => {
+    it('passes when geocoding returns valid Wanneroo suburb', async () => {
       const ok = await wannerooScraper.healthCheck();
       expect(ok).toBe(true);
     }, 15_000);

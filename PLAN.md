@@ -173,28 +173,30 @@ For each of the priority 9 councils, open the bin lookup page, open DevTools →
 
 **Priority order (by population + implementation ease):**
 - [x] City of Wanneroo — PDF + static zone map (no public API)
-- [ ] City of Armadale — `my.armadale.wa.gov.au/service/waste-and-recycling/find-your-bin-collection-day/`
-- [ ] City of Fremantle — `fremantle.wa.gov.au/waste-and-environment/residential-waste/bin-collection/`
-- [ ] City of Cockburn — `cockburn.wa.gov.au/Environment-and-Waste/Rubbish-Waste-and-Recycling/Bin-Collections`
-- [ ] City of Melville — audit URL
-- [ ] City of Canning — `canning.wa.gov.au/residents/waste-and-recycling/bins-and-collection-days/`
-- [ ] City of Swan — audit URL
-- [ ] City of South Perth — `cosp.t1cloud.com` — T1Cloud
-- [ ] City of Stirling — `stirling.wa.gov.au/waste-and-environment/waste-and-recycling/bin-collections` — Salesforce
+- [x] City of Armadale — REST API `api.my.armadale.wa.gov.au/bins` (reverse-engineered from Next.js frontend)
+- [x] City of Fremantle — ArcGIS FeatureServer/60 (public, no auth) ✅
+- [x] City of Cockburn — widget API `gis1.cockburn.wa.gov.au/webapiv2` ✅
+- [x] City of Melville — T1Cloud static API key (`gis.melvillecity.com.au`) ✅
+- [x] City of Canning — `canning.wa.gov.au/residents/waste-and-recycling/bins-and-collection-days/`
+- [x] City of Swan — `swan.spatial.t1cloud.com` — T1Cloud Intramaps (session-based auth) ✅
+- [x] City of South Perth — `cosp.spatial.t1cloud.com` — T1Cloud Intramaps (session-based auth, Property module) ✅
+- [x] City of Stirling — OpenCities custom widget — `GET /bincollectioncheck/getresult` ✅
 
 Document findings in `docs/COUNCILS.md`.
 
 ### 1.2 Database & Schema
 - [x] Initial Prisma migration applied to Supabase (`20260315152437_init`) ✅
 - [x] `src/scrapers/base/types.ts` — `CouncilScraper` interface + `ZoneResolution`, `ZoneScheduleData` types
-- [ ] Seed `wa_public_holidays` table for 2026 and 2027
-- [ ] Write `zoneScheduleComputer.ts` — takes zone record + date, returns next N collections
-- [ ] Write unit tests for `zoneScheduleComputer` including:
-  - [ ] Normal week (no holiday)
-  - [ ] Collection on WA public holiday (should shift +1 day)
-  - [ ] Week A / Week B rotation over 12 months
-  - [ ] Year boundary (Dec 31 → Jan 1)
-  - [ ] Council with no green waste
+- [x] Seed `wa_public_holidays` table for 2026 and 2027 (22 holidays seeded ✅)
+- [x] Write `zoneScheduleComputer.ts` — takes zone record + date, returns next N collections ✅
+- [x] Write unit tests for `zoneScheduleComputer` — 17/17 passing ✅
+  - [x] Normal week (no holiday)
+  - [x] Collection on WA public holiday (should shift +1 day)
+  - [x] Week A / Week B rotation over 12 months
+  - [x] Year boundary (Dec 31 → Jan 1)
+  - [x] Council with no green waste
+  - [x] Multi-day Easter cluster (4-day shift Fri→Tue)
+  - [x] Verge dates included/excluded by date range
 
 ### 1.3 Scrapers — Tier 3 (PDF — easiest, start here)
 
@@ -208,15 +210,18 @@ Document findings in `docs/COUNCILS.md`.
 - [x] `prisma/seed-wanneroo.ts` — all 9 zones seeded into Supabase ✅
 - [x] Council row in `councils` table: `e6d72c4e-32d9-441b-a4e6-d7a5dc6476e3`
 
-#### City of Armadale (open-source scraper — adapt from HACS)
-- [ ] Clone relevant code from `github.com/mampfes/hacs_waste_collection_schedule`
-  - File: `custom_components/waste_collection_schedule/source/armadale_wa_gov_au.py`
-- [ ] Port to TypeScript (or run as Python subprocess if faster)
-- [ ] Write `armadale.ts` scraper
-- [ ] Write test: `tests/scrapers/armadale.test.ts`
-  - Test address: "23 Sexty St, Armadale WA 6112"
-  - Test address: "270 Skeet Rd, Harrisdale WA 6112"
-- [ ] Seed Armadale zones into database
+#### City of Armadale ✅
+- [x] Reverse-engineered live REST API: `GET https://api.my.armadale.wa.gov.au/bins?address={street}`
+  - Autocomplete endpoint — street portion only (comma-split, not full qualified address)
+  - Response: `{ address, bin_day, recycle_area, vergeside_zone }`
+  - Area 1 → recyclingWeek 'A', Area 2 → recyclingWeek 'B' (verified 2026-03-16 = Week A)
+- [x] Write `armadale.ts` scraper — direct API, no Nominatim needed
+- [x] Write test: `tests/scrapers/armadale.test.ts` — **12/12 passing** ✅
+  - 23 Sexty St, Armadale → WED-1 ✓
+  - 270 Skeet Rd, Harrisdale → THU-2 ✓
+- [x] Seed Armadale zones into database — 10 zones (5 days × 2 areas) ✅
+  - Council row: `93961ddc-f962-46e4-928e-56a3244ba070`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
 #### Smaller councils (PDF/iCal — batch these together)
 - [ ] City of Nedlands — identify data source, build scraper
@@ -229,63 +234,97 @@ Document findings in `docs/COUNCILS.md`.
 
 ### 1.4 Scrapers — Tier 1 (ArcGIS)
 
-#### City of Fremantle
-- [ ] Identify ArcGIS layer ID from `fremantle.wa.gov.au`
-- [ ] Write `fremantle.ts` scraper — query by lat/lng point
-- [ ] Write test: `tests/scrapers/fremantle.test.ts`
-  - Test address: "15 South Tce, Fremantle WA 6160"
-- [ ] Seed Fremantle zones
+#### City of Fremantle ✅
+- [x] Identified ArcGIS layer: `Domestic_waste_collection_areas/FeatureServer/60` (services3.arcgis.com, public, no auth)
+  - FOGO (dark green lid) weekly; General waste (red lid) fortnightly Week A; Recycling (yellow lid) fortnightly Week B
+  - All zones: `recyclingWeek = 'B'` — verified from 2025-26 Waste Guide PDF holiday table
+  - 6 zones: FRE-1(Mon), FRE-2(Mon), FRE-4(Tue), FRE-5(Thu), FRE-6(Wed), FRE-7(Fri)
+- [x] Write `fremantle.ts` scraper — geocode → lat/lng → ArcGIS point query
+- [x] Write test: `tests/scrapers/fremantle.test.ts` — **13/13 passing** ✅
+  - 15 South Tce, Fremantle → FRE-4 (Tuesday) ✓
+- [x] Seed Fremantle zones — 6 zones seeded ✅
+  - Council row: `19c27fce-df87-4c68-b277-831f5fa41f7c`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
-#### City of Cockburn
-- [ ] Same as Fremantle — ArcGIS approach
-- [ ] Write `cockburn.ts` scraper and test
-- [ ] Seed Cockburn zones
+#### City of Cockburn ✅
+- [x] Reverse-engineered live widget API on `gis1.cockburn.wa.gov.au/webapiv2`
+  - `LikeSearch` / `FuzzySearch` → property `dbkey`
+  - `PropertyInfoSearch/PropertyNo?q={dbkey}` → `BinDay`, `GardenWaste`, verge `Area`, verge dates
+  - Weekly general + weekly recycling; garden organics fortnightly when applicable
+  - Verge `Area` is separate from kerbside bin day / garden parity, so Cockburn zones are stored as `day + garden week + verge area`
+- [x] Write `cockburn.ts` scraper and test
+- [x] Seed Cockburn zones — 110 seeded combinations (5 weekdays × 10 garden areas × A/B, plus no-garden areas 0 and 11)
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
-#### City of Melville
-- [ ] Same approach — write `melville.ts` scraper and test
-- [ ] Seed Melville zones
+#### City of Melville ✅
+- [x] Reverse-engineered T1Cloud Intramaps API from `melvillecity.com.au/assets/js/minified/alyka.scripts.src.js`
+  - Two-step flow: GET Reproject (WGS84 → EPSG:7850) then GET Search (waste layer)
+  - API key embedded in public frontend JS
+  - Response fields: `collection_district`, `GreenLid`, `RedLid`, `YellowLid`
+  - Recycling week determined by parsing YellowLid date vs WEEK_A_REFERENCE
+- [x] Write `melville.ts` scraper — geocode → reproject → search → zone code `MEL-{DAY}-{WEEK}`
+- [x] Write test: `tests/scrapers/melville.test.ts` — **13/13 passing** ✅
+  - 5 Kintail Rd, Applecross → MEL-MON-A ✓
+  - 12 Ardross St, Ardross → MEL-WED-B ✓
+- [x] Seed Melville zones — 10 zones (5 days × 2 recycling weeks) ✅
+  - Council ID: `0ddbb441-a515-423e-b649-8ccde4553f51`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
 ### 1.5 Scrapers — Tier 2 (Address widget reverse-engineering)
 
-#### City of Canning
-- [ ] DevTools audit complete (see §1.1)
-- [ ] Write `canning.ts` scraper against discovered endpoint
-- [ ] Test: `tests/scrapers/canning.test.ts`
-  - Test address: "1 Manning Rd, Cannington WA 6107"
-- [ ] Seed Canning zones
+#### City of Canning ✅
+- [x] DevTools audit complete — two-step custom REST API (find + bins endpoints)
+  - `GET /api/property-details/find/{encodedSearchTerm}` → `[{key, address}]`
+  - `GET /api/property-details/bins/{key}` → `{rubbishCollectionDate, recyclingCollectionDate, ...}`
+  - Dates are midnight AWST expressed as UTC — add 8h to get AWST calendar date
+  - Street abbreviations must be expanded (Rd→Road, St→Street, etc.) or API returns 204
+- [x] Write `canning.ts` scraper — zone code `CAN-{DAY_ABBREV}-{RECYCLING_WEEK}`
+- [x] Write test: `tests/scrapers/canning.test.ts` — **14/14 passing** ✅
+  - 31 Manning Rd, Cannington → CAN-WED-B ✓
+  - 15 Wharf St, Queens Park → CAN-FRI-B ✓
+  - 22 Harrison St, Bentley → CAN-MON-A ✓
+- [x] Seed Canning zones — 10 zones (5 days × 2 recycling weeks) ✅
+  - Council ID: `b49fecaf-35e4-4aca-8d71-983fbcde831c`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
-#### City of Swan
-- [ ] DevTools audit complete
-- [ ] Write `swan.ts` scraper
-- [ ] Test with real address in Middle Swan / Ellenbrook
-- [ ] Seed Swan zones
+#### City of Swan ✅
+- [x] DevTools audit complete — T1Cloud Intramaps session-based auth (4-step flow)
+- [x] Write `swan.ts` scraper — `SWA-{DAY_ABBREV}-{RECYCLING_WEEK}` zone codes
+- [x] Test with real address: 12 Morrison Road, Midland → SWA-TUE-A ✓
+- [x] Seed Swan zones — 10 zones (5 days × 2 recycling weeks)
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
+- [x] 14 tests passing ✅
 
 ### 1.6 Scrapers — Tier 4 (Platform APIs — hardest)
 
-#### City of South Perth (T1Cloud)
-- [ ] DevTools audit of `cosp.t1cloud.com` address lookup
-- [ ] Reverse-engineer T1Cloud API endpoint
-- [ ] Write `southperth.ts` scraper
-- [ ] Test with real South Perth address
-- [ ] Document T1Cloud pattern in `docs/COUNCILS.md` — may reuse for other T1Cloud councils
+#### City of South Perth (T1Cloud) ✅
+- [x] DevTools audit — session-based auth (appType=Standard, project=Public, X-Requested-With required)
+- [x] Reverse-engineered T1Cloud API: Projects → Modules → Search → Refine/Set; waste data in Property module infoPanels.info2
+- [x] Write `southperth.ts` scraper — zone code `COSP-{DAY_ABBREV}-{RECYCLING_WEEK}`
+- [x] Test: 1 Sandgate Street SOUTH PERTH WA 6151 → COSP-TUE-A ✓
+- [x] Seed 10 zones into Supabase — Council ID: `ea021a6a-7b30-4408-abbd-75916d14411d`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
-#### City of Stirling (Salesforce)
-- [ ] DevTools audit of `stirling.my.site.com` address lookup
-- [ ] Reverse-engineer Salesforce Experience Cloud API
-- [ ] Write `stirling.ts` scraper
-- [ ] Test: "45 Scarborough Beach Rd, Scarborough WA 6019"
-- [ ] Seed Stirling zones (this is the largest council — 220k residents)
-- **Note:** If Salesforce API is too locked down, fall back to PDF calendars (Week 1/Week 2 published on their site)
+#### City of Stirling (OpenCities custom widget) ✅
+- [x] DevTools audit — NOT Salesforce; custom OpenCities CMS widget on `www.stirling.wa.gov.au`
+- [x] API: `GET /bincollectioncheck/getresult` — custom headers (configid, form, fields=lng,lat, Referer required)
+- [x] Coordinate-based lookup (point-in-polygon against property parcels); `Referer` header required
+- [x] Write `stirling.ts` scraper — zone code `STI-{DAY_ABBREV}-{RECYCLING_WEEK}`; green waste = opposite week
+- [x] 45/45 tests passing — coordinate tests for WED-A, FRI-A, TUE-B, THU-B + canHandle + fetchSchedule + healthCheck
+- [x] Seed 10 zones into Supabase — Council ID: `8ef3fd59-ae75-4c15-8ac2-cb1c7a5dc489`
+- [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
+- **Note on precision:** Nominatim returns road centroids for major arterial roads; API resolves empty in those cases. Residential street addresses resolve correctly. scraper returns informative error.
 
 ### 1.7 Address Resolution Service
-- [ ] `AddressService.resolveAddress(address: string): Promise<ZoneResolution>`
-- [ ] Geocode address using Google Maps API → lat/lng + suburb
-- [ ] Check `address_cache` first — return cached result if < 30 days old
-- [ ] Determine council from geocoded suburb
-- [ ] Run council-specific scraper to get zone ID
-- [ ] Cache result in `address_cache`
-- [ ] Return zone ID + council name + next 10 collections
-- [ ] Write integration test with 10 real Perth addresses across 5 councils
+- [x] `AddressService.resolveAddress(address: string): Promise<AddressResolution | AddressError>` ✅
+- [x] Geocode via Nominatim (not Google Maps) → lat/lng + suburb ✅
+- [x] Check `address_cache` first — return cached result on hit ✅
+- [x] Scraper registry: `canHandle(suburb)` check → scraper.resolveAddress → zone code → DB lookup ✅
+  - Wanneroo scraper wired in — resolves all 30 Wanneroo suburbs to correct zone codes
+  - Generic council name fallback for councils without a scraper yet
+- [x] Cache result in `address_cache` ✅
+- [x] Return zone ID + council name + next 5 collections (via `/register-address` route) ✅
+- [ ] Write integration test with real Perth addresses across multiple councils (Phase 2)
 
 ---
 
@@ -295,33 +334,31 @@ Document findings in `docs/COUNCILS.md`.
 **AI tool recommendation:** Cursor (good for iterating on route handlers and tests)
 
 ### 2.1 API Routes
-- [ ] `POST /api/v1/register-address` — register address, return zone + schedule
-- [ ] `GET /api/v1/schedule` — get upcoming collections for a zone
-- [ ] `PUT /api/v1/push-token` — store/update APNs push token
-- [ ] `POST /api/v1/webhook/revenuecat` — handle subscription events
-- [ ] `GET /api/v1/health` — health check endpoint
-- [ ] Request validation with Zod on all POST/PUT endpoints
-- [ ] Error middleware — consistent `{ error: string }` responses
-- [ ] Rate limiting — 10 req/min per IP on `/register-address`
+- [x] `POST /api/v1/register-address` — Zod validation, resolves address, creates user, returns schedule ✅
+- [x] `GET /api/v1/schedule` — Zod validation, `zoneId` + `from` + `count` params ✅
+- [x] `PUT /api/v1/push-token` — Zod validation, updates token + notification hour ✅
+- [x] `POST /api/v1/webhook/revenuecat` — auth header validation, full event map ✅
+- [x] `GET /api/v1/health` — returns `{ status, version, env, db }` ✅
+- [x] Request validation with Zod on all POST/PUT endpoints ✅
+- [x] Error middleware — consistent `{ error: string }` responses ✅
+- [x] Rate limiting — 10 req/min per IP on `/register-address` ✅
 
 ### 2.2 Notification Engine
-- [ ] `NotificationService` class wrapping Firebase Admin SDK
-- [ ] `sendBinReminderPush(userId, collection)` — formats and sends APNs notification
-- [ ] Notification copy pulled from constants file mirroring `BRAND.md` Section 7
-- [ ] `jobs/nightly-notifications.ts` — runs at 17:00 AWST (triggered via external cron; see 2.4)
-  - [ ] Find all zones with tomorrow's collection
-  - [ ] Apply public holiday shift check
-  - [ ] Batch send per zone (FCM topic or individual tokens)
-  - [ ] Log results to Sentry
-  - [ ] Test: mock tomorrow = Good Friday → shift check fires correctly
-- [ ] `POST /api/v1/cron/trigger-notifications` — protected by `CRON_SECRET` header; invokes nightly job (for Render free tier: external cron triggers this since node-cron can't run when service is spun down)
+- [x] `sendPushNotification` / `sendBatchNotifications` — **MOCKED** (real APNs blocked on Apple Dev account) ✅
+- [x] Notification copy from `BRAND.md` §7 in `buildPayload()` ✅
+- [x] `jobs/notificationEngine.ts` — cron at 09:00 UTC (17:00 AWST) ✅
+  - [x] `getZonesCollectingTomorrow()` — implemented in scheduleService ✅
+  - [x] Public holiday shift applied via zoneScheduleComputer ✅
+  - [x] Logs sent/failed counts ✅
+  - [ ] Test: mock tomorrow = Good Friday → verify shift fires correctly
+- [x] `POST /api/v1/cron/trigger-notifications` — protected endpoint for Render free tier external cron ✅
 
 ### 2.3 RevenueCat Webhook Handler
-- [ ] `POST /api/v1/webhook/revenuecat`
-- [ ] Validate RevenueCat webhook signature
-- [ ] Handle events: `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `EXPIRATION`, `BILLING_ISSUE`
-- [ ] Update `users.subscription_status` accordingly
-- [ ] Log all webhook events
+- [x] `POST /api/v1/webhook/revenuecat` ✅
+- [x] Validates `REVENUECAT_WEBHOOK_AUTH_HEADER` ✅
+- [x] Handles all events: `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `EXPIRATION`, `BILLING_ISSUE`, `TRIAL_*` ✅
+- [x] Updates `users.subscription_status` ✅
+- [x] Logs all webhook events ✅
 
 ### 2.4 Deployment
 - [ ] Deploy to Render — `render.yaml` blueprint, environment variables configured
@@ -330,7 +367,7 @@ Document findings in `docs/COUNCILS.md`.
 - [ ] Verify health endpoint: `GET /api/v1/health` returns `{ status: "ok" }`
 - [ ] Test `/register-address` with 3 real Perth addresses from production
 - [ ] Set up Sentry alerts for 5xx errors
-- [ ] **External cron (Render free tier):** Use cron-job.org or similar — 16:58 AWST hit `/health` (wake service), 17:01 AWST hit `POST /api/v1/cron/trigger-notifications` with `X-Cron-Secret: <CRON_SECRET>`
+- [ ] **External cron (Render free tier):** Use cron-job.org or similar — 16:58 AWST hit `/health` (wake service), 17:01 AWST hit `POST /api/v1/cron/trigger-notifications` with `Authorization: Bearer <CRON_SECRET>`
 
 ---
 
@@ -342,19 +379,19 @@ Document findings in `docs/COUNCILS.md`.
 **Tech:** Protected Express routes + lightweight React SPA served from `/admin` on the backend. No new framework — builds on existing Node.js/Express stack.
 
 ### 2.5.1 Setup
-- [ ] Create `backend/src/admin/` directory for all admin routes and UI
-- [ ] Add `GET /admin` route serving the React SPA (built and served as static files)
-- [ ] Protect all `/admin/*` routes with HTTP Basic Auth middleware using `ADMIN_PASSWORD` env var
-- [ ] Add `ADMIN_PASSWORD` to `.env.example`
-- [ ] Add admin build step to `package.json` scripts
+- [x] Create `backend/src/admin/` directory for all admin routes and UI ✅
+- [x] Add `GET /admin` route (server-rendered HTML — no React build step needed) ✅
+- [x] Protect all `/admin/*` routes with HTTP Basic Auth middleware ✅
+- [x] `ADMIN_PASSWORD` already in `.env.example` ✅
+- [ ] Add admin build step to `package.json` scripts (deferred — no build step needed for server-rendered approach)
 
 ### 2.5.2 Scraper Management Panel
-- [ ] Council table: name, slug, platform type, last scraped timestamp, zone count, status badge (Healthy / Error / Never Run)
-- [ ] Per-council row: expand to see last scraper output, last error message, and response time
-- [ ] "Run scraper now" button per council → POST to `/admin/api/scrapers/:slug/run` → streams status back
-- [ ] "Health check" button per council → calls `healthCheck()` and returns pass/fail
-- [ ] Scraper run history log: last 10 runs per council (timestamp, duration, zones updated, error if any)
-- [ ] Bulk action: "Run all scrapers" (queued sequentially, not parallel — respect rate limits)
+- [x] Council table: name, slug, platform type, last scraped, zone count, status badges ✅
+- [ ] Per-council row: expand to see last scraper output and error message
+- [ ] "Run scraper now" button → POST `/admin/api/scrapers/:slug/run`
+- [x] "Health check" button per council → calls `healthCheck()` and returns pass/fail ✅
+- [ ] Scraper run history log
+- [ ] Bulk action: "Run all scrapers"
 
 ### 2.5.3 Data Browser
 - [ ] **Collection Zones tab:** filterable table by council — shows zone name, collection day, recycling week, green waste, verge dates
@@ -392,7 +429,7 @@ Document findings in `docs/COUNCILS.md`.
 - [ ] Database connection status + query latency (ping `SELECT 1`)
 - [ ] Address cache hit rate: cached hits vs live scraper calls (last 7 days)
 - [ ] Recent Sentry errors: last 10 backend errors with message + timestamp (Sentry API integration)
-- [ ] Render deployment info: current deploy timestamp, git SHA (via `process.env.RENDER_GIT_COMMIT`)
+- [x] Render deployment info: current deploy timestamp, git SHA (via `process.env.RENDER_GIT_COMMIT`) ✅
 - [ ] All council scraper health checks: run all `healthCheck()` calls and display pass/fail grid
 
 ---
@@ -403,116 +440,110 @@ Document findings in `docs/COUNCILS.md`.
 **AI tool recommendation:** Claude Code for architecture/complex logic; Cursor for view iteration; Codex for boilerplate
 
 ### 3.1 Core Infrastructure
-- [ ] `BinMateAPI.swift` — URLSession wrapper with base URL, headers, error handling
-- [ ] `KeychainService.swift` — store push token and user ID
-- [ ] `NotificationService.swift` — request permission, register with APNs, forward token to backend
-- [ ] `ScheduleRepository.swift` — fetch from API, cache in CoreData, return to ViewModels
-- [ ] `CoreData` model: `CollectionEntity`, `ZoneEntity`, `CouncilEntity`
-- [ ] `AppState.swift` — global state: onboarding complete, zone ID, subscription status
-- [ ] Deeplink handling for notification tap → open correct screen
+- [x] `BinMateAPI.swift` — URLSession wrapper with base URL, headers, error handling
+- [x] `KeychainService.swift` — store push token and user ID
+- [x] `NotificationService.swift` — request permission, register with APNs, forward token to backend
+- [x] `ScheduleRepository.swift` — fetch from API, cache in CoreData, return to ViewModels
+- [x] `CoreData` model: `CollectionEntity`, `ZoneEntity`, `CouncilEntity`
+- [x] `AppState.swift` — global state: onboarding complete, zone ID, subscription status
+- [x] Deeplink handling for notification tap → open correct screen
 
 ### 3.2 Onboarding Flow
-- [ ] `OnboardingView.swift` — step container (3 steps, progress indicator)
-- [ ] Step 1: `AddressEntryView.swift`
+- [x] `OnboardingView.swift` — step container (3 steps, progress indicator)
+- [x] Step 1: `AddressEntryView.swift`
   - Address text field with autocomplete (MapKit local search)
   - "Find my council" CTA
   - Privacy note: "Your address stays on your device"
   - Loading state while API resolves
   - Error state: "Couldn't find your address"
-- [ ] Step 2: `CouncilConfirmView.swift`
+- [x] Step 2: `CouncilConfirmView.swift`
   - Show detected council name + suburb
   - Show first upcoming collection as preview
   - "That's me" confirm CTA
   - "Try a different address" link
-- [ ] Step 3: `NotificationSetupView.swift`
+- [x] Step 3: `NotificationSetupView.swift`
   - Explain what notifications will look like
   - "Turn on reminders" CTA → request APNs permission
   - If denied: show instructions to enable in Settings
   - Set default notification hour = 18 (6pm)
-- [ ] Store zone ID in `AppState` and `UserDefaults`
-- [ ] Mark onboarding complete → navigate to Home
+- [x] Store zone ID in `AppState` and `UserDefaults`
+- [x] Mark onboarding complete → navigate to Home
 
 ### 3.3 Home Screen
-- [ ] `HomeView.swift` + `HomeViewModel.swift`
-- [ ] Date/location header: "TUESDAY, 18 MAR" + "Scarborough · Stirling"
-- [ ] `HeroCollectionCard.swift` — the lime "Bins out tonight" card
+- [x] `HomeView.swift` + `HomeViewModel.swift`
+- [x] Date/location header: "TUESDAY, 18 MAR" + "Scarborough · Stirling"
+- [x] `HeroCollectionCard.swift` — the lime "Bins out tonight" card
   - Dynamic: changes based on next collection
   - Shows which bins go out (colour-coded pills)
   - Shows "Out by 6am {day}" subtitle
   - Empty state: "Nothing due this week. Next: [date]"
-- [ ] `UpcomingScheduleList.swift` — next 8 collections
+- [x] `UpcomingScheduleList.swift` — next 8 collections
   - Date column (day abbreviation + date number)
   - Bin type pills (colour + label)
   - Verge collection shown in amber
   - Holiday-shifted collection shows original date in strikethrough
-- [ ] Pull to refresh
-- [ ] Bottom navigation bar (Home, Calendar, Settings)
+- [x] Pull to refresh
+- [x] Bottom navigation bar (Home, Calendar, Settings)
 
 ### 3.4 Calendar Screen
-- [ ] `CalendarView.swift` + `CalendarViewModel.swift`
-- [ ] Month grid view — 12 months of upcoming collections
-- [ ] Bin type colour dots on collection days
-- [ ] Tap a day → bottom sheet with collection details
-- [ ] Verge collection dates highlighted in amber
-- [ ] Public holidays shown with shift indicator
+- [x] `CalendarView.swift` + `CalendarViewModel.swift`
+- [x] Month grid view — 12 months of upcoming collections
+- [x] Bin type colour dots on collection days
+- [x] Tap a day → bottom sheet with collection details
+- [x] Verge collection dates highlighted in amber
+- [x] Public holidays shown with shift indicator
 
 ### 3.5 Settings Screen
-- [ ] `SettingsView.swift`
-- [ ] Address section: current address + "Change address" → re-runs onboarding
-- [ ] Multiple addresses section (Premium): add/remove addresses, toggle primary
-- [ ] Notification section:
-  - Toggle notifications on/off
-  - Notification time picker (4pm–10pm)
-  - "Test notification" button (sends immediately)
-- [ ] Subscription section: current plan, manage subscription (opens App Store)
-- [ ] About section: version, privacy policy link, contact email
+- [x] `SettingsView.swift` — full implementation ✅
+- [x] `SettingsViewModel.swift` — notification state, hour sync, test notification ✅
+- [x] Address section: current address (suburb + council) + "Change address" → confirmation → re-runs onboarding ✅
+- [x] Multiple addresses section (Premium): premium gate (free → upgrade prompt; premium → "Coming soon" placeholder) ✅
+- [x] Notification section:
+  - Toggle notifications on/off (system auth check, local opt-out, open Settings if denied) ✅
+  - Notification time picker (4pm–10pm, syncs to backend via updatePushToken) ✅
+  - "Test notification" button (fires local notification in 3s, checkmark feedback) ✅
+- [x] Subscription section: current plan, manage subscription (RevenueCat CustomerCenter) ✅
+- [x] About section: version, privacy policy link, contact support link ✅
+- [x] Wired into MainTabView (replaced Text("Settings") placeholder) ✅
 
 ### 3.6 Bin Guide Screen
-- [ ] `BinGuideView.swift`
-- [ ] Tab bar: Red lid / Yellow lid / Lime Green lid
-- [ ] Per-council bin content list (what goes in, what doesn't)
-- [ ] A–Z search: "where does X go?"
-- [ ] Matches bin colours exactly to Perth lids (`BRAND.md` Section 1, bin colours)
+- [x] `BinGuideView.swift` + `BinGuideContent.swift` ✅
+- [x] Lid selector: Red / Yellow / Lime Green tabs with coloured circle indicators ✅
+- [x] Per-lid content lists: "Goes in" (accepted) + "Not in this bin" (rejected) sections ✅
+- [x] A–Z search: "What goes where?" — filters accepted items across all bins ✅
+- [x] Bin colours match Perth physical lids exactly via `BinMateTheme.Colors.binRed/Yellow/Green` ✅
+- [x] Accessible from Settings → About → "Bin guide" (presented as sheet) ✅
+- [x] Full VoiceOver labels on all interactive elements ✅
 
 ### 3.7 Paywall Screen
-- [ ] `PaywallView.swift` + `PaywallViewModel.swift`
-- [ ] Eyebrow: "Your free trial ends {day}" (amber, mono font)
-- [ ] Headline: "Never miss a bin day. Ever."
-- [ ] Feature list (5 items from `BRAND.md`)
-- [ ] Two plan options:
-  - Annual: $9.99/year, "BEST VALUE" badge, selected by default
-  - Monthly: $1.49/month
-- [ ] "Get BinMate Premium →" CTA
-- [ ] Legal copy: "7-day free trial. Cancel anytime in Settings."
-- [ ] RevenueCat `Purchases.purchase(package:)` call
-- [ ] Loading state during purchase
-- [ ] Error handling (user cancelled vs actual error — different messages)
-- [ ] Restore purchases link
-- [ ] Show paywall:
-  - After 7-day trial ends
-  - When user tries to add a second address (Premium feature)
-  - On first verge collection alert trigger (gentle upsell)
+- [x] `BinMatePaywallView.swift` — wraps RevenueCat native `PaywallView` (design configured in RC dashboard) ✅
+- [x] `onPurchaseCompleted` + `onRestoreCompleted` handlers → `EntitlementService.refresh()` ✅
+- [x] `.tint(BinMateTheme.Colors.lime)` applied to RC paywall CTA ✅
+- [x] `binMatePaywall(isPresented:)` modifier — reusable sheet presenter used across the app ✅
+- [x] Show paywall: second address gate (SettingsView), calendar locked cells, notification gate ✅
+- [x] Verge collection gentle upsell trigger ✅
 
 ### 3.8 Free Tier Logic
-- [ ] `EntitlementService.swift` — checks RevenueCat entitlement `premium`
-- [ ] Free tier: 1 address, no push notifications, 7-day schedule preview only
-- [ ] Premium features gated by `EntitlementService.isPremium`
-- [ ] Graceful degradation: show what they're missing, not a hard error
+- [x] `EntitlementService.swift` — RevenueCat entitlement `Bin Mate Pro`, real-time stream ✅
+- [x] 1 address: second address gated in Settings behind `isPremium` ✅
+- [x] No push notifications: notifications section locked for free users, shows Premium badge ✅
+- [x] 7-day schedule preview: CalendarView locks cells beyond today+7 with lock icon + upsell banner ✅
+- [x] Graceful degradation: informational banners + Premium badge labels, no hard errors ✅
 
 ### 3.9 Widget (WidgetKit)
-- [ ] `BinMateWidget` — small and medium sizes
-- [ ] Small: "Tomorrow — Red + Yellow" or "Nothing this week"
-- [ ] Medium: small + next 3 collections with dates
-- [ ] Timeline provider refreshes at 17:00 AWST daily
-- [ ] Uses shared `AppGroup` to read zone ID from main app
-- [ ] Tap widget → opens Home screen
+- [x] `BinMateWidget` — small and medium sizes ✅
+- [x] Small: "Tomorrow — Red + Yellow" or "Nothing this week" ✅
+- [x] Medium: small + next 3 collections with dates ✅
+- [x] Timeline provider refreshes at 17:00 AWST daily ✅
+- [x] Uses shared `AppGroup` (`group.app.binmate`) to read data from main app ✅
+- [x] `WidgetDataWriter` called after schedule loads in `HomeViewModel` ✅
 
 ### 3.10 Accessibility Pass
-- [ ] VoiceOver: all interactive elements labelled
-- [ ] Dynamic Type: all text scales correctly
-- [ ] Colour contrast: verify lime on dark passes 4.5:1
-- [ ] Reduce Motion: all animations respect `@Environment(\.accessibilityReduceMotion)`
-- [ ] Keyboard navigation (iPad): logical tab order
+- [x] VoiceOver: all interactive elements labelled, decorative icons hidden ✅
+- [x] Dynamic Type: theme fonts used throughout (no hardcoded sizes in interactive elements) ✅
+- [x] Colour contrast: lime (#B8F04A) on dark (#0D0F12) = 14.2:1 — passes WCAG AAA ✅
+- [x] Reduce Motion: `@Environment(\.accessibilityReduceMotion)` in OnboardingView, BinGuideView, SkeletonView ✅
+- [ ] Keyboard navigation (iPad): logical tab order (manual test needed)
 
 ---
 
@@ -536,13 +567,14 @@ Document findings in `docs/COUNCILS.md`.
 - **Each needs:** scraper + test + seeded zones + health check registered
 
 ### 4.2 App Polish
-- [ ] App icon: 1024×1024pt (lime square, bin mark)
-- [ ] Launch screen: midnight background, BinMate wordmark centered
-- [ ] All loading states implemented (skeleton views)
-- [ ] All empty states implemented with helpful copy
-- [ ] All error states show user-friendly messages (from `BRAND.md`)
-- [ ] Haptic feedback: `UIImpactFeedbackGenerator` on primary CTA taps
-- [ ] App review prompt: trigger after 3rd successful bin-day notification received
+- [ ] App icon: 1024×1024pt (lime square, bin mark) — needs designer asset
+- [x] Launch screen: `LaunchBackground` (#0D0F12) colorset + `INFOPLIST_KEY_UILaunchScreen_UIColorName` ✅
+- [x] All loading states implemented (SkeletonView shimmer in HomeView) ✅
+- [x] All empty states implemented (HomeView empty state card with pull-to-refresh prompt) ✅
+- [x] Error states show user-friendly messages via `BinMateError.errorDescription` + `isUserFacing` ✅
+- [x] Haptic feedback: `HapticFeedback.impact(.medium)` on "That's me" + "Turn on reminders" CTAs ✅
+- [x] App review prompt: fires after 3rd notification via `requestReview()` + `notificationReceivedCount` ✅
+- [x] Verge collection gentle upsell trigger ✅
 
 ### 4.3 App Store Preparation
 - [ ] App Store screenshots: 6 screens (iPhone 6.7" and 6.1")
@@ -552,13 +584,14 @@ Document findings in `docs/COUNCILS.md`.
   4. Verge collection alert
   5. Address setup (onboarding)
   6. Calendar view
-- [ ] App Store description (see `docs/PROJECT.md` Section 9.2 for copy)
-- [ ] Keywords: "bin day Perth", "Perth bin reminder", "recycling reminder Perth", "WA bin collection", "rubbish day reminder"
-- [ ] Category: Utilities (primary), Lifestyle (secondary)
+- [ ] App Store screenshots: 6 screens — see `docs/APP_STORE.md` for specs (needs Xcode/designer)
+- [x] App Store description — see `docs/APP_STORE.md` ✅
+- [x] Keywords — see `docs/APP_STORE.md` (96 chars, 7 terms) ✅
+- [x] Category: Utilities (primary), Lifestyle (secondary) ✅
 - [ ] Privacy policy page: `binmate.app/privacy`
 - [ ] Support URL: `binmate.app/support`
-- [ ] Age rating: 4+
-- [ ] App Review notes: explain what the app does, list test credentials
+- [x] Age rating: 4+ ✅
+- [x] App Review notes — see `docs/APP_STORE.md` ✅
 
 ### 4.4 TestFlight Beta
 - [ ] Upload build to TestFlight
@@ -673,4 +706,4 @@ Record significant decisions here so future AI sessions have context.
 ---
 
 *Last updated: 16 March 2026*
-*Next: seed WA public holidays → `zoneScheduleComputer.ts` → Armadale scraper → wire `/register-address` route*
+*Next: City of South Perth — T1Cloud Intramaps pattern (cosp.spatial.t1cloud.com); see HANDOFF.md*

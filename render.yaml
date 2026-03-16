@@ -11,8 +11,8 @@ services:
     # Backend lives in backend/ subdirectory
     rootDir: backend
 
-    buildCommand: npm ci && npm run build
-    startCommand: npm run start
+    buildCommand: npm ci && npm run db:generate && npm run build
+    startCommand: npm run start:render
 
     healthCheckPath: /api/v1/health
 
@@ -30,10 +30,10 @@ services:
         sync: false
       - key: REVENUECAT_WEBHOOK_AUTH_HEADER
         sync: false
+      - key: GEOCODING_CONTACT_EMAIL
+        value: contact@binmate.app
       # Optional — add when ready:
       # - key: FCM_SERVICE_ACCOUNT_KEY
       #   sync: false
       # - key: ADMIN_PASSWORD
       #   sync: false
-      # - key: GEOCODING_CONTACT_EMAIL
-      #   value: contact@binmate.app

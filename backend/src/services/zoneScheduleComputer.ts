@@ -54,7 +54,7 @@ function sameDay(a: Date, b: Date): boolean {
 function getWeekLabel(d: Date): 'A' | 'B' {
   const msPerWeek = 7 * 86_400_000;
   const diffMs = utcMidnight(d).getTime() - utcMidnight(WEEK_A_REFERENCE).getTime();
-  const diffWeeks = Math.round(diffMs / msPerWeek);
+  const diffWeeks = Math.floor(diffMs / msPerWeek);
   return diffWeeks % 2 === 0 ? 'A' : 'B';
 }
 
@@ -109,17 +109,20 @@ export function computeSchedule(
       types.push('general');
     }
 
-    // ── Recycling (fortnightly) ────────────────────────────────────────────
-    if (zone.recyclingDay === dayName && zone.recyclingWeek === weekLabel) {
+    // ── Recycling (weekly or fortnightly) ──────────────────────────────────
+    if (
+      zone.recyclingDay === dayName &&
+      (zone.recyclingWeek === 'weekly' || zone.recyclingWeek === weekLabel)
+    ) {
       types.push('recycling');
     }
 
-    // ── Green waste (fortnightly, optional) ───────────────────────────────
+    // ── Green waste (weekly or fortnightly, optional) ─────────────────────
     if (
       zone.greenWasteDay &&
       zone.greenWasteWeek &&
       zone.greenWasteDay === dayName &&
-      zone.greenWasteWeek === weekLabel
+      (zone.greenWasteWeek === 'weekly' || zone.greenWasteWeek === weekLabel)
     ) {
       types.push('green_waste');
     }

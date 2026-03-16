@@ -1,9 +1,10 @@
 import { geocodeAddress } from './geocoding';
 import { findCachedAddress, cacheAddress } from '../repositories/addressRepository';
-import { findZonesByCouncil } from '../repositories/zoneRepository';
+import { findZonesByCouncil, findZoneByCode } from '../repositories/zoneRepository';
 import prisma from '../utils/prisma';
 import { logger } from '../utils/logger';
 import type { CollectionZone, Council } from '@prisma/client';
+import { SCRAPER_REGISTRY } from '../scrapers/registry';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,7 @@ export interface AddressError {
 }
 
 // ─── Perth LGA bounding box (rough, for fast pre-filter) ─────────────────────
+
 const PERTH_BOUNDS = { latMin: -32.8, latMax: -31.4, lngMin: 115.6, lngMax: 116.3 };
 
 function isInPerth(lat: number, lng: number): boolean {
@@ -32,20 +34,18 @@ function isInPerth(lat: number, lng: number): boolean {
   );
 }
 
-// ─── Council matching ─────────────────────────────────────────────────────────
+// ─── Generic council matching (fallback for councils without scrapers) ────────
 
 /**
- * Find the active council whose service area contains the given lat/lng.
- * Currently uses suburb name matching against council slugs (pre-scraper phase).
- * Replace with PostGIS spatial query once boundary polygons are loaded.
+ * Find the active council whose service area contains the given suburb.
+ * Uses name-based matching — suitable only for single-zone or same-name councils.
+ * Replace with PostGIS ST_Within(point, boundary) in Phase 2.
  */
 async function matchCouncil(
   suburb: string,
   _lat: number,
   _lng: number
 ): Promise<Council | null> {
-  // Simple suburb → council lookup using known Perth suburbs in council names
-  // TODO Phase 2: replace with PostGIS ST_Within(point, boundary) query
   const councils = await prisma.council.findMany({ where: { isActive: true } });
   if (!councils.length) return null;
 
@@ -55,20 +55,18 @@ async function matchCouncil(
   const direct = councils.find((c) => c.slug === suburbLower);
   if (direct) return direct;
 
-  // Partial match — suburb name appears in council name
-  const partial = councils.find((c) =>
-    c.name.toLowerCase().includes(suburbLower) ||
-    suburbLower.includes(c.slug)
+  // Partial match — suburb name appears in council name or vice-versa
+  const partial = councils.find(
+    (c) =>
+      c.name.toLowerCase().includes(suburbLower) ||
+      suburbLower.includes(c.slug)
   );
   return partial ?? null;
 }
 
-// ─── Zone matching ────────────────────────────────────────────────────────────
-
 /**
- * Find the best zone for a lat/lng within a council.
- * Currently returns the first zone (single-zone councils) or null.
- * TODO Phase 2: use scraper resolveAddress() for multi-zone councils.
+ * Generic zone match — returns the first zone for a council.
+ * Only used for councils that have no registered scraper yet.
  */
 async function matchZone(
   councilId: string,
@@ -83,7 +81,13 @@ async function matchZone(
 
 /**
  * Resolve a Perth street address to a collection zone.
- * Checks cache first; geocodes and matches council/zone on cache miss.
+ *
+ * Resolution order:
+ *   1. Address cache (avoids geocoding on repeat lookups)
+ *   2. Geocode via Nominatim → suburb + lat/lng
+ *   3. Scraper registry — canHandle(suburb) narrows to the right scraper; the
+ *      scraper does the definitive zone-level lookup (zone code → DB zone)
+ *   4. Generic council name match — fallback for councils without a scraper yet
  */
 export async function resolveAddress(
   address: string
@@ -116,7 +120,59 @@ export async function resolveAddress(
     return { error: 'address_not_found', message: 'Address is outside the Perth metro area' };
   }
 
-  // 3. Match council
+  // 3. Scraper-based resolution — check each registered scraper
+  const suburbLower = geo.suburb.toLowerCase().trim();
+  for (const [councilSlug, entry] of Object.entries(SCRAPER_REGISTRY)) {
+    if (!entry.canHandle(suburbLower)) continue;
+
+    // Scraper claims this suburb — call it for the definitive zone code
+    const resolution = await entry.scraper.resolveAddress(address);
+    if (resolution.error || !resolution.zoneCode) {
+      logger.warn('Scraper canHandle=true but resolveAddress failed', {
+        councilSlug,
+        suburb: geo.suburb,
+        error: resolution.error,
+      });
+      continue;
+    }
+
+    const council = await prisma.council.findUnique({ where: { slug: councilSlug } });
+    if (!council) {
+      logger.warn('Scraper matched but council not in DB', { councilSlug });
+      continue;
+    }
+
+    const zone = await findZoneByCode(council.id, resolution.zoneCode);
+    if (!zone) {
+      logger.warn('Scraper resolved zone code not seeded in DB', {
+        councilSlug,
+        zoneCode: resolution.zoneCode,
+      });
+      continue;
+    }
+
+    await cacheAddress({
+      addressString: address,
+      lat: geo.lat,
+      lng: geo.lng,
+      councilId: council.id,
+      zoneId: zone.id,
+    });
+
+    logger.info('Address resolved via scraper', {
+      councilName: council.name,
+      zoneCode: resolution.zoneCode,
+    });
+    return {
+      zoneId: zone.id,
+      councilName: council.name,
+      suburb: geo.suburb,
+      lat: geo.lat,
+      lng: geo.lng,
+    };
+  }
+
+  // 4. Fallback: generic council name match (for councils without a scraper yet)
   const council = await matchCouncil(geo.suburb, geo.lat, geo.lng);
   if (!council) {
     logger.warn('No council matched for suburb', { suburb: geo.suburb });
@@ -126,7 +182,6 @@ export async function resolveAddress(
     };
   }
 
-  // 4. Match zone
   const zone = await matchZone(council.id, geo.lat, geo.lng);
   if (!zone) {
     return {
@@ -135,7 +190,6 @@ export async function resolveAddress(
     };
   }
 
-  // 5. Cache and return
   await cacheAddress({
     addressString: address,
     lat: geo.lat,
@@ -144,8 +198,10 @@ export async function resolveAddress(
     zoneId: zone.id,
   });
 
-  logger.info('Address resolved and cached', { councilName: council.name, zoneId: zone.id });
-
+  logger.info('Address resolved via generic match', {
+    councilName: council.name,
+    zoneId: zone.id,
+  });
   return {
     zoneId: zone.id,
     councilName: council.name,
