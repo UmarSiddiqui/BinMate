@@ -140,9 +140,14 @@
 ### City of Joondalup
 - **Population:** ~180,000
 - **Slug:** joondalup
-- **Platform:** TBD
+- **Platform:** Custom website widget API
+- **Lookup URL:** `https://www.joondalup.wa.gov.au/residents/waste-and-recycling/residential-bin-collections`
+- **API endpoints:** `GET /aapi/coj/propertylookup/{address}` and `GET /aapi/coj/bindatelookup/{mapkey}`
+- **Test address 1:** "1 King Edward Drive, Heathridge WA 6027" — JOO-THU-A
+- **Test address 2:** "90 Boas Avenue, Joondalup WA 6027" — JOO-FRI-B
 - **Scraper file:** `backend/src/scrapers/joondalup.ts`
-- **Status:** [ ] Not started
+- **Status:** [x] Complete
+- **Notes:** Resolver ranks candidate properties and retries `bindatelookup` across top candidates to skip non-serviced freeway/map features.
 
 ### City of Bayswater
 - **Population:** ~70,000
@@ -168,8 +173,14 @@
 ### City of Belmont
 - **Population:** ~35,000
 - **Slug:** belmont
+- **Platform:** IntraMaps (City website API)
+- **Lookup URL:** `https://www.belmont.wa.gov.au/bin-collections`
+- **API endpoints:** `GET /api/intramaps/getaddresses?key={address}` and `GET /api/intramaps/getpropertydetailsbymapdbkey?mapkey={mapkey}&dbkey={dbkey}`
+- **Test address 1:** "1B Keady Street, Belmont WA 6104" — BEL-FOGO-THU-A-O
+- **Test address 2:** "4 Fulham Street, Kewdale WA 6105" — BEL-FOGO-TUE-B-S
 - **Scraper file:** `backend/src/scrapers/belmont.ts`
-- **Status:** [ ] Not started
+- **Status:** [x] Complete
+- **Notes:** Supports both FOGO and standard properties; zone code encodes whether FOGO runs in the same week or opposite week to recycling.
 
 ### City of Gosnells
 - **Population:** ~130,000

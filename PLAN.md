@@ -552,11 +552,11 @@ Document findings in `docs/COUNCILS.md`.
 **Estimated time:** 3–4 weeks
 
 ### 4.1 Remaining Council Scrapers (post-launch priority order)
-- [ ] City of Joondalup (~180k)
+- [x] City of Joondalup (~180k) ✅
 - [ ] City of Bayswater (~70k)
 - [ ] City of Vincent (~35k)
 - [ ] City of Rockingham (~145k)
-- [ ] City of Belmont (~35k)
+- [x] City of Belmont (~35k) ✅
 - [ ] City of Gosnells (~130k)
 - [ ] City of Kalamunda (~60k)
 - [ ] Town of Victoria Park (~40k)

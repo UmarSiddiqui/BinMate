@@ -13,6 +13,8 @@ import { subiacoScraper, subiacoCanHandle } from './subiaco';
 import { cambridgeScraper, cambridgeCanHandle } from './cambridge';
 import { peppermintGroveScraper, peppermintGroveCanHandle } from './peppermintgrove';
 import { mosmanParkScraper, mosmanParkCanHandle } from './mosmanpark';
+import { joondalupScraper, joondalupCanHandle } from './joondalup';
+import { belmontScraper, belmontCanHandle } from './belmont';
 
 export interface ScraperEntry {
   scraper: CouncilScraper;
@@ -86,5 +88,13 @@ export const SCRAPER_REGISTRY: Record<string, ScraperEntry> = {
   mosmanpark: {
     scraper: mosmanParkScraper,
     canHandle: (suburb) => mosmanParkCanHandle(suburb),
+  },
+  joondalup: {
+    scraper: joondalupScraper,
+    canHandle: (suburb) => joondalupCanHandle(suburb),
+  },
+  belmont: {
+    scraper: belmontScraper,
+    canHandle: (suburb) => belmontCanHandle(suburb),
   },
 };
