@@ -3,10 +3,10 @@ import { z } from 'zod';
 import { requireAdminAuth } from './middleware';
 import { renderDashboard } from './dashboard';
 import {
+  clearAddressCache,
   createHoliday,
   deleteHoliday,
   getAdminSummary,
-  getSystemHealthSummary,
   getUserDetail,
   getZonePreview,
   listAddressCache,
@@ -14,8 +14,11 @@ import {
   listHolidays,
   listUsers,
   listZones,
+  softDeleteUser,
+  toggleCouncilActive,
   updateHoliday,
 } from './data';
+import { getSystemHealthSummary } from './data-system';
 import { runAllScraperHealthChecks, runAllScrapers, runScraper } from './scrapers';
 import { logger } from '../utils/logger';
 import { SCRAPER_REGISTRY } from '../scrapers/registry';
@@ -32,13 +35,8 @@ const holidaySchema = z.object({
 adminRouter.use(requireAdminAuth);
 
 /** GET /admin — serves the HTML admin dashboard shell. */
-adminRouter.get('/', async (_req: Request, res: Response) => {
-  try {
-    res.send(renderDashboard(await listCouncilStats()));
-  } catch (err) {
-    logger.error('Admin dashboard failed to load', { err });
-    res.status(500).send('Failed to load dashboard');
-  }
+adminRouter.get('/', (_req: Request, res: Response) => {
+  res.send(renderDashboard());
 });
 
 /** GET /admin/api/summary — high-level admin cards and metrics. */
@@ -203,6 +201,35 @@ adminRouter.get('/api/users/:userId', async (req: Request, res: Response) => {
     res.json(user);
   } catch (err) {
     respondWithError(res, 'Failed to load user', err);
+  }
+});
+
+/** PATCH /admin/api/councils/:id/toggle — toggle a council's isActive flag. */
+adminRouter.patch('/api/councils/:id/toggle', async (req: Request, res: Response) => {
+  try {
+    const council = await toggleCouncilActive(req.params.id);
+    res.json({ id: council.id, isActive: council.isActive });
+  } catch (err) {
+    respondWithError(res, 'Failed to toggle council', err);
+  }
+});
+
+/** DELETE /admin/api/address-cache — clear the entire address cache. */
+adminRouter.delete('/api/address-cache', async (_req: Request, res: Response) => {
+  try {
+    res.json(await clearAddressCache());
+  } catch (err) {
+    respondWithError(res, 'Failed to clear address cache', err);
+  }
+});
+
+/** DELETE /admin/api/users/:userId — soft-delete a user. */
+adminRouter.delete('/api/users/:userId', async (req: Request, res: Response) => {
+  try {
+    await softDeleteUser(req.params.userId);
+    res.json({ ok: true });
+  } catch (err) {
+    respondWithError(res, 'Failed to delete user', err);
   }
 });
 

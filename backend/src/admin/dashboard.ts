@@ -1,62 +1,15 @@
-import type { CouncilStat } from './types';
+import { getDashboardStyles } from './dashboard-styles';
+import { getDashboardScripts } from './dashboard-scripts';
 
 /** Renders the admin dashboard as a self-contained HTML page. */
-export function renderDashboard(councils: CouncilStat[]): string {
-  const totalZones = councils.reduce((sum, council) => sum + council.zoneCount, 0);
-  const scraperCount = councils.filter((council) => council.hasScraper).length;
-  const rows = councils.map(renderCouncilRow).join('');
-
+export function renderDashboard(): string {
   return /* html */ `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BinMate Admin</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0D0F12;color:#F0F2F5;font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-a{color:#B8F04A}
-button{font:inherit}
-header{background:#1A1D22;border-bottom:1px solid rgba(255,255,255,.07);padding:14px 24px;display:flex;align-items:center;gap:10px}
-header h1{font-size:16px;font-weight:700}
-.dot{width:8px;height:8px;background:#B8F04A;border-radius:50%;flex-shrink:0}
-.meta{margin-left:auto;font-size:12px;color:#6B7480}
-.stats,.actions{display:grid;gap:12px;padding:20px 24px}
-.stats{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
-.actions{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));padding-top:0}
-.card,.panel{background:#1A1D22;border:1px solid rgba(255,255,255,.07);border-radius:12px}
-.card{padding:16px 20px}
-.card .val{font-size:28px;font-weight:700;color:#B8F04A}
-.card .lbl{font-size:11px;color:#6B7480;margin-top:2px;text-transform:uppercase;letter-spacing:.06em}
-.panel{padding:16px 20px}
-.panel h2{font-size:12px;font-weight:700;margin-bottom:6px}
-.panel p{color:#9BA3AD;font-size:13px}
-main{padding:0 24px 40px}
-h3{font-size:11px;font-weight:600;color:#6B7480;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-table{width:100%;border-collapse:collapse;background:#1A1D22;border-radius:12px;overflow:hidden}
-th{text-align:left;padding:10px 14px;font-size:11px;font-weight:500;color:#6B7480;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid rgba(255,255,255,.07)}
-td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.02)}
-td.num{text-align:right;font-variant-numeric:tabular-nums}
-code{font-size:11px;color:#6B7480;font-family:Menlo,monospace}
-.dim{color:#6B7480}
-.stack{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:500}
-.badge.lime{background:rgba(184,240,74,.12);color:#B8F04A}
-.badge.teal{background:rgba(77,206,188,.12);color:#4DCEBC}
-.badge.red{background:rgba(232,72,72,.12);color:#E84848}
-.badge.muted{background:rgba(255,255,255,.07);color:#9BA3AD}
-.badge.ok{background:rgba(77,206,188,.12);color:#4DCEBC}
-.badge.fail{background:rgba(232,72,72,.12);color:#E84848}
-.btn{background:rgba(255,255,255,.07);color:#F0F2F5;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:7px 12px;font-size:12px;cursor:pointer}
-.btn:hover{background:rgba(255,255,255,.12)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn.primary{background:#B8F04A;color:#0D0F12;border-color:#B8F04A}
-.btn.primary:hover{background:#c7f567}
-.mono{font-family:Menlo,monospace;font-size:12px}
-@media (max-width:800px){table{display:block;overflow:auto;white-space:nowrap}}
-</style>
+<style>${getDashboardStyles()}</style>
 </head>
 <body>
 <header>
@@ -64,145 +17,128 @@ code{font-size:11px;color:#6B7480;font-family:Menlo,monospace}
   <h1>BinMate Admin</h1>
   <span class="meta">Internal use only · <a href="/api/v1/health">API health</a></span>
 </header>
-<section class="stats">
-  <div class="card"><div class="val">${councils.length}</div><div class="lbl">Councils</div></div>
-  <div class="card"><div class="val">${scraperCount}</div><div class="lbl">Registered Scrapers</div></div>
-  <div class="card"><div class="val">${totalZones}</div><div class="lbl">Seeded Zones</div></div>
-  <div class="card"><div class="val" id="userCount">…</div><div class="lbl">Users</div></div>
-</section>
-<section class="actions">
-  <div class="panel">
-    <h2>Admin APIs</h2>
-    <p>Summary, users, zones, holidays, address cache, scraper runs, and manual notification trigger are now served from authenticated JSON endpoints under <span class="mono">/admin/api/*</span>.</p>
+<nav>
+  <button class="tab-btn" data-tab="overview"  onclick="showTab('overview')">Overview</button>
+  <button class="tab-btn" data-tab="councils"  onclick="showTab('councils')">Councils</button>
+  <button class="tab-btn" data-tab="zones"     onclick="showTab('zones')">Zones</button>
+  <button class="tab-btn" data-tab="holidays"  onclick="showTab('holidays')">Holidays</button>
+  <button class="tab-btn" data-tab="users"     onclick="showTab('users')">Users</button>
+  <button class="tab-btn" data-tab="cache"     onclick="showTab('cache')">Cache</button>
+  <button class="tab-btn" data-tab="system"    onclick="showTab('system')">System</button>
+</nav>
+
+<!-- Overview -->
+<div class="page" id="page-overview">
+  <div class="stats">
+    <div class="card"><div class="val" id="ov-councils">…</div><div class="lbl">Councils</div><div class="sub" id="ov-councils-sub"></div></div>
+    <div class="card"><div class="val" id="ov-zones">…</div><div class="lbl">Zones</div></div>
+    <div class="card"><div class="val" id="ov-users">…</div><div class="lbl">Users</div><div class="sub" id="ov-users-sub"></div></div>
+    <div class="card"><div class="val" id="ov-holidays">…</div><div class="lbl">Holidays</div></div>
+    <div class="card"><div class="val" id="ov-cache">…</div><div class="lbl">Cached addresses</div></div>
   </div>
   <div class="panel">
-    <h2>Operations</h2>
-    <div class="stack">
-      <button class="btn primary" id="runAllBtn" onclick="runAllScrapers()">Run all scrapers</button>
-      <button class="btn" onclick="triggerNotifications()">Trigger notifications</button>
-      <button class="btn" onclick="loadSummary()">Refresh summary</button>
+    <div class="panel-row"><h2>Top zones by users</h2></div>
+    <table>
+      <thead><tr><th>Zone</th><th>Council</th><th>Users</th></tr></thead>
+      <tbody id="ov-top-zones"><tr><td colspan="3" class="dim">Loading…</td></tr></tbody>
+    </table>
+  </div>
+  <div class="sb" id="ov-status">Loading…</div>
+</div>
+
+<!-- Councils -->
+<div class="page" id="page-councils">
+  <div class="panel">
+    <div class="panel-row">
+      <h2>Operations</h2>
+      <div class="row">
+        <button class="btn p" id="run-all-btn" onclick="runAllScrapers()">Run all scrapers</button>
+      </div>
     </div>
-    <p class="dim" id="opsStatus" style="margin-top:10px">No admin action running.</p>
+    <div class="sb" id="councils-status">Select a council action below.</div>
   </div>
-</section>
-<main>
-  <h3>Scrapers &amp; Coverage</h3>
   <table>
-    <thead><tr>
-      <th>Council</th><th>Platform</th><th style="text-align:right">Zones</th>
-      <th>Last scraped</th><th>Status</th><th>Health</th><th>Actions</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
+    <thead><tr><th>Council</th><th>Platform</th><th>Zones</th><th>Last scraped</th><th>Status</th><th>Health</th><th>Actions</th></tr></thead>
+    <tbody id="councils-tbody"><tr><td colspan="7" class="dim">Loading…</td></tr></tbody>
   </table>
-</main>
-<script>
-async function postJson(url, options) {
-  const response = await fetch(url, { method: 'POST', ...options });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || 'Request failed');
-  return data;
-}
+</div>
 
-async function loadSummary() {
-  try {
-    const data = await fetch('/admin/api/summary').then((r) => r.json());
-    document.getElementById('userCount').textContent = data.summary.users.total;
-    document.getElementById('opsStatus').textContent =
-      'DB ' + data.system.db.status + ' · ' + data.system.deployment.gitSha;
-  } catch (error) {
-    document.getElementById('opsStatus').textContent = 'Failed to refresh summary';
-  }
-}
+<!-- Zones -->
+<div class="page" id="page-zones">
+  <div class="filters">
+    <input id="zones-council-filter" placeholder="Filter by council slug…" style="width:240px"
+      oninput="filterZones(this.value)">
+    <button class="btn" onclick="filterZones(document.getElementById('zones-council-filter').value)">Filter</button>
+  </div>
+  <table>
+    <thead><tr><th>Zone</th><th>Council</th><th>General</th><th>Recycling</th><th>Green waste</th><th>Users</th><th>Updated</th></tr></thead>
+    <tbody id="zones-tbody"><tr><td colspan="7" class="dim">Loading…</td></tr></tbody>
+  </table>
+</div>
 
-async function runCheck(slug, btn) {
-  const cell = btn.closest('tr').querySelector('.health-cell');
-  btn.disabled = true;
-  btn.textContent = 'Checking';
-  try {
-    const data = await postJson('/admin/api/scrapers/' + slug + '/health');
-    cell.innerHTML = data.healthy
-      ? '<span class="badge ok">Healthy</span>'
-      : '<span class="badge fail">Failed' + (data.error ? ': ' + data.error : '') + '</span>';
-  } catch (error) {
-    cell.innerHTML = '<span class="badge fail">' + error.message + '</span>';
-  }
-  btn.textContent = 'Health';
-  btn.disabled = false;
-}
+<!-- Holidays -->
+<div class="page" id="page-holidays">
+  <table>
+    <thead><tr><th>Name</th><th>Date</th><th>Shift</th><th>Actions</th></tr></thead>
+    <tbody id="holidays-tbody"><tr><td colspan="4" class="dim">Loading…</td></tr></tbody>
+  </table>
+  <div class="form-row">
+    <div class="fg"><label>Name</label><input id="new-hname" placeholder="Easter Monday"></div>
+    <div class="fg"><label>Date</label><input id="new-hdate" type="date"></div>
+    <button class="btn p" onclick="addHoliday()">Add holiday</button>
+  </div>
+</div>
 
-async function runScraper(slug, btn) {
-  btn.disabled = true;
-  btn.textContent = 'Running';
-  try {
-    const data = await postJson('/admin/api/scrapers/' + slug + '/run');
-    document.getElementById('opsStatus').textContent =
-      slug + ': refreshed ' + data.refreshed + ', skipped ' + data.skipped;
-  } catch (error) {
-    document.getElementById('opsStatus').textContent = slug + ': ' + error.message;
-  }
-  btn.textContent = 'Run';
-  btn.disabled = false;
-}
+<!-- Users -->
+<div class="page" id="page-users">
+  <div class="filters">
+    <select id="users-status-filter" onchange="loadUsers()">
+      <option value="">All statuses</option>
+      <option value="free">Free</option>
+      <option value="trial">Trial</option>
+      <option value="active">Active</option>
+      <option value="expired">Expired</option>
+    </select>
+  </div>
+  <table>
+    <thead><tr><th>ID</th><th>Created</th><th>Status</th><th>Notif. hour</th><th>Zones</th><th>Push token</th></tr></thead>
+    <tbody id="users-tbody"><tr><td colspan="6" class="dim">Loading…</td></tr></tbody>
+  </table>
+</div>
 
-async function runAllScrapers() {
-  const button = document.getElementById('runAllBtn');
-  button.disabled = true;
-  button.textContent = 'Running all';
-  try {
-    const data = await postJson('/admin/api/scrapers/run-all');
-    const refreshed = data.reduce((sum, row) => sum + row.refreshed, 0);
-    document.getElementById('opsStatus').textContent = 'All scrapers finished · ' + refreshed + ' zones refreshed';
-  } catch (error) {
-    document.getElementById('opsStatus').textContent = error.message;
-  }
-  button.textContent = 'Run all scrapers';
-  button.disabled = false;
-}
+<!-- Cache -->
+<div class="page" id="page-cache">
+  <div class="filters">
+    <input id="cache-search" placeholder="Search addresses…" style="width:280px"
+      oninput="searchCache(this.value)">
+    <span class="dim" id="cache-count"></span>
+    <button class="btn d" onclick="clearCache()">Clear all cache</button>
+  </div>
+  <table>
+    <thead><tr><th>Address</th><th>Council</th><th>Zone</th><th>Cached</th><th>Expires</th></tr></thead>
+    <tbody id="cache-tbody"><tr><td colspan="5" class="dim">Loading…</td></tr></tbody>
+  </table>
+</div>
 
-async function triggerNotifications() {
-  try {
-    await postJson('/admin/api/system/notifications/trigger');
-    document.getElementById('opsStatus').textContent = 'Notification job triggered successfully';
-  } catch (error) {
-    document.getElementById('opsStatus').textContent = error.message;
-  }
-}
+<!-- System -->
+<div class="page" id="page-system">
+  <div class="stats">
+    <div class="card"><div class="val sm" id="sys-db-val">…</div><div class="lbl">Database</div></div>
+    <div class="card"><div class="val sm" id="sys-env-val">…</div><div class="lbl">Environment</div></div>
+    <div class="card"><div class="val sm" id="sys-sha-val" style="font-size:13px;word-break:break-all">…</div><div class="lbl">Git SHA</div></div>
+    <div class="card"><div class="val sm" id="sys-auth-val">…</div><div class="lbl">Admin auth</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-row">
+      <h2>Notification engine</h2>
+      <button class="btn d" id="notif-btn" onclick="triggerNotifications()">Trigger notifications</button>
+    </div>
+    <p class="dim" style="font-size:13px">Runs nightly at 17:00 AWST. In production, sends <code>X-Admin-Confirm: RUN_NOW</code> automatically.</p>
+  </div>
+  <div class="sb" id="sys-status">Loading system info…</div>
+</div>
 
-loadSummary();
-</script>
+<script>${getDashboardScripts()}</script>
 </body>
 </html>`;
-}
-
-/** Render one council table row. */
-function renderCouncilRow(council: CouncilStat): string {
-  const scraperBadge = council.hasScraper
-    ? '<span class="badge teal">Live</span>'
-    : '<span class="badge muted">No scraper</span>';
-  const activeBadge = council.isActive
-    ? '<span class="badge lime">Active</span>'
-    : '<span class="badge red">Inactive</span>';
-  const scraped = council.lastScrapedAt
-    ? new Date(council.lastScrapedAt).toLocaleDateString('en-AU', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      })
-    : '<span class="dim">Never</span>';
-  const actions = council.hasScraper
-    ? `<div class="stack">
-        <button class="btn" onclick="runCheck('${council.slug}', this)">Health</button>
-        <button class="btn" onclick="runScraper('${council.slug}', this)">Run</button>
-      </div>`
-    : '<span class="dim">Unavailable</span>';
-
-  return `<tr>
-    <td><strong>${council.name}</strong><br><code>${council.slug}</code></td>
-    <td><span class="badge muted">${council.platformType}</span></td>
-    <td class="num">${council.zoneCount}</td>
-    <td>${scraped}</td>
-    <td>${activeBadge} ${scraperBadge}</td>
-    <td class="health-cell dim">—</td>
-    <td>${actions}</td>
-  </tr>`;
 }

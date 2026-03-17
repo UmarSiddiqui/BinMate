@@ -21,7 +21,8 @@
       "WebFetch(domain:www.cambridge.wa.gov.au)",
       "Bash(ls /Users/umarsiddiqui/Desktop/BinMate/backend/prisma/seed-*.ts)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(curl -s https://binmate-api.onrender.com/api/v1/health)"
     ]
   }
 }

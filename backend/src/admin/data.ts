@@ -5,7 +5,6 @@ import type {
   AddressCacheItem,
   AdminSummary,
   CouncilStat,
-  SystemHealthSummary,
   UserDetail,
   UserListItem,
   ZoneDetail,
@@ -257,36 +256,24 @@ export async function getUserDetail(userId: string): Promise<UserDetail | null> 
   };
 }
 
-/** Return database and deployment health for the admin panel. */
-export async function getSystemHealthSummary(): Promise<SystemHealthSummary> {
-  const start = Date.now();
+/** Toggle a council's isActive flag and return the updated record. */
+export async function toggleCouncilActive(id: string) {
+  const council = await prisma.council.findUniqueOrThrow({ where: { id } });
+  return prisma.council.update({ where: { id }, data: { isActive: !council.isActive } });
+}
 
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return {
-      db: { status: 'ok', latencyMs: Date.now() - start },
-      deployment: getDeployment(),
-      adminAuthEnabled: Boolean(process.env.ADMIN_PASSWORD),
-    };
-  } catch {
-    return {
-      db: { status: 'error', latencyMs: null },
-      deployment: getDeployment(),
-      adminAuthEnabled: Boolean(process.env.ADMIN_PASSWORD),
-    };
-  }
+/** Delete all address cache entries and return the count removed. */
+export async function clearAddressCache() {
+  const { count } = await prisma.addressCache.deleteMany();
+  return { deleted: count };
+}
+
+/** Soft-delete a user by setting deletedAt. */
+export async function softDeleteUser(userId: string) {
+  return prisma.user.update({ where: { id: userId }, data: { deletedAt: new Date() } });
 }
 
 /** Normalise Prisma JSON verge dates to a string array. */
 function toDateList(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-}
-
-/** Return deployment metadata for admin surfaces. */
-function getDeployment() {
-  return {
-    env: process.env.NODE_ENV ?? 'development',
-    serviceName: process.env.RENDER_SERVICE_NAME ?? 'local',
-    gitSha: process.env.RENDER_GIT_COMMIT ?? 'local',
-  };
 }
