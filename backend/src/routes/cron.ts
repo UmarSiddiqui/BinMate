@@ -41,7 +41,7 @@ export function createCronRouter(): Router {
    * POST /api/v1/cron/trigger-notifications
    * Manually trigger the nightly notification engine.
    */
-  router.post('/trigger-notifications', requireCronSecret, async (_req, res) => {
+  router.post('/trigger-notifications', requireCronSecret, async (_req: Request, res: Response) => {
     try {
       await runNotificationEngine();
       res.json({ ok: true });

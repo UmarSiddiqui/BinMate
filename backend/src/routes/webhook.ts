@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { updateSubscriptionStatus } from '../repositories/userRepository';
 import { logger } from '../utils/logger';
 
@@ -30,7 +30,7 @@ const EVENT_STATUS_MAP: Record<string, SubscriptionStatus> = {
  * POST /api/v1/webhook/revenuecat
  * Validates the RevenueCat auth header and updates user subscription status.
  */
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   // Validate auth header (skip in development if not set)
   if (RC_AUTH_HEADER) {
     const incomingAuth = req.headers['authorization'];

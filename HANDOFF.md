@@ -1,39 +1,32 @@
-## Handoff — 2026-03-17 06:54 AWST
+## Handoff — 2026-03-17 08:20 AWST
 **From:** Codex
 **Completed in this session:**
-- Implemented City of Belmont scraper end-to-end using the live public IntraMaps endpoints:
-  - `GET /api/intramaps/getaddresses?key={address}`
-  - `GET /api/intramaps/getpropertydetailsbymapdbkey?mapkey={mapkey}&dbkey={dbkey}`
-- Added candidate ranking + retry logic so address resolution can skip unsupported map records and still return a valid serviced property.
-- Added Belmont zone model:
-  - `BEL-FOGO-{DAY}-{A|B}-{S|O}` where `S` = same-week FOGO and `O` = opposite-week FOGO
-  - `BEL-STD-{DAY}-{A|B}` for non-FOGO properties
-- Wired Belmont into `SCRAPER_REGISTRY` so `addressService` can route Belmont suburbs.
-- Added full Belmont scraper unit tests (resolve, schedule, canHandle, health-check).
-- Added Belmont seed script with 30 zones (FOGO same/opposite + standard across weekdays and A/B).
-- Updated trackers to mark Belmont complete in `COUNCILS.md` and `PLAN.md`.
-- Verification:
-  - `npm test -- tests/scrapers/belmont.test.ts` ✅ (11/11)
-  - `npm run build` ✅
+- Implemented City of Kalamunda scraper end-to-end using live T1Cloud IntraMaps MapBuilder flow (`Projects → Modules → Search → Refine/Set`).
+- Added resilient Kalamunda resolution logic:
+  - street-first search terms with suburb fallback
+  - candidate ranking by house number/suburb/token overlap
+  - `Bin Day` + `Bin Area` parsing (`Area One → Week A`, `Area Two → Week B`)
+  - request timeout + 1 request/second throttling in non-test env
+- Added full Kalamunda scraper unit tests (resolve, fallback ranking, schedule, canHandle, health-check) with mocked T1Cloud payloads.
+- Wired Kalamunda into `SCRAPER_REGISTRY` so `addressService` can route Kalamunda suburbs.
+- Added Kalamunda seed script with 10 zones (`5 weekdays × 2 recycling weeks`) and weekly FOGO settings.
+- Updated tracker docs to mark Kalamunda complete in `COUNCILS.md` and `PLAN.md`.
 
 **Files modified:**
-- [backend/src/scrapers/belmont.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/src/scrapers/belmont.ts)
-- [backend/tests/scrapers/belmont.test.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/tests/scrapers/belmont.test.ts)
-- [backend/prisma/seed-belmont.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/prisma/seed-belmont.ts)
+- [backend/src/scrapers/kalamunda.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/src/scrapers/kalamunda.ts)
+- [backend/tests/scrapers/kalamunda.test.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/tests/scrapers/kalamunda.test.ts)
+- [backend/prisma/seed-kalamunda.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/prisma/seed-kalamunda.ts)
 - [backend/src/scrapers/registry.ts](/Users/umarsiddiqui/Desktop/BinMate/backend/src/scrapers/registry.ts)
 - [COUNCILS.md](/Users/umarsiddiqui/Desktop/BinMate/COUNCILS.md)
 - [PLAN.md](/Users/umarsiddiqui/Desktop/BinMate/PLAN.md)
 - [HANDOFF.md](/Users/umarsiddiqui/Desktop/BinMate/HANDOFF.md)
 
 **Currently broken / in progress:**
-- Belmont tests and backend TypeScript build pass.
-- Existing uncommitted Joondalup files from previous session remain in the worktree (not reverted).
+- Kalamunda implementation complete; tests and TypeScript build pass.
+- Existing unrelated workspace change remains in `ios/Bin Mate` (not reverted).
 
 **Next task:**
-- Continue remaining-council coverage with the same checklist (scraper + tests + seed + registry + tracker updates), recommended next:
-  - `vincent` (Pozi-backed widget)
-  - `kalamunda` (T1Cloud map embed)
-  - `gosnells` (Drupal AJAX form flow)
+- Implement the next remaining council scraper (likely Gosnells or Victoria Park) with the same checklist: scraper + tests + seed + registry/docs updates.
 
 **Known issues:**
-- Worktree contains unrelated existing changes, including an iOS path entry (`ios/Bin Mate`); do not revert unrelated files.
+- Kalamunda search endpoint does not match full comma-formatted addresses reliably; resolver intentionally uses street/suburb terms and candidate ranking to compensate.

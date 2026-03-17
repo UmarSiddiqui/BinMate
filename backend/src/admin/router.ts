@@ -1,4 +1,4 @@
-import { Router, type Response } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { requireAdminAuth } from './middleware';
 import { renderDashboard } from './dashboard';
@@ -32,7 +32,7 @@ const holidaySchema = z.object({
 adminRouter.use(requireAdminAuth);
 
 /** GET /admin — serves the HTML admin dashboard shell. */
-adminRouter.get('/', async (_req, res) => {
+adminRouter.get('/', async (_req: Request, res: Response) => {
   try {
     res.send(renderDashboard(await listCouncilStats()));
   } catch (err) {
@@ -42,7 +42,7 @@ adminRouter.get('/', async (_req, res) => {
 });
 
 /** GET /admin/api/summary — high-level admin cards and metrics. */
-adminRouter.get('/api/summary', async (_req, res) => {
+adminRouter.get('/api/summary', async (_req: Request, res: Response) => {
   try {
     const [summary, system] = await Promise.all([getAdminSummary(), getSystemHealthSummary()]);
     res.json({ summary, system });
@@ -52,7 +52,7 @@ adminRouter.get('/api/summary', async (_req, res) => {
 });
 
 /** GET /admin/api/scrapers — list councils and scraper coverage. */
-adminRouter.get('/api/scrapers', async (_req, res) => {
+adminRouter.get('/api/scrapers', async (_req: Request, res: Response) => {
   try {
     res.json(await listCouncilStats());
   } catch (err) {
@@ -61,7 +61,7 @@ adminRouter.get('/api/scrapers', async (_req, res) => {
 });
 
 /** GET /admin/api/scrapers/health — run a live health check for each scraper. */
-adminRouter.get('/api/scrapers/health', async (_req, res) => {
+adminRouter.get('/api/scrapers/health', async (_req: Request, res: Response) => {
   try {
     res.json(await runAllScraperHealthChecks());
   } catch (err) {
@@ -70,7 +70,7 @@ adminRouter.get('/api/scrapers/health', async (_req, res) => {
 });
 
 /** POST /admin/api/scrapers/run-all — refresh every registered scraper. */
-adminRouter.post('/api/scrapers/run-all', async (_req, res) => {
+adminRouter.post('/api/scrapers/run-all', async (_req: Request, res: Response) => {
   try {
     res.json(await runAllScrapers());
   } catch (err) {
@@ -79,7 +79,7 @@ adminRouter.post('/api/scrapers/run-all', async (_req, res) => {
 });
 
 /** POST /admin/api/scrapers/:slug/health — run healthCheck() for one scraper. */
-adminRouter.post('/api/scrapers/:slug/health', async (req, res) => {
+adminRouter.post('/api/scrapers/:slug/health', async (req: Request, res: Response) => {
   const entry = SCRAPER_REGISTRY[req.params.slug];
   if (!entry) {
     res.status(404).json({ error: `No scraper registered for '${req.params.slug}'` });
@@ -94,7 +94,7 @@ adminRouter.post('/api/scrapers/:slug/health', async (req, res) => {
 });
 
 /** POST /admin/api/scrapers/:slug/run — refresh seeded zones for one scraper. */
-adminRouter.post('/api/scrapers/:slug/run', async (req, res) => {
+adminRouter.post('/api/scrapers/:slug/run', async (req: Request, res: Response) => {
   try {
     res.json(await runScraper(req.params.slug));
   } catch (err) {
@@ -105,7 +105,7 @@ adminRouter.post('/api/scrapers/:slug/run', async (req, res) => {
 });
 
 /** GET /admin/api/zones — browse collection zones, optionally filtered by council. */
-adminRouter.get('/api/zones', async (req, res) => {
+adminRouter.get('/api/zones', async (req: Request, res: Response) => {
   try {
     const councilSlug = typeof req.query.councilSlug === 'string' ? req.query.councilSlug : undefined;
     res.json(await listZones(councilSlug));
@@ -115,7 +115,7 @@ adminRouter.get('/api/zones', async (req, res) => {
 });
 
 /** GET /admin/api/zones/:zoneId — zone detail with schedule preview. */
-adminRouter.get('/api/zones/:zoneId', async (req, res) => {
+adminRouter.get('/api/zones/:zoneId', async (req: Request, res: Response) => {
   try {
     const count = parseCount(req.query.count);
     const result = await getZonePreview(req.params.zoneId, count);
@@ -132,7 +132,7 @@ adminRouter.get('/api/zones/:zoneId', async (req, res) => {
 });
 
 /** GET /admin/api/address-cache — search recent address resolutions. */
-adminRouter.get('/api/address-cache', async (req, res) => {
+adminRouter.get('/api/address-cache', async (req: Request, res: Response) => {
   try {
     const query = typeof req.query.q === 'string' ? req.query.q : undefined;
     res.json(await listAddressCache(query));
@@ -142,7 +142,7 @@ adminRouter.get('/api/address-cache', async (req, res) => {
 });
 
 /** GET /admin/api/holidays — list WA public holidays. */
-adminRouter.get('/api/holidays', async (_req, res) => {
+adminRouter.get('/api/holidays', async (_req: Request, res: Response) => {
   try {
     res.json(await listHolidays());
   } catch (err) {
@@ -151,7 +151,7 @@ adminRouter.get('/api/holidays', async (_req, res) => {
 });
 
 /** POST /admin/api/holidays — create a holiday row. */
-adminRouter.post('/api/holidays', async (req, res) => {
+adminRouter.post('/api/holidays', async (req: Request, res: Response) => {
   try {
     const payload = holidaySchema.parse(req.body);
     res.status(201).json(await createHoliday(payload.name, new Date(payload.date)));
@@ -161,7 +161,7 @@ adminRouter.post('/api/holidays', async (req, res) => {
 });
 
 /** PUT /admin/api/holidays/:id — update a holiday row. */
-adminRouter.put('/api/holidays/:id', async (req, res) => {
+adminRouter.put('/api/holidays/:id', async (req: Request, res: Response) => {
   try {
     const payload = holidaySchema.parse(req.body);
     res.json(await updateHoliday(req.params.id, payload.name, new Date(payload.date)));
@@ -171,7 +171,7 @@ adminRouter.put('/api/holidays/:id', async (req, res) => {
 });
 
 /** DELETE /admin/api/holidays/:id — remove a holiday row. */
-adminRouter.delete('/api/holidays/:id', async (req, res) => {
+adminRouter.delete('/api/holidays/:id', async (req: Request, res: Response) => {
   try {
     await deleteHoliday(req.params.id);
     res.json({ ok: true });
@@ -181,7 +181,7 @@ adminRouter.delete('/api/holidays/:id', async (req, res) => {
 });
 
 /** GET /admin/api/users — list users without exposing push token values. */
-adminRouter.get('/api/users', async (req, res) => {
+adminRouter.get('/api/users', async (req: Request, res: Response) => {
   try {
     const subscriptionStatus =
       typeof req.query.subscriptionStatus === 'string' ? req.query.subscriptionStatus : undefined;
@@ -192,7 +192,7 @@ adminRouter.get('/api/users', async (req, res) => {
 });
 
 /** GET /admin/api/users/:userId — user detail, linked zones only. */
-adminRouter.get('/api/users/:userId', async (req, res) => {
+adminRouter.get('/api/users/:userId', async (req: Request, res: Response) => {
   try {
     const user = await getUserDetail(req.params.userId);
     if (!user) {
@@ -207,7 +207,7 @@ adminRouter.get('/api/users/:userId', async (req, res) => {
 });
 
 /** GET /admin/api/system/health — DB and deployment summary. */
-adminRouter.get('/api/system/health', async (_req, res) => {
+adminRouter.get('/api/system/health', async (_req: Request, res: Response) => {
   try {
     res.json(await getSystemHealthSummary());
   } catch (err) {
@@ -216,7 +216,7 @@ adminRouter.get('/api/system/health', async (_req, res) => {
 });
 
 /** POST /admin/api/system/notifications/trigger — manual notification run. */
-adminRouter.post('/api/system/notifications/trigger', async (req, res) => {
+adminRouter.post('/api/system/notifications/trigger', async (req: Request, res: Response) => {
   if (process.env.NODE_ENV === 'production' && req.get('X-Admin-Confirm') !== 'RUN_NOW') {
     res.status(409).json({ error: 'Confirmation required in production' });
     return;

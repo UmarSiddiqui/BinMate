@@ -159,9 +159,20 @@
 ### City of Vincent
 - **Population:** ~35,000
 - **Slug:** vincent
-- **Platform:** Address widget confirmed — `vincent.wa.gov.au/your-home/waste-recycling/your-bin-day.aspx`
+- **Platform:** Pozi/QGIS widget
+- **Lookup URL:** `https://www.vincent.wa.gov.au/your-home/waste-recycling/your-bin-day.aspx`
+- **API endpoint:** `GET https://mapping.vincent.wa.gov.au/pozi/qgisserver` (`SERVICE=WFS`, `REQUEST=GetFeature`, `TYPENAME=Waste_Collection`)
+- **Request method:** GET
+- **Request payload:** WFS params + XML filter on `Address` via `PropertyIsLike`
+- **Response structure:** GeoJSON FeatureCollection with HTML fields:
+  `General Waste Collection Day`, `Recycling Collection Day`, `FOGO Collection Day`
+- **Auth required:** None
+- **Rate limit notes:** capped to 1 request/second in scraper
+- **Test address 1:** "2 Chertsey Street, Mount Lawley WA 6050" — VIN-FRI-A
+- **Test address 2:** "17 Simpson Street, West Perth WA 6005" — VIN-WED-B
 - **Scraper file:** `backend/src/scrapers/vincent.ts`
-- **Status:** [ ] Not started
+- **Status:** [x] Complete
+- **Notes:** Resolver uses address-filtered WFS lookup and parses residential patterns only (fortnightly general + fortnightly recycling + weekly FOGO on same weekday).
 
 ### City of Rockingham
 - **Population:** ~145,000
@@ -191,8 +202,19 @@
 ### City of Kalamunda
 - **Population:** ~60,000
 - **Slug:** kalamunda
+- **Platform:** T1Cloud IntraMaps (MapBuilder)
+- **Lookup URL:** `https://www.kalamunda.wa.gov.au/kerbside-3-bin-system/collection-days/bin-day`
+- **API endpoint:** `POST https://kalamunda.spatial.t1cloud.com/spatial/intramaps/ApplicationEngine`
+- **Request method:** POST (session-based sequence)
+- **Request payload:** `Projects → Modules → Search(fullText) → Search/Refine/Set`
+- **Response structure:** `Search.fullText[]` candidates + `infoPanels.info1.feature.fields` (`Bin Day`, `Bin Area`)
+- **Auth required:** None (anonymous session via `x-intramaps-session`)
+- **Rate limit notes:** capped to 1 request/second in scraper
+- **Test address 1:** "1 Amaroo Street, Lesmurdie WA 6076" — KAL-FRI-A
+- **Test address 2:** "1 Barron Road, Kalamunda WA 6076" — KAL-THU-B
 - **Scraper file:** `backend/src/scrapers/kalamunda.ts`
-- **Status:** [ ] Not started
+- **Status:** [x] Complete
+- **Notes:** Area One maps to recycling Week A; Area Two maps to recycling Week B. Resolver uses street-first search and suburb fallback with candidate ranking.
 
 ### Town of Victoria Park
 - **Population:** ~40,000

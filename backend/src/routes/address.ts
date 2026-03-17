@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import rateLimit from 'express-rate-limit';
 import { z } from 'zod';
 import { resolveAddress } from '../services/addressService';
@@ -35,7 +35,7 @@ export function createAddressRouter(): Router {
    * POST /api/v1/register-address
    * Geocode a Perth address, link to a collection zone, optionally create a user.
    */
-  router.post('/', registerAddressLimiter, async (req, res) => {
+  router.post('/', registerAddressLimiter, async (req: Request, res: Response) => {
     try {
       const parsed = RegisterBody.safeParse(req.body);
       if (!parsed.success) {

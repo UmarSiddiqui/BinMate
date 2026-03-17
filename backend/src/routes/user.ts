@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { findUserById, updatePushToken } from '../repositories/userRepository';
 import { logger } from '../utils/logger';
@@ -15,7 +15,7 @@ const PushTokenBody = z.object({
  * PUT /api/v1/push-token
  * Update a user's APNs push token and optional notification hour.
  */
-router.put('/', async (req, res) => {
+router.put('/', async (req: Request, res: Response) => {
   const parsed = PushTokenBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.issues[0].message });

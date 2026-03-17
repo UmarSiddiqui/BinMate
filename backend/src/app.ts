@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import { logger } from './utils/logger';
 import { createAddressRouter } from './routes/address';
 import scheduleRouter from './routes/schedule';
@@ -18,7 +18,7 @@ export function createApp(): express.Express {
 
   app.use(express.json());
 
-  app.get('/api/v1/health', async (_req, res) => {
+  app.get('/api/v1/health', async (_req: Request, res: Response) => {
     let dbStatus: 'ok' | 'error' = 'ok';
     try {
       const { default: prisma } = await import('./utils/prisma');
@@ -47,11 +47,11 @@ export function createApp(): express.Express {
   app.use('/api/v1/cron', createCronRouter());
   app.use('/admin', adminRouter);
 
-  app.use((_req, res) => {
+  app.use((_req: Request, res: Response) => {
     res.status(404).json({ error: 'Not found' });
   });
 
-  app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
     logger.error('Unhandled error', { err });
     res.status(500).json({ error: 'Internal server error' });
   });

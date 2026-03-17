@@ -554,11 +554,11 @@ Document findings in `docs/COUNCILS.md`.
 ### 4.1 Remaining Council Scrapers (post-launch priority order)
 - [x] City of Joondalup (~180k) ✅
 - [ ] City of Bayswater (~70k)
-- [ ] City of Vincent (~35k)
+- [x] City of Vincent (~35k) ✅
 - [ ] City of Rockingham (~145k)
 - [x] City of Belmont (~35k) ✅
 - [ ] City of Gosnells (~130k)
-- [ ] City of Kalamunda (~60k)
+- [x] City of Kalamunda (~60k) ✅
 - [ ] Town of Victoria Park (~40k)
 - [ ] City of East Fremantle (~8k)
 - [ ] Town of Bassendean (~15k)

@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { getSchedule } from '../services/scheduleService';
 
@@ -14,7 +14,7 @@ const ScheduleQuery = z.object({
  * GET /api/v1/schedule
  * Return upcoming collections for a zone.
  */
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   const parsed = ScheduleQuery.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.issues[0].message });
