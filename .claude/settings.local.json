@@ -18,7 +18,10 @@
       "WebFetch(domain:www.cottesloe.wa.gov.au)",
       "WebFetch(domain:www.mosmanpark.wa.gov.au)",
       "WebFetch(domain:www.subiaco.wa.gov.au)",
-      "WebFetch(domain:www.cambridge.wa.gov.au)"
+      "WebFetch(domain:www.cambridge.wa.gov.au)",
+      "Bash(ls /Users/umarsiddiqui/Desktop/BinMate/backend/prisma/seed-*.ts)",
+      "Bash(git commit:*)",
+      "Bash(git add:*)"
     ]
   }
 }
