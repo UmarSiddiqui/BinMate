@@ -295,7 +295,7 @@ All copy is tone-reviewed and brand-approved. If a new scenario arises, ask befo
 
 ### Free trial ending (2 days before)
 - **Title:** `Your free trial ends {day}`
-- **Body:** `Keep getting reminders for $1.49/month. Less than a coffee.`
+- **Body:** `Keep getting reminders for $0.99/month. Less than a coffee.`
 
 ### Subscription confirmed (in-app)
 - **Title:** `Cheers.`

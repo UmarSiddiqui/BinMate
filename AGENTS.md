@@ -484,7 +484,7 @@ These are absolute prohibitions. If a task seems to require these, stop and ask.
 - ❌ Do not store user addresses in the database linked to a user identity
 - ❌ Do not use UIKit for new views — SwiftUI only
 - ❌ Do not hardcode API keys, URLs, or secrets in source files
-- ❌ Do not change the pricing model ($1.49/month, $9.99/year) without explicit instruction
+- ❌ Do not change the pricing model ($0.99/month, $5.99/year, 3-month free trial for new users, no lifetime) without explicit instruction
 - ❌ Do not add notification copy that isn't in BRAND.md Section 7
 - ❌ Do not rename or restructure the file layout in Section 3
 - ❌ Do not add Android support without explicit instruction

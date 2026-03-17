@@ -6,9 +6,8 @@ import RevenueCatUI
 /// Offerings and paywall design are configured in the RevenueCat dashboard.
 ///
 /// Products configured:
-///   - monthly  → $1.49/month with 7-day free trial
-///   - yearly   → $9.99/year with 7-day free trial (default selected)
-///   - lifetime → one-time purchase
+///   - monthly  → $0.99/month with 3-month free trial for new users
+///   - yearly   → $5.99/year with 3-month free trial for new users (default selected)
 struct BinMatePaywallView: View {
 
     @Environment(\.dismiss) private var dismiss

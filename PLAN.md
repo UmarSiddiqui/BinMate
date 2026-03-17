@@ -147,10 +147,10 @@
 - [x] All keys in `backend/.env` (not committed) and `backend/.env.example`
 
 ### 0.5 RevenueCat Setup
-- [ ] Create product in App Store Connect: `binmate_monthly` ($1.49 AUD/month) — needs paid Apple Dev account
-- [ ] Create product in App Store Connect: `binmate_annual` ($9.99 AUD/year)
+- [ ] Create product in App Store Connect: `binmate_monthly` ($0.99 AUD/month) — needs paid Apple Dev account
+- [ ] Create product in App Store Connect: `binmate_annual` ($5.99 AUD/year)
 - [ ] Create subscription group: `BinMate Premium`
-- [ ] Add 7-day free trial to both products
+- [ ] Add 3-month free trial to both products (new users only)
 - [ ] Add products to RevenueCat dashboard
 - [ ] Create entitlement: `Bin Mate Pro` (already hardcoded in `EntitlementService.swift`)
 - [ ] Create offering: `default` with both packages
@@ -694,8 +694,8 @@ Record significant decisions here so future AI sessions have context.
 | Mar 2026 | No analytics SDK at launch | Privacy-first position, simpler app, less data liability |
 | Mar 2026 | Zone-based data model (not per-user schedules) | Massively more efficient — 1 zone serves thousands of users |
 | Mar 2026 | Free tier has no push notifications | Makes the value of Premium immediately obvious, not coercive |
-| Mar 2026 | $1.49/month primary, $9.99/year | Below friction threshold, annual drives retention |
-| Mar 2026 | 7-day free trial on both plans | User must experience a real bin-day notification before converting |
+| Mar 2026 | $0.99/month, $5.99/year, 3-month free trial for new users | Ultra-low friction entry, 3-month trial drives habitual use before paywall |
+| Mar 2026 | No lifetime offering | Subscription model only — predictable revenue, simpler pricing |
 | Mar 2026 | Nominatim for geocoding (not Google Maps) | Free, no API key, 1 req/sec — sufficient for address lookups at MVP scale |
 | Mar 2026 | Local server for development (not Railway/Render yet) | No running costs during build phase; deploy to Render when app is TestFlight-ready |
 | Mar 2026 | Wanneroo: static suburb map not PDF parsing | PDF parsing is fragile; static map from verified calendar is reliable and maintainable |

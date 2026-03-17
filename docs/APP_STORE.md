@@ -50,10 +50,10 @@ More councils added regularly. If your council isn't listed, it's in the queue.
 FREE TIER
 Full upcoming schedule, verge collection dates, public holiday shift information, 7-day schedule preview.
 
-PREMIUM — $1.49/MONTH OR $9.99/YEAR
+PREMIUM — $0.99/MONTH OR $5.99/YEAR
 Push notification the evening before bin day. Verge collection reminder 3 days out and the day before. Public holiday shift alert 2 days out. Full year calendar view.
 
-7-day free trial. Cancel any time.
+3 months free for new users. Cancel any time.
 
 PRIVACY
 Your address stays on your device. No account required. No ads. No tracking.
@@ -103,7 +103,7 @@ TEST FLOW
 5. Home screen shows upcoming collection schedule
 
 SUBSCRIPTION TESTING
-Both plans ($1.49/month, $9.99/year) include a 7-day free trial.
+Both plans ($0.99/month, $5.99/year) include a 3-month free trial for new users.
 Use the StoreKit sandbox environment — no charge will occur.
 Restore purchases works in sandbox via the Settings screen.
 
