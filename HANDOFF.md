@@ -14,24 +14,31 @@
 - ✅ All zones seeded into Supabase
 - ✅ Phase 2.1 API routes complete (register-address, schedule, push-token, revenuecat webhook, health)
 - ✅ Notification engine implemented (cron at 09:00 UTC / 17:00 AWST)
-- ⚠️  APNs still mocked — blocked on Apple Developer account
-- ❌ Not yet deployed to Render
+- ✅ **DEPLOYED to Render** — `https://binmate-api.onrender.com` — all systems operational
+- ✅ Health check verified: `GET /api/v1/health` → `{"status":"ok","db":"ok","env":"production"}`
+- ⚠️  APNs still mocked — blocked on Apple Developer account (cannot send real push notifications until APNs configured)
 
 **Current state — iOS:**
 - ✅ All Phase 3.1–3.10 complete (all screens, WidgetKit, notifications, paywall, accessibility)
-- ❌ Not yet on TestFlight — blocked on Apple Developer account + Render deployment
+- ❌ Not yet on TestFlight — blocked on Apple Developer account + real APNs from backend
 
 **Next tasks (in order):**
-1. **Deploy to Render** — requires GitHub repo to be connected to Render, env vars configured, `prisma migrate deploy` run on production
-   - `render.yaml` blueprint is ready
-   - All required env vars are in `backend/.env` (copy to Render dashboard)
-   - After deploy: verify `GET /api/v1/health` returns `{"status":"ok","db":"ok"}`
-2. **Apple Developer account** ($149 AUD/year) — unblocks:
-   - Real APNs push notifications (replace mock in `src/services/notifications.ts`)
-   - TestFlight upload
-   - App Store submission
-3. **TestFlight beta** — upload build, recruit 50+ Perth beta testers
-4. **App Store submission** — screenshots + review notes ready in `docs/APP_STORE.md`
+1. **✅ DONE** — Backend deployed to Render (2026-03-17 15:38:27 UTC)
+2. **Apple Developer account** ($149 AUD/year) — unblocks **all remaining work**:
+   - **Real APNs push notifications:** Replace mock in `backend/src/services/notifications.ts` with actual FCM → APNs relay
+   - **APNs certificate + key:** Generate in App Store Connect, upload to backend config
+   - **TestFlight upload:** Use `xcode build -scheme BinMate -archivePath ... -exportOptionsPlist` + `xcrun altool --upload-app ...`
+   - **App Store submission:** Screenshots + review notes ready in `docs/APP_STORE.md`
+3. **TestFlight beta** — once Apple account + real APNs working:
+   - Build + archive iOS app
+   - Upload via Xcode → Organizer or Transporter
+   - Invite 50+ Perth beta testers (use TestFlight email/link)
+   - Collect feedback on notification reliability, address resolution UX
+4. **App Store submission** — after TestFlight review cycle stabilizes (5–14 days):
+   - Submit via App Store Connect
+   - Add screenshots, description, privacy policy link
+   - App Review (typically 24–48 hours)
+   - Live on App Store
 
 **Known issues / watch-outs:**
 - Live council APIs can shift weekday/week-token outcomes over time — scraper tests assert invariant zone shape, not pinned day values (correct behaviour)
