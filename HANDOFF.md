@@ -1,62 +1,40 @@
-## Handoff — 2026-03-17 (updated after doc audit)
+## Handoff — 2026-03-17 (scraper phase complete)
 **From:** Claude Code
-**Completed in this session (post-Subiaco):**
-- Town of Bassendean — scraper + tests ✅ (no seed file yet)
-- City of Bayswater — scraper + tests + seed ✅
-- Town of Claremont — scraper + tests ✅ (no seed file yet)
-- Town of Cottesloe — scraper + tests ✅ (no seed file yet)
-- City of East Fremantle — scraper + tests ✅ (no seed file yet)
-- City of Gosnells — scraper + tests + seed ✅
-- City of Kwinana — scraper + helpers + tests ✅ (no seed file yet)
-- Shire of Mundaring — scraper + tests ✅ (no seed file yet)
-- City of Rockingham — scraper + tests + seed ✅
-- Shire of Serpentine-Jarrahdale — scraper + tests ✅ (no seed file yet)
-- Town of Victoria Park — scraper + tests + seed ✅
-- City of Nedlands — scraper + tests + seed ✅ (previously committed)
-- Town of Cambridge — scraper + tests + seed ✅ (previously committed)
-- Shire of Peppermint Grove — scraper + tests + seed ✅ (previously committed)
-- Updated `registry.ts` — all 29 scrapers wired in
-- Subiaco scraper stability fixes (live data drift, flexible health check assertions)
-- Updated PLAN.md, COUNCILS.md, HANDOFF.md to reflect actual state
+**Completed in this session:**
+- All 29 Perth council scrapers built, tested, seeded into Supabase, and committed
+- 7 new seed files created and run: Bassendean, Claremont, Cottesloe, EastFremantle, Kwinana, Mundaring, Serpentine-Jarrahdale
+- All 29 scrapers wired into `SCRAPER_REGISTRY`
+- Subiaco scraper stability fixes (live-data drift in assertions)
+- PLAN.md, COUNCILS.md, HANDOFF.md fully updated to reflect actual state
 
-**Files modified (uncommitted):**
-- `COUNCILS.md` — all Priority 1 councils updated from "Not started" to Complete with API details; Nedlands, Cambridge, Claremont, Cottesloe, Peppermint Grove entries added/updated
-- `HANDOFF.md` — this file
-- `PLAN.md` — Nedlands/Cambridge marked [x]; Peppermint Grove added; Phase 4.1 remaining councils updated
-- `backend/src/scrapers/registry.ts` — all 29 scrapers registered
-- `backend/src/scrapers/subiaco.ts` — stability fixes
-- `backend/tests/scrapers/subiaco.test.ts` — stable assertions
-- `backend/src/jobs/notificationEngine.ts` — (check diff)
-- `backend/src/repositories/zoneRepository.ts` — (check diff)
-- `backend/src/services/scheduleService.ts` — (check diff)
-- `backend/src/services/zoneScheduleComputer.ts` — (check diff)
-- `backend/tests/services/zoneScheduleComputer.test.ts` — (check diff)
+**Commit:** `f0bb7af` — "Complete all 29 Perth council scrapers; seed all zones into Supabase"
 
-**New untracked files (uncommitted):**
-- `backend/src/scrapers/`: bassendean, bayswater, claremont, cottesloe, eastfremantle, gosnells, kwinana, kwinana.helpers, mundaring, rockingham, serpentinejj, victoriapark
-- `backend/tests/scrapers/`: bassendean, bayswater, claremont, cottesloe, eastfremantle, gosnells, kwinana, mundaring, rockingham, serpentinejj, victoriapark
-- `backend/prisma/`: seed-bayswater, seed-gosnells, seed-rockingham, seed-victoriapark
+**Current state — backend:**
+- ✅ All 29 council scrapers complete (scraper + tests + seed + registry)
+- ✅ All zones seeded into Supabase
+- ✅ Phase 2.1 API routes complete (register-address, schedule, push-token, revenuecat webhook, health)
+- ✅ Notification engine implemented (cron at 09:00 UTC / 17:00 AWST)
+- ⚠️  APNs still mocked — blocked on Apple Developer account
+- ❌ Not yet deployed to Render
 
-**Current state:**
-- **29 of ~30 Perth councils** have scrapers in `SCRAPER_REGISTRY`
-- **All scrapers wired** into address resolution service
-- **Seed files pending** for: Claremont, Cottesloe, EastFremantle, Bassendean, Kwinana, SerpentineJJ, Mundaring (scraper + tests done; zones not yet in Supabase)
-- **iOS app:** All phases 3.1–3.10 complete per PLAN.md ✅
-- **Backend API:** All Phase 2.1 routes complete ✅
-- **Notification engine:** Implemented (mocked APNs — pending real Apple Dev account)
-- **Deployment:** Not yet deployed to Render (pending GitHub repo setup)
+**Current state — iOS:**
+- ✅ All Phase 3.1–3.10 complete (all screens, WidgetKit, notifications, paywall, accessibility)
+- ❌ Not yet on TestFlight — blocked on Apple Developer account + Render deployment
 
-**Currently broken / in progress:**
-- None known from scraper work
-- APNs still mocked (blocked on Apple Developer account)
+**Next tasks (in order):**
+1. **Deploy to Render** — requires GitHub repo to be connected to Render, env vars configured, `prisma migrate deploy` run on production
+   - `render.yaml` blueprint is ready
+   - All required env vars are in `backend/.env` (copy to Render dashboard)
+   - After deploy: verify `GET /api/v1/health` returns `{"status":"ok","db":"ok"}`
+2. **Apple Developer account** ($149 AUD/year) — unblocks:
+   - Real APNs push notifications (replace mock in `src/services/notifications.ts`)
+   - TestFlight upload
+   - App Store submission
+3. **TestFlight beta** — upload build, recruit 50+ Perth beta testers
+4. **App Store submission** — screenshots + review notes ready in `docs/APP_STORE.md`
 
-**Next tasks (in priority order):**
-1. **Run seed files** for unseeded councils (Claremont, Cottesloe, EastFremantle, Bassendean, Kwinana, SerpentineJJ, Mundaring) — each needs a seed script created + run against Supabase
-2. **Commit all uncommitted work** — 11 new scrapers + 4 seed files + registry + doc updates
-3. **Deploy to Render** — create GitHub repo, push, configure environment vars, run `prisma migrate deploy`
-4. **Apple Developer account** — unblocks real APNs push notifications
-5. **TestFlight beta** — once deployed + APNs working
-
-**Known issues:**
-- Live council APIs can shift weekday/week-token outcomes for fixed reference addresses over time — tests should assert invariant zone shape, not pinned day values
-- Stirling scraper returns informative error for major arterial road addresses (Nominatim returns road centroids, not residential parcels) — expected behaviour
+**Known issues / watch-outs:**
+- Live council APIs can shift weekday/week-token outcomes over time — scraper tests assert invariant zone shape, not pinned day values (correct behaviour)
+- Stirling scraper returns informative error for major arterial road addresses (Nominatim road centroid, not residential parcel) — expected, residential addresses work fine
+- Kwinana zones: seed covers 20 common combinations; edge-case zone codes will be upserted on first encounter by the address service
+- Claremont ward bundle URL (`796.2182434058107d55e5c6.js`) will change when council deploys a new JS build — monitor and update `WARD_BUNDLE_URL` in `claremont.ts` if health check fails
