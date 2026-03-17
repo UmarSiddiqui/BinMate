@@ -76,8 +76,8 @@ async function loadCouncils() {
       '<td>' + _badge(c.isActive ? 'Active' : 'Inactive', c.isActive ? 'lime' : 'red') + ' ' + _badge(c.hasScraper ? 'Live' : 'No scraper', c.hasScraper ? 'teal' : 'muted') + '</td>' +
       '<td class="hc dim">—</td>' +
       '<td><div class="row">' +
-        (c.hasScraper ? '<button class="btn s" onclick="checkHealth(\'' + c.slug + '\',\'' + c.id + '\')">Health</button><button class="btn s" onclick="runOne(\'' + c.slug + '\')">Run</button>' : '') +
-        '<button class="btn s ' + (c.isActive ? 'd' : '') + '" onclick="toggleCouncil(\'' + c.id + '\',' + c.isActive + ')">' + (c.isActive ? 'Disable' : 'Enable') + '</button>' +
+        (c.hasScraper ? '<button class="btn s" onclick="checkHealth(' + JSON.stringify(c.slug) + ',' + JSON.stringify(c.id) + ')">Health</button><button class="btn s" onclick="runOne(' + JSON.stringify(c.slug) + ')">Run</button>' : '') +
+        '<button class="btn s ' + (c.isActive ? 'd' : '') + '" onclick="toggleCouncil(' + JSON.stringify(c.id) + ',' + c.isActive + ')">' + (c.isActive ? 'Disable' : 'Enable') + '</button>' +
       '</div></td></tr>'
     ).join('');
   } catch(err) { _set('councils-status', 'Error: ' + err.message); }
@@ -122,7 +122,7 @@ async function filterZones(slug) {
   try {
     const zones = await _api('GET', '/admin/api/zones' + (slug ? '?councilSlug=' + encodeURIComponent(slug) : ''));
     document.getElementById('zones-tbody').innerHTML = zones.map(z =>
-      '<tr style="cursor:pointer" onclick="showZone(\'' + z.id + '\')">' +
+      '<tr style="cursor:pointer" onclick="showZone(' + JSON.stringify(z.id) + ')">' +
       '<td><strong>' + _esc(z.zoneName) + '</strong>' + (z.zoneCode ? '<br><code>' + _esc(z.zoneCode) + '</code>' : '') + '</td>' +
       '<td>' + _esc(z.council.name) + '</td>' +
       '<td>' + _esc(z.generalDay) + '</td>' +
@@ -163,8 +163,8 @@ async function loadHolidays() {
       '<td><input id="hn-' + h.id + '" value="' + _esc(h.name) + '" style="width:220px"></td>' +
       '<td><input id="hd-' + h.id + '" type="date" value="' + h.date.substring(0,10) + '"></td>' +
       '<td class="dim">+' + h.shiftDays + ' day</td>' +
-      '<td><div class="row"><button class="btn s p" onclick="saveHoliday(\'' + h.id + '\')">Save</button>' +
-      '<button class="btn s d" onclick="deleteHoliday(\'' + h.id + '\')">Delete</button></div></td></tr>'
+      '<td><div class="row"><button class="btn s p" onclick="saveHoliday(' + JSON.stringify(h.id) + ')">Save</button>' +
+      '<button class="btn s d" onclick="deleteHoliday(' + JSON.stringify(h.id) + ')">Delete</button></div></td></tr>'
     ).join('') || '<tr><td colspan="4" class="dim">No holidays.</td></tr>';
   } catch(err) { _toast('Holidays error: ' + err.message, false); }
 }
@@ -206,7 +206,7 @@ async function loadUsers() {
   try {
     const users = await _api('GET', '/admin/api/users' + (status ? '?subscriptionStatus=' + status : ''));
     document.getElementById('users-tbody').innerHTML = users.map(u =>
-      '<tr style="cursor:pointer" onclick="showUser(\'' + u.id + '\')">' +
+      '<tr style="cursor:pointer" onclick="showUser(' + JSON.stringify(u.id) + ')">' +
       '<td><code>' + u.id.substring(0,8) + '…</code></td>' +
       '<td class="dim">' + new Date(u.createdAt).toLocaleDateString('en-AU') + '</td>' +
       '<td>' + _badge(u.subscriptionStatus, u.subscriptionStatus === 'active' ? 'lime' : u.subscriptionStatus === 'trial' ? 'teal' : 'muted') + '</td>' +
@@ -232,7 +232,7 @@ async function showUser(userId) {
       '<dt>Push token</dt><dd>' + _badge(u.pushTokenStatus, u.pushTokenStatus === 'configured' ? 'teal' : 'warn') + '</dd></dl>' +
       (u.zones.length ? '<h3 style="margin-top:16px">Zones</h3><table style="margin-top:8px"><thead><tr><th>Zone</th><th>Council</th><th>Primary</th></tr></thead><tbody>' + zoneRows + '</tbody></table>' : '') +
       '<div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)">' +
-      '<button class="btn d s" onclick="deleteUser(\'' + u.id + '\')">Delete user</button></div>'
+      '<button class="btn d s" onclick="deleteUser(' + JSON.stringify(u.id) + ')">Delete user</button></div>'
     );
   } catch(err) { _toast(err.message, false); }
 }
