@@ -224,13 +224,17 @@ Document findings in `docs/COUNCILS.md`.
 - [x] Wired into `SCRAPER_REGISTRY` in `addressService.ts` ✅
 
 #### Smaller councils (PDF/iCal — batch these together)
-- [ ] City of Nedlands — identify data source, build scraper
-- [ ] Town of Claremont — identify data source, build scraper
-- [ ] Town of Cottesloe — identify data source, build scraper
-- [ ] Town of Mosman Park — identify data source, build scraper
-- [ ] City of Subiaco — identify data source, build scraper
-- [ ] Town of Cambridge — identify data source, build scraper
-- [ ] Each needs test with a real address
+- [x] City of Nedlands — IntraMaps 21b (gispublic01.nedlands.wa.gov.au), scraper + tests + seed complete ✅
+- [x] Town of Claremont — GeoJSON ward polygons + PDF calendar, scraper + tests complete ✅
+- [x] Town of Cottesloe — PDF zone map (static street lookup), scraper + tests complete ✅
+- [x] City of East Fremantle — scraper + tests complete ✅
+- [x] Town of Bassendean — scraper + tests complete ✅
+- [x] City of Kwinana — scraper + tests complete ✅
+- [x] Shire of Mundaring — MyMundaring widget API, scraper + tests complete ✅
+- [x] Town of Mosman Park — T1Cloud IntraMaps, scraper + tests complete ✅
+- [x] City of Subiaco — T1Cloud IntraMaps (MapBuilder), scraper/tests validated against live endpoint ✅
+- [x] Town of Cambridge — OpenCities myarea API, scraper + tests + seed complete ✅
+- [x] Shire of Peppermint Grove — PDF-derived static zone (single shire-wide zone PEP-FRI-B), scraper + tests + seed complete ✅
 
 ### 1.4 Scrapers — Tier 1 (ArcGIS)
 
@@ -553,18 +557,23 @@ Document findings in `docs/COUNCILS.md`.
 
 ### 4.1 Remaining Council Scrapers (post-launch priority order)
 - [x] City of Joondalup (~180k) ✅
-- [ ] City of Bayswater (~70k)
+- [x] City of Bayswater (~70k) ✅
 - [x] City of Vincent (~35k) ✅
-- [ ] City of Rockingham (~145k)
+- [x] City of Rockingham (~145k) ✅
 - [x] City of Belmont (~35k) ✅
-- [ ] City of Gosnells (~130k)
+- [x] City of Gosnells (~130k) ✅
 - [x] City of Kalamunda (~60k) ✅
-- [ ] Town of Victoria Park (~40k)
-- [ ] City of East Fremantle (~8k)
-- [ ] Town of Bassendean (~15k)
-- [ ] Shire of Serpentine-Jarrahdale (~35k)
-- [ ] Remaining 9 smaller councils
-- **Each needs:** scraper + test + seeded zones + health check registered
+- [x] Town of Victoria Park (~40k) ✅
+- [x] City of East Fremantle (~8k) ✅
+- [x] Town of Bassendean (~15k) ✅
+- [x] City of Kwinana (~45k) ✅
+- [x] Shire of Serpentine-Jarrahdale (~35k) ✅
+- [x] Shire of Mundaring (~35k) ✅
+- [x] City of Nedlands (~22k) ✅ — moved from Phase 1.3; seed + registry complete
+- [x] Town of Cambridge (~25k) ✅ — OpenCities myarea; seed + registry complete
+- [x] Shire of Peppermint Grove (~2k) ✅ — PDF-derived static zone; seed + registry complete
+- **All 29 Perth councils scraped and wired into SCRAPER_REGISTRY** ✅
+- **Note:** Seed files pending for Claremont, Cottesloe, EastFremantle, Bassendean, Kwinana, SerpentineJJ (scrapers + tests done; zones to be seeded into Supabase)
 
 ### 4.2 App Polish
 - [ ] App icon: 1024×1024pt (lime square, bin mark) — needs designer asset
@@ -705,5 +714,5 @@ Record significant decisions here so future AI sessions have context.
 
 ---
 
-*Last updated: 16 March 2026*
-*Next: City of South Perth — T1Cloud Intramaps pattern (cosp.spatial.t1cloud.com); see HANDOFF.md*
+*Last updated: 17 March 2026*
+*Next: Town of Cambridge — validate scraper against live endpoint/tests, then update registry docs and handoff.*

@@ -2,7 +2,7 @@ import type { CollectionZone } from '@prisma/client';
 
 // ─── Public Types ─────────────────────────────────────────────────────────────
 
-export type BinType = 'general' | 'recycling' | 'green_waste';
+export type BinType = 'general' | 'recycling' | 'green_waste' | 'fogo';
 export type EventType = 'kerbside' | 'verge' | 'ewaste' | 'green_waste_drop';
 
 export interface Collection {
@@ -24,6 +24,15 @@ const DAY_LABELS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fri
 
 /** Max days to look ahead when collecting results. Prevents infinite loops. */
 const MAX_LOOKAHEAD_DAYS = 400;
+const FOGO_ALWAYS_COUNCILS = new Set([
+  'fremantle',
+  'melville',
+  'mosmanpark',
+  'nedlands',
+  'peppermintgrove',
+  'subiaco',
+  'vincent',
+]);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -77,6 +86,27 @@ function applyHolidayShift(
   return { date: shifted, shifted: isShifted, originalDate: isShifted ? original : undefined };
 }
 
+/** Return true when the zone's weekly "general" stream is actually FOGO. */
+function isFogoZone(
+  zone: CollectionZone,
+  councilSlug?: string
+): boolean {
+  const zoneCode = zone.zoneCode?.toUpperCase() ?? '';
+  const zoneName = zone.zoneName.toLowerCase();
+
+  // Mixed councils encode FOGO directly in zone code.
+  if (zoneCode.includes('-FOGO-')) return true;
+
+  // Some councils are fully FOGO; in these councils the weekly "general" stream
+  // is the lime-lid FOGO service.
+  if (councilSlug && FOGO_ALWAYS_COUNCILS.has(councilSlug.toLowerCase())) {
+    return true;
+  }
+
+  // Fallback for explicitly named zones.
+  return zoneName.includes('fogo');
+}
+
 // ─── Main Export ──────────────────────────────────────────────────────────────
 
 /**
@@ -87,7 +117,8 @@ export function computeSchedule(
   zone: CollectionZone,
   holidays: Date[],
   from: Date,
-  count: number
+  count: number,
+  context?: { councilSlug?: string }
 ): Collection[] {
   const results: Collection[] = [];
   const start = utcMidnight(from);
@@ -106,7 +137,7 @@ export function computeSchedule(
 
     // ── General waste ──────────────────────────────────────────────────────
     if (zone.generalDay === dayName) {
-      types.push('general');
+      types.push(isFogoZone(zone, context?.councilSlug) ? 'fogo' : 'general');
     }
 
     // ── Recycling (weekly or fortnightly) ──────────────────────────────────

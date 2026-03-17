@@ -15,8 +15,19 @@ import { peppermintGroveScraper, peppermintGroveCanHandle } from './peppermintgr
 import { mosmanParkScraper, mosmanParkCanHandle } from './mosmanpark';
 import { joondalupScraper, joondalupCanHandle } from './joondalup';
 import { belmontScraper, belmontCanHandle } from './belmont';
+import { gosnellsScraper, gosnellsCanHandle } from './gosnells';
 import { kalamundaScraper, kalamundaCanHandle } from './kalamunda';
+import { bassendeanScraper, bassendeanCanHandle } from './bassendean';
+import { bayswaterScraper, bayswaterCanHandle } from './bayswater';
 import { vincentScraper, vincentCanHandle } from './vincent';
+import { victoriaParkScraper, victoriaParkCanHandle } from './victoriapark';
+import { rockinghamScraper, rockinghamCanHandle } from './rockingham';
+import { claremontScraper, claremontCanHandle } from './claremont';
+import { cottesloeScraper, cottesloeCanHandle } from './cottesloe';
+import { eastFremantleScraper, eastFremantleCanHandle } from './eastfremantle';
+import { kwinanaScraper, kwinanaCanHandle } from './kwinana';
+import { serpentineJJScraper, serpentineJJCanHandle } from './serpentinejj';
+import { mundaringScraper, mundaringCanHandle } from './mundaring';
 
 export interface ScraperEntry {
   scraper: CouncilScraper;
@@ -99,12 +110,56 @@ export const SCRAPER_REGISTRY: Record<string, ScraperEntry> = {
     scraper: belmontScraper,
     canHandle: (suburb) => belmontCanHandle(suburb),
   },
+  gosnells: {
+    scraper: gosnellsScraper,
+    canHandle: (suburb) => gosnellsCanHandle(suburb),
+  },
   kalamunda: {
     scraper: kalamundaScraper,
     canHandle: (suburb) => kalamundaCanHandle(suburb),
   },
+  bassendean: {
+    scraper: bassendeanScraper,
+    canHandle: (suburb) => bassendeanCanHandle(suburb),
+  },
+  bayswater: {
+    scraper: bayswaterScraper,
+    canHandle: (suburb) => bayswaterCanHandle(suburb),
+  },
   vincent: {
     scraper: vincentScraper,
     canHandle: (suburb) => vincentCanHandle(suburb),
+  },
+  victoriapark: {
+    scraper: victoriaParkScraper,
+    canHandle: (suburb) => victoriaParkCanHandle(suburb),
+  },
+  rockingham: {
+    scraper: rockinghamScraper,
+    canHandle: (suburb) => rockinghamCanHandle(suburb),
+  },
+  claremont: {
+    scraper: claremontScraper,
+    canHandle: (suburb) => claremontCanHandle(suburb),
+  },
+  cottesloe: {
+    scraper: cottesloeScraper,
+    canHandle: (suburb) => cottesloeCanHandle(suburb),
+  },
+  eastfremantle: {
+    scraper: eastFremantleScraper,
+    canHandle: (suburb) => eastFremantleCanHandle(suburb),
+  },
+  kwinana: {
+    scraper: kwinanaScraper,
+    canHandle: (suburb) => kwinanaCanHandle(suburb),
+  },
+  serpentinejj: {
+    scraper: serpentineJJScraper,
+    canHandle: (suburb) => serpentineJJCanHandle(suburb),
+  },
+  mundaring: {
+    scraper: mundaringScraper,
+    canHandle: (suburb) => mundaringCanHandle(suburb),
   },
 };

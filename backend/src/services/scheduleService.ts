@@ -39,7 +39,7 @@ export async function getSchedule(
   const holidays = await getHolidaysBetween(from, holidayEnd);
 
   try {
-    const collections = computeSchedule(zone, holidays, from, count);
+    const collections = computeSchedule(zone, holidays, from, count, { councilSlug: zone.council.slug });
     logger.info('Schedule computed', { zoneId, count: collections.length });
     return { zoneId, councilName: zone.council.name, collections };
   } catch (err) {
@@ -70,7 +70,7 @@ export async function getZonesCollectingTomorrow(): Promise<
   const result: Array<{ zoneId: string; collections: Collection[] }> = [];
 
   for (const zone of zones) {
-    const collections = computeSchedule(zone, holidays, tomorrow, 1);
+    const collections = computeSchedule(zone, holidays, tomorrow, 1, { councilSlug: zone.council.slug });
     if (collections.length > 0 && collections[0].date === tomorrow.toISOString().slice(0, 10)) {
       result.push({ zoneId: zone.id, collections });
     }

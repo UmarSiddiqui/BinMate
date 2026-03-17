@@ -138,6 +138,21 @@ describe('computeSchedule', () => {
       const results = computeSchedule(zone, holidays, utc('2026-01-08'), 1);
       expect(results[0].date).toBe('2026-01-14');
     });
+
+    it('returns fogo instead of general for known FOGO councils', () => {
+      const results = computeSchedule(zone, holidays, utc('2026-01-07'), 1, { councilSlug: 'fremantle' });
+      expect(results[0].types).toContain('fogo');
+      expect(results[0].types).not.toContain('general');
+    });
+
+    it('returns fogo when zone code explicitly marks a mixed-council FOGO zone', () => {
+      const fogoZone = makeZone({
+        zoneCode: 'BEL-FOGO-WED-A-S',
+      });
+      const results = computeSchedule(fogoZone, holidays, utc('2026-01-07'), 1);
+      expect(results[0].types).toContain('fogo');
+      expect(results[0].types).not.toContain('general');
+    });
   });
 
   // ── Week A / Week B rotation ──────────────────────────────────────────────

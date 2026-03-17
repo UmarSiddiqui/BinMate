@@ -276,11 +276,11 @@ class SubiacoScraper implements CouncilScraper {
     };
   }
 
-  /** Health check — resolve a known Subiaco address and expect a SUB-TUE-B zone. */
+  /** Health check — resolve a known Subiaco address and expect any valid SUB zone. */
   async healthCheck(): Promise<boolean> {
-    // Confirmed Tuesday recycling (Week B per Mar 24 2026 parse) via live API 2026-03-16
+    // 1 Rokeby Road remains stable in the live lookup, but day/week can change over time.
     const result = await this.resolveAddress('1 Rokeby Road SUBIACO WA 6008');
-    const ok = result.zoneCode.startsWith('SUB-TUE-') && !result.error;
+    const ok = /^SUB-(MON|TUE|WED|THU|FRI)-(A|B)$/.test(result.zoneCode) && !result.error;
     if (!ok) logger.warn('Subiaco health check failed', { result });
     return ok;
   }

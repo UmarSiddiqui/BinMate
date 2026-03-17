@@ -63,6 +63,7 @@ function buildPayload(
     general: 'General',
     recycling: 'Recycling',
     green_waste: 'Green Waste',
+    fogo: 'FOGO',
   };
 
   const bins = types.map((t) => binLabels[t]).join(' & ');

@@ -18,9 +18,10 @@ export async function findZonesByCouncil(councilId: string): Promise<CollectionZ
   });
 }
 
-/** Return all collection zones. */
-export async function listAllZones(): Promise<CollectionZone[]> {
+/** Return all collection zones, including parent council. */
+export async function listAllZones(): Promise<ZoneWithCouncil[]> {
   return prisma.collectionZone.findMany({
+    include: { council: true },
     orderBy: { zoneName: 'asc' },
   });
 }
