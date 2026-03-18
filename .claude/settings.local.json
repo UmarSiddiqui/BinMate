@@ -22,7 +22,9 @@
       "Bash(ls /Users/umarsiddiqui/Desktop/BinMate/backend/prisma/seed-*.ts)",
       "Bash(git commit:*)",
       "Bash(git add:*)",
-      "Bash(curl -s https://binmate-api.onrender.com/api/v1/health)"
+      "Bash(curl -s https://binmate-api.onrender.com/api/v1/health)",
+      "Bash(DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -scheme \"Bin Mate\" -project \"/Users/umarsiddiqui/Desktop/BinMate/ios/Bin Mate/Bin Mate.xcodeproj\" -destination \"generic/platform=iOS Simulator\" build)",
+      "Bash(find /Users/umarsiddiqui/Desktop/BinMate/backend -name seed* -o -name *seed*)"
     ]
   }
 }

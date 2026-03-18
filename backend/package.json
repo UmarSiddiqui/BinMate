@@ -7,14 +7,15 @@
     "dev": "tsx watch --watch .env src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "start:render": "npm run db:deploy && npm run start",
+    "start:render": "npm run db:deploy && npm run db:seed-all && npm run start",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:seed-all": "tsx prisma/seed-all.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
