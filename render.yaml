@@ -28,8 +28,6 @@ services:
         sync: false
       - key: SENTRY_DSN
         sync: false
-      - key: REVENUECAT_WEBHOOK_AUTH_HEADER
-        sync: false
       - key: GEOCODING_CONTACT_EMAIL
         value: contact@binmate.app
       # Optional — add when ready:

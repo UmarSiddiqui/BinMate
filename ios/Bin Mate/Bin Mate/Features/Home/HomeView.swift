@@ -4,7 +4,6 @@ import SwiftUI
 struct HomeView: View {
 
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var entitlementService: EntitlementService
     @StateObject private var viewModel = HomeViewModel(repository: ScheduleRepository.shared)
 
     var body: some View {
@@ -35,10 +34,6 @@ struct HomeView: View {
                         }
 
                         bulkCollectionCard
-
-                        if viewModel.hasUpcomingVerge && !entitlementService.isPremium {
-                            VergeUpsellBanner()
-                        }
 
                         if let err = viewModel.error, err.isUserFacing {
                             errorBanner(err)

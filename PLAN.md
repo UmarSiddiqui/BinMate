@@ -65,7 +65,7 @@
 | **swift-concurrency** | All async/await patterns — `@MainActor` ViewModels, structured concurrency (§4 coding standards) |
 | **ios-networking** | `BinMateAPI.swift` — URLSession wrapper, error handling, retry logic (§3.1) |
 | **ios-security** | `KeychainService.swift` — push token + user ID storage (§3.1) |
-| **storekit** | `PaywallView.swift` + `EntitlementService.swift` — StoreKit 2 / RevenueCat (§3.7, §3.8) |
+| **free-access** | Free feature access — no paywall, entitlement, or purchase flow (§3.7, §3.8) |
 | **push-notifications** | `NotificationService.swift` — APNs permission, token registration, deeplink on tap (§3.1) |
 | **widgetkit** | `BinMateWidget` — small/medium sizes, timeline provider, AppGroup sharing (§3.9) |
 | **mapkit-location** | Address autocomplete in `AddressEntryView.swift` (§3.2) |
@@ -119,8 +119,8 @@
 - [x] Add `Logger+BinMate.swift` (os_log setup)
 - [x] Add `BinMateError.swift` (error enum)
 - [x] `BinMateApp.swift`, `AppState.swift`, `Configuration.swift` created
-- [x] `EntitlementService.swift`, `PaywallView.swift`, `SettingsView.swift` created
-- [x] RevenueCat SPM package added (`RevenueCat` + `RevenueCatUI`)
+- [x] `SettingsView.swift` created
+- [x] RevenueCat SPM package removed — app is free
 - [x] Verify build succeeds on simulator — **Build Succeeded ✅**
 
 ### 0.3 Backend Project
@@ -137,7 +137,7 @@
 
 ### 0.4 External Services — Accounts & Keys
 - [ ] Apple Developer account ($149 AUD/year) — deferred until app is ready for TestFlight
-- [~] RevenueCat account — test key `test_oPScHsCPlTsGZedsKOJpkWVRXhn` integrated in app; dashboard products not yet configured
+- [x] RevenueCat not used — app is free
 - [!] Firebase / FCM — **mocked** (TODO: implement direct APNs instead of FCM — see Decision Log)
 - [x] Geocoding — **Nominatim** (free, no API key needed — replaces Google Maps)
 - [ ] Sentry iOS — run: `brew install getsentry/tools/sentry-wizard && sentry-wizard -i ios --saas --org umazen --project apple-ios`
@@ -146,14 +146,10 @@
 - [ ] Render — `render.yaml` ready; deploy after GitHub repo created
 - [x] All keys in `backend/.env` (not committed) and `backend/.env.example`
 
-### 0.5 RevenueCat Setup
-- [ ] Create product in App Store Connect: `binmate_monthly` ($0.99 AUD/month) — needs paid Apple Dev account
-- [ ] Create product in App Store Connect: `binmate_annual` ($5.99 AUD/year)
-- [ ] Create subscription group: `BinMate Premium`
-- [ ] Add 3-month free trial to both products (new users only)
-- [ ] Add products to RevenueCat dashboard
-- [ ] Create entitlement: `Bin Mate Pro` (already hardcoded in `EntitlementService.swift`)
-- [ ] Create offering: `default` with both packages
+### 0.5 Free App Setup
+- [x] No App Store Connect products required
+- [x] No RevenueCat dashboard required
+- [x] No entitlement gate required
 
 ---
 
@@ -341,7 +337,7 @@ Document findings in `docs/COUNCILS.md`.
 - [x] `POST /api/v1/register-address` — Zod validation, resolves address, creates user, returns schedule ✅
 - [x] `GET /api/v1/schedule` — Zod validation, `zoneId` + `from` + `count` params ✅
 - [x] `PUT /api/v1/push-token` — Zod validation, updates token + notification hour ✅
-- [x] `POST /api/v1/webhook/revenuecat` — auth header validation, full event map ✅
+- [x] RevenueCat webhook removed — app is free ✅
 - [x] `GET /api/v1/health` — returns `{ status, version, env, db }` ✅
 - [x] Request validation with Zod on all POST/PUT endpoints ✅
 - [x] Error middleware — consistent `{ error: string }` responses ✅
@@ -357,12 +353,8 @@ Document findings in `docs/COUNCILS.md`.
   - [ ] Test: mock tomorrow = Good Friday → verify shift fires correctly
 - [x] `POST /api/v1/cron/trigger-notifications` — protected endpoint for Render free tier external cron ✅
 
-### 2.3 RevenueCat Webhook Handler
-- [x] `POST /api/v1/webhook/revenuecat` ✅
-- [x] Validates `REVENUECAT_WEBHOOK_AUTH_HEADER` ✅
-- [x] Handles all events: `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `EXPIRATION`, `BILLING_ISSUE`, `TRIAL_*` ✅
-- [x] Updates `users.subscription_status` ✅
-- [x] Logs all webhook events ✅
+### 2.3 Subscription Webhook Handler
+- [x] Removed — app is free ✅
 
 ### 2.4 Deployment
 - [ ] Deploy to Render — `render.yaml` blueprint, environment variables configured
@@ -425,8 +417,8 @@ Document findings in `docs/COUNCILS.md`.
 - [ ] **Address lookups chart:** daily count of `/register-address` calls (last 30 days)
 - [ ] **Zone popularity:** top 10 zones by user count (zone name + council, no user details)
 - [ ] **Council coverage table:** all 30 councils — status (Live / In Progress / Not Started), user count, last scraper run
-- [ ] **Subscription funnel:** Free → Trial → Active → Expired counts with conversion % (data from `users` table)
-- [ ] RevenueCat dashboard deep-link card (opens RevenueCat in new tab — MRR/churn live there)
+- [ ] **User status overview:** Free users by notification and zone count
+- [x] No RevenueCat dashboard card — app is free
 - [ ] **Notification delivery rate:** 7-day rolling average (successful sends / total attempted)
 
 ### 2.5.7 System Health Panel
@@ -449,7 +441,7 @@ Document findings in `docs/COUNCILS.md`.
 - [x] `NotificationService.swift` — request permission, register with APNs, forward token to backend
 - [x] `ScheduleRepository.swift` — fetch from API, cache in CoreData, return to ViewModels
 - [x] `CoreData` model: `CollectionEntity`, `ZoneEntity`, `CouncilEntity`
-- [x] `AppState.swift` — global state: onboarding complete, zone ID, subscription status
+- [x] `AppState.swift` — global state: onboarding complete, primary zone, additional zones
 - [x] Deeplink handling for notification tap → open correct screen
 
 ### 3.2 Onboarding Flow
@@ -501,12 +493,12 @@ Document findings in `docs/COUNCILS.md`.
 - [x] `SettingsView.swift` — full implementation ✅
 - [x] `SettingsViewModel.swift` — notification state, hour sync, test notification ✅
 - [x] Address section: current address (suburb + council) + "Change address" → confirmation → re-runs onboarding ✅
-- [x] Multiple addresses section (Premium): premium gate (free → upgrade prompt; premium → "Coming soon" placeholder) ✅
+- [x] Multiple addresses section: add, remove, and promote saved zones ✅
 - [x] Notification section:
   - Toggle notifications on/off (system auth check, local opt-out, open Settings if denied) ✅
   - Notification time picker (4pm–10pm, syncs to backend via updatePushToken) ✅
   - "Test notification" button (fires local notification in 3s, checkmark feedback) ✅
-- [x] Subscription section: current plan, manage subscription (RevenueCat CustomerCenter) ✅
+- [x] Subscription section removed — app is free ✅
 - [x] About section: version, privacy policy link, contact support link ✅
 - [x] Wired into MainTabView (replaced Text("Settings") placeholder) ✅
 
@@ -519,20 +511,17 @@ Document findings in `docs/COUNCILS.md`.
 - [x] Accessible from Settings → About → "Bin guide" (presented as sheet) ✅
 - [x] Full VoiceOver labels on all interactive elements ✅
 
-### 3.7 Paywall Screen
-- [x] `BinMatePaywallView.swift` — wraps RevenueCat native `PaywallView` (design configured in RC dashboard) ✅
-- [x] `onPurchaseCompleted` + `onRestoreCompleted` handlers → `EntitlementService.refresh()` ✅
-- [x] `.tint(BinMateTheme.Colors.lime)` applied to RC paywall CTA ✅
-- [x] `binMatePaywall(isPresented:)` modifier — reusable sheet presenter used across the app ✅
-- [x] Show paywall: second address gate (SettingsView), calendar locked cells, notification gate ✅
-- [x] Verge collection gentle upsell trigger ✅
+### 3.7 Free Access
+- [x] Paywall removed ✅
+- [x] RevenueCat dependency removed ✅
+- [x] Full-year calendar available to every user ✅
+- [x] Push notifications available to every user ✅
+- [x] Additional addresses available to every user ✅
 
-### 3.8 Free Tier Logic
-- [x] `EntitlementService.swift` — RevenueCat entitlement `Bin Mate Pro`, real-time stream ✅
-- [x] 1 address: second address gated in Settings behind `isPremium` ✅
-- [x] No push notifications: notifications section locked for free users, shows Premium badge ✅
-- [x] 7-day schedule preview: CalendarView locks cells beyond today+7 with lock icon + upsell banner ✅
-- [x] Graceful degradation: informational banners + Premium badge labels, no hard errors ✅
+### 3.8 Feature Availability
+- [x] No local entitlement service required ✅
+- [x] No locked calendar cells ✅
+- [x] No upgrade prompts or subscription restore flow ✅
 
 ### 3.9 Widget (WidgetKit)
 - [x] `BinMateWidget` — small and medium sizes ✅
@@ -640,7 +629,7 @@ Document findings in `docs/COUNCILS.md`.
 - [ ] Monitor Sentry for crashes — fix P0 within 24 hours
 - [ ] Monitor notification delivery rate (target >97%)
 - [ ] Monitor App Store rating (target 4.5+ after first 20 reviews)
-- [ ] Monitor conversion: install → trial → paid (target >40%)
+- [ ] Monitor activation: install → address registered → notifications enabled
 - [ ] Respond to all App Store reviews (first 30 days)
 
 ---
@@ -656,7 +645,7 @@ Document findings in `docs/COUNCILS.md`.
 ### Monthly Tasks
 - [ ] Review Sentry error report
 - [ ] Review notification delivery metrics
-- [ ] Review RevenueCat dashboard — churn, MRR, conversion
+- [ ] Review activation and notification metrics
 
 ### As Needed
 - [ ] Council website change detected (change-detection cron alerts) → fix scraper within 48 hours
@@ -672,13 +661,13 @@ Document findings in `docs/COUNCILS.md`.
 | Data layer MVP | Week 4 | 5 councils return correct schedules for real addresses |
 | Backend API live | Week 6 | API deployed, push notifications working end-to-end |
 | iOS Alpha | Week 8 | Address setup + home screen working on real device |
-| iOS Feature Complete | Week 12 | All screens built, paywall working, no P0 bugs |
+| iOS Feature Complete | Week 12 | All screens built, free features working, no P0 bugs |
 | Top 9 councils live | Week 14 | 57% of Perth covered |
 | TestFlight Beta | Week 15 | 50+ beta testers, feedback collected |
 | App Store Submission | Week 16 | All P0/P1 bugs fixed, screenshots done |
 | **App Store Launch** | **Week 17** | **Live in App Store** |
 | All 30 councils | Month 5 | 100% Perth metro coverage |
-| 1,000 paying users | Month 4 | Revenue validated, sustainable |
+| 1,000 active users | Month 4 | Usage validated, sustainable |
 
 ---
 
@@ -690,12 +679,11 @@ Record significant decisions here so future AI sessions have context.
 |---|---|---|
 | Mar 2026 | iOS-only at launch, no Android | Faster build, iOS dominant in AU (60%+), validate before scaling |
 | Mar 2026 | Node.js backend (not Python) | Developer familiarity, faster iteration |
-| Mar 2026 | RevenueCat for subscriptions | Avoids building subscription validation from scratch |
+| Jul 2026 | Free app, no RevenueCat | Remove monetization friction before launch |
 | Mar 2026 | No analytics SDK at launch | Privacy-first position, simpler app, less data liability |
 | Mar 2026 | Zone-based data model (not per-user schedules) | Massively more efficient — 1 zone serves thousands of users |
-| Mar 2026 | Free tier has no push notifications | Makes the value of Premium immediately obvious, not coercive |
-| Mar 2026 | $0.99/month, $5.99/year, 3-month free trial for new users | Ultra-low friction entry, 3-month trial drives habitual use before paywall |
-| Mar 2026 | No lifetime offering | Subscription model only — predictable revenue, simpler pricing |
+| Jul 2026 | Push notifications free | Core reminder value should work for every user |
+| Jul 2026 | Additional addresses free | Settings feature should be functional, not gated |
 | Mar 2026 | Nominatim for geocoding (not Google Maps) | Free, no API key, 1 req/sec — sufficient for address lookups at MVP scale |
 | Mar 2026 | Local server for development (not Railway/Render yet) | No running costs during build phase; deploy to Render when app is TestFlight-ready |
 | Mar 2026 | Wanneroo: static suburb map not PDF parsing | PDF parsing is fragile; static map from verified calendar is reliable and maintainable |
@@ -709,7 +697,7 @@ Record significant decisions here so future AI sessions have context.
 |---|---|---|
 | City of Stirling uses Salesforce | Unresolved | May need PDF fallback — investigate in Phase 1.6 |
 | FCM deprecation of legacy APIs | Low risk | Using Firebase Admin SDK (current) |
-| Apple rejection for subscription terms | Low risk | Standard utility app, StoreKit 2 pattern is Apple-preferred |
+| App Review utility value questions | Low risk | Free reminder utility with council-specific Perth coverage |
 | Council website redesigns | Ongoing | Change detection cron mitigates this |
 
 ---

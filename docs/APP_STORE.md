@@ -102,15 +102,11 @@ TEST FLOW
 4. Optionally enable push notifications (can be skipped)
 5. Home screen shows upcoming collection schedule
 
-SUBSCRIPTION TESTING
-Both plans ($0.99/month, $5.99/year) include a 3-month free trial for new users.
-Use the StoreKit sandbox environment — no charge will occur.
-Restore purchases works in sandbox via the Settings screen.
-
-FREE TIER RESTRICTIONS (visible during review)
-• Schedule preview limited to 7 days (Calendar tab locks beyond this)
-• Push notifications locked — shown in Settings with Premium badge
-• Second address locked — shown in Settings with Premium badge
+FREE APP BEHAVIOUR
+• No subscription, paid plan, or in-app purchase.
+• Full-year calendar is available.
+• Push notifications are available.
+• Additional addresses are available from Settings.
 
 NOTES
 • App is Perth, WA specific. Non-Perth addresses show a clear error.

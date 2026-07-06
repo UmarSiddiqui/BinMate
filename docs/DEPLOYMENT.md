@@ -13,7 +13,6 @@
 - `DATABASE_URL`
 - `DIRECT_URL`
 - `CRON_SECRET`
-- `REVENUECAT_WEBHOOK_AUTH_HEADER`
 - `GEOCODING_CONTACT_EMAIL`
 
 ### Optional environment variables
@@ -98,8 +97,7 @@ Expected:
 ### TestFlight base URL
 1. Copy [Config.example.xcconfig](/Users/umarsiddiqui/Desktop/BinMate/ios/BinMate/Resources/Config.example.xcconfig) to `Config.xcconfig`.
 2. Set `API_BASE_URL` to the Render HTTPS URL.
-3. Set production `REVENUECAT_API_KEY`.
-4. Set `SENTRY_DSN` if enabled.
+3. Set `SENTRY_DSN` if enabled.
 
 ### Pre-TestFlight check
 - The app must not point at `http://localhost:3000`.

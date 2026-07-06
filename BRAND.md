@@ -293,13 +293,9 @@ All copy is tone-reviewed and brand-approved. If a new scenario arises, ask befo
 - **Title:** `You're sorted.`
 - **Body:** `BinMate has your {suburb} schedule. We'll remind you every time.`
 
-### Free trial ending (2 days before)
-- **Title:** `Your free trial ends {day}`
-- **Body:** `Keep getting reminders for $0.99/month. Less than a coffee.`
-
-### Subscription confirmed (in-app)
+### Setup confirmed (in-app)
 - **Title:** `Cheers.`
-- **Body:** `Premium is active. You'll never have to think about bins again.`
+- **Body:** `BinMate is ready. You'll never have to think about bins again.`
 
 ### Address not found (in-app error)
 - **Title:** `Couldn't find your address`
@@ -340,7 +336,7 @@ When writing any in-app text, error messages, empty states, or UI labels, follow
 - Respect `@Environment(\.accessibilityReduceMotion)` — check before animating
 - Loading states: skeleton views, not spinners (except for inline actions)
 - Page transitions: `.slide` for forward navigation, `.opacity` for modals
-- No bounce animations on primary content — reserved for celebratory moments only (e.g. successful subscription)
+- No bounce animations on primary content — reserved for celebratory moments only
 
 ```swift
 // Motion check pattern — always use this

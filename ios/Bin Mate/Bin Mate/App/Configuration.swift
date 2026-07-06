@@ -9,13 +9,6 @@ import Foundation
 ///   3. Link Config.xcconfig to your target in Xcode project settings
 enum Configuration {
 
-    // MARK: - RevenueCat
-
-    /// Public RevenueCat API key. Use your test key locally; production key in Config.xcconfig.
-    static var revenueCatAPIKey: String {
-        value(forKey: "REVENUECAT_API_KEY", fallback: "test_oPScHsCPlTsGZedsKOJpkWVRXhn")
-    }
-
     // MARK: - Backend API
 
     /// BinMate backend base URL.

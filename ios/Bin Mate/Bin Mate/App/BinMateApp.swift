@@ -1,6 +1,5 @@
 import StoreKit
 import SwiftUI
-import RevenueCat
 
 @main
 struct BinMateApp: App {
@@ -8,10 +7,8 @@ struct BinMateApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     @StateObject private var appState           = AppState()
-    @StateObject private var entitlementService = EntitlementService.shared
 
     init() {
-        configureRevenueCat()
         // Initialise early so UNUserNotificationCenterDelegate is registered before
         // the system delivers any pending notifications at launch.
         _ = NotificationService.shared
@@ -21,19 +18,8 @@ struct BinMateApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(appState)
-                .environmentObject(entitlementService)
                 .preferredColorScheme(.dark) // BinMate is dark-mode only
         }
-    }
-
-    // MARK: - RevenueCat
-
-    private func configureRevenueCat() {
-        #if DEBUG
-        Purchases.logLevel = .debug
-        #endif
-        Purchases.configure(withAPIKey: Configuration.revenueCatAPIKey)
-        entitlementService.start()
     }
 }
 

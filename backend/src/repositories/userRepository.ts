@@ -37,17 +37,6 @@ export async function updatePushToken(
   });
 }
 
-/** Update a user's subscription status (called from RevenueCat webhook). */
-export async function updateSubscriptionStatus(
-  userId: string,
-  status: 'free' | 'trial' | 'active' | 'expired'
-): Promise<User> {
-  return prisma.user.update({
-    where: { id: userId },
-    data: { subscriptionStatus: status },
-  });
-}
-
 /** Link a user to a zone. No-ops if already linked. */
 export async function upsertUserZone(params: {
   userId: string;

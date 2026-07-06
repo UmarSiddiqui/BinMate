@@ -30,7 +30,7 @@ Always use these. Never suggest alternatives without being asked.
 - **Networking:** URLSession with async/await (no Alamofire)
 - **Local storage:** CoreData for schedule cache; UserDefaults for preferences only
 - **Push notifications:** Apple Push Notification Service (APNs) via UserNotifications framework
-- **Payments:** StoreKit 2 (native) + RevenueCat SDK (`purchases-ios`)
+- **Payments:** None at launch — app is free
 - **Widgets:** WidgetKit (iOS 14+)
 - **Maps/geocoding:** MapKit + CoreLocation (no Google Maps SDK in app)
 - **Analytics:** None at launch — privacy-first
@@ -42,7 +42,7 @@ Always use these. Never suggest alternatives without being asked.
 - **Hosting:** Render.app
 - **Push dispatch:** Firebase Admin SDK (FCM)
 - **Geocoding (server-side):** Google Maps Geocoding API
-- **Subscription validation:** RevenueCat webhooks
+- **Subscription validation:** None — app is free
 - **Scheduling:** Node-cron or APScheduler — nightly at 17:00 AWST (UTC+8)
 
 ### Infrastructure
@@ -73,9 +73,8 @@ BinMate/
 │   │   │   ├── Onboarding/       # Address setup flow
 │   │   │   ├── Home/             # Today view, upcoming schedule
 │   │   │   ├── Calendar/         # Full year calendar view
-│   │   │   ├── Settings/         # Notifications, address, subscription
+│   │   │   ├── Settings/         # Notifications, address
 │   │   │   ├── BinGuide/         # What goes in which bin
-│   │   │   └── Paywall/          # Subscription screen
 │   │   ├── UI/
 │   │   │   ├── Components/       # Reusable SwiftUI views
 │   │   │   ├── Theme/            # BinMateTheme.swift (colours, fonts, spacing)
@@ -165,7 +164,7 @@ Logger.app.debug("Debug info") // GOOD
 - Variables/functions: `camelCase` — `nextCollectionDate`, `fetchUpcoming()`
 - Constants: `camelCase` — `static let defaultNotificationHour = 18`
 - Files: match type name — `CollectionSchedule.swift`
-- View files: suffix with `View` — `HomeView.swift`, `PaywallView.swift`
+- View files: suffix with `View` — `HomeView.swift`, `SettingsView.swift`
 - ViewModel files: suffix with `ViewModel` — `HomeViewModel.swift`
 - Test files: suffix with `Tests` — `HomeViewModelTests.swift`
 
@@ -292,10 +291,6 @@ PUT /api/v1/push-token
   Body: { userId: string, pushToken: string, notificationHour?: number }
   Response: { ok: true }
 
-POST /api/v1/webhook/revenuecat
-  Body: RevenueCat webhook payload
-  Response: { ok: true }
-
 GET /api/v1/health
   Response: { status: "ok", version: string, db: "ok"|"error" }
 ```
@@ -374,7 +369,7 @@ These are hard constraints. Do not work around them.
 - **No PII in logs.** Never log addresses, push tokens, or user IDs in plaintext logs.
 - **All API requests must be HTTPS.** Reject HTTP in production.
 - **Push tokens treated as sensitive.** Stored encrypted in database.
-- **RevenueCat handles all payment data.** Never store card details or Apple receipt data directly.
+- **No payment data.** Never store card details, Apple receipts, or subscription identifiers.
 - **App Tracking Transparency:** Not required at v1.0 (no tracking). Do not add ATT prompt.
 - **Privacy nutrition label (App Store):** Data types collected — Device ID (for push), Approximate Location (for council detection). No linked data to identity.
 
@@ -461,7 +456,7 @@ enum BinMateError: LocalizedError {
 ```
 feat(home): add upcoming schedule list view
 fix(scraper): correct Wanneroo week B rotation offset
-chore(deps): update RevenueCat SDK to 4.38.0
+chore(deps): update Sentry SDK
 test(scraper): add Armadale address resolution test
 refactor(notifications): extract holiday shift logic to utility
 docs(api): add /schedule endpoint documentation
@@ -484,7 +479,7 @@ These are absolute prohibitions. If a task seems to require these, stop and ask.
 - ❌ Do not store user addresses in the database linked to a user identity
 - ❌ Do not use UIKit for new views — SwiftUI only
 - ❌ Do not hardcode API keys, URLs, or secrets in source files
-- ❌ Do not change the pricing model ($0.99/month, $5.99/year, 3-month free trial for new users, no lifetime) without explicit instruction
+- ❌ Do not add paid plans, trials, or a pricing model without explicit instruction
 - ❌ Do not add notification copy that isn't in BRAND.md Section 7
 - ❌ Do not rename or restructure the file layout in Section 3
 - ❌ Do not add Android support without explicit instruction

@@ -1,17 +1,14 @@
 import SwiftUI
-import RevenueCatUI
 
-/// Settings screen — address management, notification preferences, subscription, and app info.
+/// Settings screen — address management, notification preferences, and app info.
 struct SettingsView: View {
 
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var entitlementService: EntitlementService
     @StateObject private var viewModel = SettingsViewModel()
 
-    @State private var showPaywall        = false
-    @State private var showCustomerCenter = false
     @State private var showResetConfirm   = false
     @State private var showBinGuide       = false
+    @State private var showAddAddress     = false
 
     var body: some View {
         NavigationStack {
@@ -19,7 +16,6 @@ struct SettingsView: View {
                 addressSection
                 additionalAddressesSection
                 notificationsSection
-                subscriptionSection
                 aboutSection
             }
             .navigationTitle("Settings")
@@ -39,9 +35,16 @@ struct SettingsView: View {
                 Text("This will take you back to address setup.")
             }
         }
-        .binMatePaywall(isPresented: $showPaywall)
-        .sheet(isPresented: $showCustomerCenter) { CustomerCenterView() }
         .sheet(isPresented: $showBinGuide) { NavigationStack { BinGuideView() } }
+        .sheet(isPresented: $showAddAddress) {
+            AdditionalAddressSheet { result in
+                appState.addAdditionalAddress(
+                    zoneId: result.zoneId,
+                    councilName: result.councilName,
+                    suburb: result.suburb
+                )
+            }
+        }
     }
 
     // MARK: - Address
@@ -68,35 +71,41 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Additional addresses (Premium-gated)
+    // MARK: - Additional addresses
 
     private var additionalAddressesSection: some View {
         Section {
-            if entitlementService.isPremium {
-                HStack {
-                    Label("Add address", systemImage: "plus.circle")
-                        .foregroundStyle(BinMateTheme.Colors.lime)
-                    Spacer()
-                    Text("Coming soon")
-                        .font(BinMateTheme.Typography.bodySmall)
-                        .foregroundStyle(BinMateTheme.Colors.textMuted)
-                }
-            } else {
-                Button { showPaywall = true } label: {
-                    HStack {
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(BinMateTheme.Colors.lime)
-                        Text("Add a second address")
+            ForEach(appState.additionalAddresses) { address in
+                Button {
+                    appState.makePrimary(address)
+                } label: {
+                    VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
+                        Text(address.suburb)
+                            .font(BinMateTheme.Typography.body)
                             .foregroundStyle(BinMateTheme.Colors.textPrimary)
-                        Spacer()
-                        Text("Premium")
+                        Text(address.councilName)
+                            .font(BinMateTheme.Typography.bodySmall)
+                            .foregroundStyle(BinMateTheme.Colors.textSecondary)
+                        Text("Tap to make primary")
                             .font(BinMateTheme.Typography.label)
                             .foregroundStyle(BinMateTheme.Colors.lime)
                     }
                 }
+                .swipeActions {
+                    Button("Remove", role: .destructive) {
+                        appState.removeAdditionalAddress(address)
+                    }
+                }
+            }
+
+            Button { showAddAddress = true } label: {
+                Label("Add address", systemImage: "plus.circle")
+                    .foregroundStyle(BinMateTheme.Colors.lime)
             }
         } header: {
             Text("Additional Addresses")
+        } footer: {
+            Text("Only suburb, council, and zone are saved. Street addresses are not stored.")
         }
     }
 
@@ -104,32 +113,17 @@ struct SettingsView: View {
 
     private var notificationsSection: some View {
         Section("Notifications") {
-            if entitlementService.isPremium {
-                Toggle(isOn: Binding(
-                    get: { viewModel.notificationsEnabled },
-                    set: { _ in Task { await viewModel.handleNotificationsToggle() } }
-                )) {
-                    Label("Bin day reminders", systemImage: BinMateTheme.Symbols.bell)
-                }
-                .tint(BinMateTheme.Colors.lime)
+            Toggle(isOn: Binding(
+                get: { viewModel.notificationsEnabled },
+                set: { _ in Task { await viewModel.handleNotificationsToggle() } }
+            )) {
+                Label("Bin day reminders", systemImage: BinMateTheme.Symbols.bell)
+            }
+            .tint(BinMateTheme.Colors.lime)
 
-                if viewModel.notificationsEnabled {
-                    hourPickerRow
-                    testNotificationRow
-                }
-            } else {
-                // Free tier — push notifications are a Premium feature
-                Button { showPaywall = true } label: {
-                    HStack {
-                        Label("Bin day reminders", systemImage: BinMateTheme.Symbols.bell)
-                            .foregroundStyle(BinMateTheme.Colors.textPrimary)
-                        Spacer()
-                        Text("Premium")
-                            .font(BinMateTheme.Typography.label)
-                            .foregroundStyle(BinMateTheme.Colors.lime)
-                    }
-                }
-                .accessibilityLabel("Bin day reminders, Premium feature — tap to upgrade")
+            if viewModel.notificationsEnabled {
+                hourPickerRow
+                testNotificationRow
             }
         }
     }
@@ -176,27 +170,6 @@ struct SettingsView: View {
                             ? "Test notification sent"
                             : "Send test notification")
     }
-
-    // MARK: - Subscription
-
-    private var subscriptionSection: some View {
-        Section("Subscription") {
-            if entitlementService.isPremium {
-                LabeledContent("Plan", value: "BinMate Premium")
-                Button("Manage subscription") { showCustomerCenter = true }
-                    .foregroundStyle(BinMateTheme.Colors.lime)
-            } else {
-                Button("Upgrade to Premium") { showPaywall = true }
-                    .foregroundStyle(BinMateTheme.Colors.lime)
-                Button("Restore Purchases") {
-                    Task { try? await entitlementService.restorePurchases() }
-                }
-                .foregroundStyle(BinMateTheme.Colors.textSecondary)
-            }
-        }
-    }
-
-    // MARK: - About
 
     private var aboutSection: some View {
         Section("About") {

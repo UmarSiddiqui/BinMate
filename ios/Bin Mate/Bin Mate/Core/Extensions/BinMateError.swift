@@ -6,8 +6,6 @@ enum BinMateError: LocalizedError {
     case addressNotFound
     case councilUnsupported(String)
     case scheduleUnavailable
-    case purchaseFailed(String)
-    case purchaseCancelled
     case unknown(Error)
 
     var errorDescription: String? {
@@ -20,10 +18,6 @@ enum BinMateError: LocalizedError {
             return "\(name) isn't supported yet"
         case .scheduleUnavailable:
             return "Schedule temporarily unavailable"
-        case .purchaseFailed(let reason):
-            return "Purchase failed: \(reason)"
-        case .purchaseCancelled:
-            return nil // Don't show an error when user cancels — it's intentional
         case .unknown:
             return "Something went wrong"
         }
@@ -31,7 +25,6 @@ enum BinMateError: LocalizedError {
 
     /// True if this error should be displayed to the user.
     var isUserFacing: Bool {
-        if case .purchaseCancelled = self { return false }
         return true
     }
 }
