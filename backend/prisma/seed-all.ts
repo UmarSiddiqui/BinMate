@@ -49,7 +49,7 @@ let failed = 0;
 for (const file of SEEDS) {
   const label = file.replace('.ts', '');
   try {
-    execSync('npx', ['tsx', path.join(seedDir, file)], { stdio: 'inherit', cwd: seedDir });
+    execSync(`npx tsx "${path.join(seedDir, file)}"`, { stdio: 'inherit', cwd: seedDir, env: process.env });
     passed++;
   } catch {
     console.error(`\n✗ ${label} failed — see output above\n`);
