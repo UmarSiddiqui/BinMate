@@ -6,6 +6,13 @@ struct HomeView: View {
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel = HomeViewModel(repository: ScheduleRepository.shared)
 
+    private enum Metrics {
+        static let dashboardChipHeight: CGFloat = 70
+        static let dashboardIconSize: CGFloat = 30
+        static let dashboardSymbolSize: CGFloat = 13
+        static let dashboardValueScale: CGFloat = 0.82
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -30,10 +37,11 @@ struct HomeView: View {
                         }
 
                         if !viewModel.listCollections.isEmpty {
+                            sectionHeader("Upcoming")
                             UpcomingScheduleList(collections: viewModel.listCollections)
                         }
 
-                        bulkCollectionCard
+                        dashboardStrip
 
                         if let err = viewModel.error, err.isUserFacing {
                             errorBanner(err)
@@ -62,50 +70,98 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Bulk collection entry card
+    // MARK: - Dashboard strip
 
-    private var bulkCollectionCard: some View {
-        NavigationLink {
-            BulkCollectionView(
-                viewModel: BulkCollectionViewModel(
-                    councilName: appState.primaryCouncilName ?? "",
-                    vergeCollections: viewModel.vergeCollections
-                )
+    private var dashboardStrip: some View {
+        HStack(spacing: BinMateTheme.Spacing.sm) {
+            dashboardChip(
+                title: "Next bin",
+                value: viewModel.nextKerbsideSummary,
+                icon: BinMateTheme.Symbols.calendar,
+                foreground: BinMateTheme.Colors.lime,
+                background: BinMateTheme.Colors.limeFaint
             )
-        } label: {
-            HStack(spacing: BinMateTheme.Spacing.md) {
-                BinMateIconBadge(
-                    systemName: BinMateTheme.Symbols.verge,
-                    foreground: BinMateTheme.Colors.amber,
-                    background: BinMateTheme.Colors.amberFaint
+
+            NavigationLink {
+                BulkCollectionView(
+                    viewModel: BulkCollectionViewModel(
+                        councilName: appState.primaryCouncilName ?? "",
+                        vergeCollections: viewModel.vergeCollections
+                    )
                 )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Bulk Collection")
-                        .font(BinMateTheme.Typography.body)
-                        .foregroundColor(BinMateTheme.Colors.textPrimary)
-                    Text(bulkCollectionSubtitle)
-                        .font(BinMateTheme.Typography.bodySmall)
-                        .foregroundColor(BinMateTheme.Colors.textSecondary)
-                }
-
-                Spacer()
-
-                Image(systemName: BinMateTheme.Symbols.next)
-                    .font(.caption)
-                    .foregroundColor(BinMateTheme.Colors.textMuted)
+            } label: {
+                dashboardChip(
+                    title: "Bulk",
+                    value: viewModel.bulkCollectionSummary,
+                    icon: BinMateTheme.Symbols.verge,
+                    foreground: BinMateTheme.Colors.amber,
+                    background: BinMateTheme.Colors.amberFaint,
+                    showsDisclosure: true
+                )
             }
-            .padding(BinMateTheme.Spacing.md)
-            .background(BinMateTheme.Colors.bgRaised)
-            .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.lg))
+            .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
     }
 
-    private var bulkCollectionSubtitle: String {
-        if viewModel.vergeCollections.isEmpty { return "On demand — tap to request" }
-        let first = viewModel.vergeCollections[0]
-        return "Next: \(first.dayOfWeek), \(first.date)"
+    private func dashboardChip(
+        title: String,
+        value: String,
+        icon: String,
+        foreground: Color,
+        background: Color,
+        showsDisclosure: Bool = false
+    ) -> some View {
+        HStack(spacing: BinMateTheme.Spacing.sm) {
+            BinMateIconBadge(
+                systemName: icon,
+                foreground: foreground,
+                background: background,
+                size: Metrics.dashboardIconSize,
+                symbolSize: Metrics.dashboardSymbolSize
+            )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title.uppercased())
+                    .font(BinMateTheme.Typography.label)
+                    .foregroundColor(BinMateTheme.Colors.textMuted)
+                    .lineLimit(1)
+                Text(value)
+                    .font(BinMateTheme.Typography.bodySmall)
+                    .foregroundColor(BinMateTheme.Colors.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(Metrics.dashboardValueScale)
+            }
+
+            Spacer(minLength: 0)
+
+            if showsDisclosure {
+                Image(systemName: BinMateTheme.Symbols.next)
+                    .font(.caption2)
+                    .foregroundColor(BinMateTheme.Colors.textMuted)
+                    .accessibilityHidden(true)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: Metrics.dashboardChipHeight, alignment: .leading)
+        .padding(.horizontal, BinMateTheme.Spacing.sm)
+        .background(BinMateTheme.Colors.bgRaised)
+        .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.lg))
+        .overlay {
+            RoundedRectangle(cornerRadius: BinMateTheme.Radius.lg)
+                .stroke(BinMateTheme.Colors.borderSubtle)
+        }
+    }
+
+    // MARK: - Section header
+
+    private func sectionHeader(_ title: String) -> some View {
+        HStack {
+            Text(title.uppercased())
+                .font(BinMateTheme.Typography.label)
+                .foregroundColor(BinMateTheme.Colors.textMuted)
+                .kerning(1.1)
+            Spacer()
+        }
+        .padding(.top, BinMateTheme.Spacing.xs)
     }
 
     // MARK: - Header

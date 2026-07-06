@@ -60,6 +60,22 @@ final class HomeViewModel: ObservableObject {
 
     var hasUpcomingVerge: Bool { !vergeCollections.isEmpty }
 
+    /// Compact label for the next kerbside collection, used by the Home dashboard.
+    var nextKerbsideSummary: String {
+        guard let first = kerbside.first, let days = daysUntil(first.date) else {
+            return "No kerbside date"
+        }
+        return relativeLabel(days: days)
+    }
+
+    /// Compact label for the next bulk/verge collection, used by the Home dashboard.
+    var bulkCollectionSummary: String {
+        guard let first = vergeCollections.first, let days = daysUntil(first.date) else {
+            return "On demand"
+        }
+        return "Next bulk \(relativeBulkLabel(days: days))"
+    }
+
     // MARK: - Private
 
     private let repository: ScheduleRepositoryProtocol
@@ -130,6 +146,8 @@ final class HomeViewModel: ObservableObject {
 
     private func relativeLabel(days: Int) -> String {
         switch days {
+        case 0:  return "Today"
+        case 1:  return "Tomorrow"
         case 2:  return "In 2 days"
         case 3:  return "In 3 days"
         case 4:  return "In 4 days"
@@ -137,6 +155,14 @@ final class HomeViewModel: ObservableObject {
         case 6:  return "In 6 days"
         case 7:  return "In a week"
         default: return "In \(days) days"
+        }
+    }
+
+    private func relativeBulkLabel(days: Int) -> String {
+        switch days {
+        case 0: return "today"
+        case 1: return "tomorrow"
+        default: return "in \(days) days"
         }
     }
 }

@@ -6,20 +6,26 @@ struct UpcomingScheduleList: View {
     let collections: [Collection]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            VStack(spacing: 0) {
-                ForEach(Array(collections.enumerated()), id: \.offset) { index, collection in
-                    CollectionRow(collection: collection)
-                    if index < collections.count - 1 {
-                        Divider()
-                            .background(BinMateTheme.Colors.borderSubtle)
-                            .padding(.leading, 68)
-                    }
+        VStack(spacing: 0) {
+            ForEach(Array(collections.enumerated()), id: \.offset) { index, collection in
+                CollectionRow(collection: collection)
+                if index < collections.count - 1 {
+                    Divider()
+                        .background(BinMateTheme.Colors.borderSubtle)
+                        .padding(.leading, Metrics.dividerLeadingPadding)
                 }
             }
-            .background(BinMateTheme.Colors.bgRaised)
-            .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.card))
         }
+        .background(BinMateTheme.Colors.bgRaised)
+        .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.card))
+        .overlay {
+            RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
+                .stroke(BinMateTheme.Colors.borderSubtle)
+        }
+    }
+
+    private enum Metrics {
+        static let dividerLeadingPadding: CGFloat = 68
     }
 }
 
@@ -29,6 +35,13 @@ private struct CollectionRow: View {
 
     let collection: Collection
 
+    private enum Metrics {
+        static let rowMinimumHeight: CGFloat = 72
+        static let dateColumnWidth: CGFloat = 44
+        static let eventIconSize: CGFloat = 24
+        static let eventSymbolSize: CGFloat = 10
+    }
+
     private var isVerge: Bool { collection.eventType == .verge }
 
     var body: some View {
@@ -37,7 +50,8 @@ private struct CollectionRow: View {
             contentColumn
             Spacer()
         }
-        .padding(.vertical, BinMateTheme.Spacing.sm + BinMateTheme.Spacing.xs)
+        .frame(minHeight: Metrics.rowMinimumHeight)
+        .padding(.vertical, BinMateTheme.Spacing.sm)
         .padding(.horizontal, BinMateTheme.Spacing.md)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(rowAccessibilityLabel)
@@ -67,8 +81,8 @@ private struct CollectionRow: View {
                 systemName: eventIconName,
                 foreground: eventIconForeground,
                 background: eventIconBackground,
-                size: 24,
-                symbolSize: 10
+                size: Metrics.eventIconSize,
+                symbolSize: Metrics.eventSymbolSize
             )
             Text(dayAbbrev(collection.dayOfWeek))
                 .font(BinMateTheme.Typography.label)
@@ -78,20 +92,27 @@ private struct CollectionRow: View {
                 .font(BinMateTheme.Typography.heading3)
                 .foregroundColor(isVerge ? BinMateTheme.Colors.amber : BinMateTheme.Colors.textPrimary)
         }
-        .frame(width: 44, alignment: .center)
+        .frame(width: Metrics.dateColumnWidth, alignment: .center)
     }
 
     // MARK: - Content column
 
     private var contentColumn: some View {
         VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
+            HStack(spacing: BinMateTheme.Spacing.xs) {
+                Text(rowTitle)
+                    .font(BinMateTheme.Typography.body)
+                    .foregroundColor(BinMateTheme.Colors.textPrimary)
+                    .lineLimit(1)
+                if collection.isHolidayShifted { holidayBadge }
+            }
+
             // Bin type pills + optional verge badge
             HStack(spacing: BinMateTheme.Spacing.xs) {
                 ForEach(collection.types, id: \.self) { type in
                     BinTypePill(type: type)
                 }
                 if isVerge { vergePill }
-                if collection.isHolidayShifted { holidayBadge }
             }
 
             // Struck-through original date when holiday-shifted
@@ -102,6 +123,13 @@ private struct CollectionRow: View {
                     .strikethrough(true, color: BinMateTheme.Colors.textMuted)
             }
         }
+    }
+
+    private var rowTitle: String {
+        if isVerge { return "Bulk collection" }
+        let names = collection.types.map(\.displayName)
+        guard !names.isEmpty else { return "Bin collection" }
+        return names.joined(separator: " + ")
     }
 
     // MARK: - Supplementary pills

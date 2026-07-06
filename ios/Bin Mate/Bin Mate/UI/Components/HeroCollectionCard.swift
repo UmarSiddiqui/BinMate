@@ -11,46 +11,57 @@ struct HeroCollectionCard: View {
     /// True when there is a collection today or tomorrow (drives lime vs dark style).
     let isActive: Bool
 
+    private enum Metrics {
+        static let cardMinimumHeight: CGFloat = 140
+        static let titleScale: CGFloat = 0.78
+        static let iconSize: CGFloat = 46
+        static let symbolSize: CGFloat = 20
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.md) {
+        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.lg) {
             titleRow
-            if !types.isEmpty { typePills }
-            subtitleRow
+            VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
+                if !types.isEmpty { typePills }
+                subtitleRow
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(BinMateTheme.Spacing.lg)
+        .frame(minHeight: Metrics.cardMinimumHeight, alignment: .leading)
         .background(isActive ? BinMateTheme.Colors.lime : BinMateTheme.Colors.bgRaised)
         .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.card))
         .overlay {
-            if !isActive {
-                RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
-                    .stroke(BinMateTheme.Colors.borderSubtle)
-            }
+            RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
+                .stroke(isActive ? BinMateTheme.Colors.bgBase.opacity(0.08)
+                                  : BinMateTheme.Colors.borderSubtle)
         }
     }
 
     // MARK: - Sub-views
 
     private var titleRow: some View {
-        HStack {
+        HStack(alignment: .top, spacing: BinMateTheme.Spacing.md) {
             Text(title)
-                .font(BinMateTheme.Typography.heading2)
+                .font(BinMateTheme.Typography.display)
                 .foregroundColor(isActive
                                  ? BinMateTheme.Colors.bgBase
                                  : BinMateTheme.Colors.textPrimary)
+                .lineLimit(2)
+                .minimumScaleFactor(Metrics.titleScale)
             Spacer()
             BinMateIconBadge(
                 systemName: isActive ? BinMateTheme.Symbols.binsOut : BinMateTheme.Symbols.bins,
                 foreground: isActive ? BinMateTheme.Colors.bgBase.opacity(0.72) : BinMateTheme.Colors.textMuted,
                 background: isActive ? BinMateTheme.Colors.bgBase.opacity(0.12) : BinMateTheme.Colors.bgSurface,
-                size: 34,
-                symbolSize: 15
+                size: Metrics.iconSize,
+                symbolSize: Metrics.symbolSize
             )
         }
     }
 
     private var typePills: some View {
-        HStack(spacing: BinMateTheme.Spacing.xs) {
+        HStack(spacing: BinMateTheme.Spacing.sm) {
             ForEach(types, id: \.self) { type in
                 BinTypePill(type: type, inverted: isActive)
             }
@@ -59,9 +70,10 @@ struct HeroCollectionCard: View {
 
     private var subtitleRow: some View {
         Text(subtitle)
-            .font(BinMateTheme.Typography.body)
+            .font(BinMateTheme.Typography.bodyLarge)
             .foregroundColor(isActive
                              ? BinMateTheme.Colors.bgBase.opacity(0.65)
                              : BinMateTheme.Colors.textSecondary)
+            .lineLimit(2)
     }
 }
