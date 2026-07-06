@@ -5,12 +5,14 @@ struct HomeView: View {
 
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel = HomeViewModel(repository: ScheduleRepository.shared)
+    @State private var showAddAddress = false
 
     private enum Metrics {
         static let dashboardChipHeight: CGFloat = 70
         static let dashboardIconSize: CGFloat = 30
         static let dashboardSymbolSize: CGFloat = 13
         static let dashboardValueScale: CGFloat = 0.82
+        static let emptyStateArtHeight: CGFloat = 96
     }
 
     var body: some View {
@@ -20,7 +22,7 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: BinMateTheme.Spacing.lg) {
-                        header
+                        HomeHeaderView(onAddAddress: { showAddAddress = true })
 
                         if viewModel.isLoading && viewModel.collections.isEmpty {
                             skeletonHeroCard
@@ -37,7 +39,7 @@ struct HomeView: View {
                         }
 
                         if !viewModel.listCollections.isEmpty {
-                            sectionHeader("Upcoming")
+                            sectionHeader("Upcoming", showsViewAll: true)
                             UpcomingScheduleList(collections: viewModel.listCollections)
                         }
 
@@ -61,11 +63,21 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .task {
+            // Re-runs on launch and whenever the user switches house.
+            .task(id: appState.primaryZoneId) {
                 await viewModel.loadSchedule(
                     zoneId: appState.primaryZoneId ?? "",
                     suburb: appState.primarySuburb ?? ""
                 )
+            }
+            .sheet(isPresented: $showAddAddress) {
+                AdditionalAddressSheet { result in
+                    appState.addAdditionalAddress(
+                        zoneId: result.zoneId,
+                        councilName: result.councilName,
+                        suburb: result.suburb
+                    )
+                }
             }
         }
     }
@@ -99,7 +111,7 @@ struct HomeView: View {
                     showsDisclosure: true
                 )
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.pressableCard)
         }
     }
 
@@ -153,43 +165,30 @@ struct HomeView: View {
 
     // MARK: - Section header
 
-    private func sectionHeader(_ title: String) -> some View {
+    private func sectionHeader(_ title: String, showsViewAll: Bool = false) -> some View {
         HStack {
             Text(title.uppercased())
                 .font(BinMateTheme.Typography.label)
                 .foregroundColor(BinMateTheme.Colors.textMuted)
                 .kerning(1.1)
             Spacer()
-        }
-        .padding(.top, BinMateTheme.Spacing.xs)
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
-            Text(todayLabel)
-                .font(BinMateTheme.Typography.label)
-                .foregroundColor(BinMateTheme.Colors.textMuted)
-                .kerning(1.5)
-
-            HStack(spacing: BinMateTheme.Spacing.xs) {
-                if let suburb = appState.primarySuburb, !suburb.isEmpty {
-                    Text(suburb)
-                        .font(BinMateTheme.Typography.heading2)
-                        .foregroundColor(BinMateTheme.Colors.textPrimary)
-                    Text("·")
-                        .font(BinMateTheme.Typography.heading2)
-                        .foregroundColor(BinMateTheme.Colors.textMuted)
+            if showsViewAll {
+                Button {
+                    NotificationCenter.default.post(name: .binMateShowCalendar, object: nil)
+                } label: {
+                    HStack(spacing: BinMateTheme.Spacing.xs) {
+                        Text("View all")
+                            .font(BinMateTheme.Typography.bodySmall)
+                        Image(systemName: BinMateTheme.Symbols.next)
+                            .font(.caption2)
+                            .accessibilityHidden(true)
+                    }
+                    .foregroundColor(BinMateTheme.Colors.lime)
                 }
-                if let council = appState.primaryCouncilName, !council.isEmpty {
-                    Text(shortCouncilName(council))
-                        .font(BinMateTheme.Typography.heading2)
-                        .foregroundColor(BinMateTheme.Colors.textSecondary)
-                        .lineLimit(1)
-                }
+                .accessibilityLabel("View full schedule in Calendar")
             }
         }
+        .padding(.top, BinMateTheme.Spacing.xs)
     }
 
     // MARK: - Skeleton (initial load placeholder)
@@ -204,13 +203,11 @@ struct HomeView: View {
 
     private var emptyState: some View {
         VStack(spacing: BinMateTheme.Spacing.md) {
-            BinMateIconBadge(
-                systemName: "calendar.badge.exclamationmark",
-                foreground: BinMateTheme.Colors.textMuted,
-                background: BinMateTheme.Colors.bgSurface,
-                size: 64,
-                symbolSize: 28
-            )
+            Image("BinMascot")
+                .resizable()
+                .scaledToFit()
+                .frame(height: Metrics.emptyStateArtHeight)
+                .accessibilityHidden(true)
             Text("No schedule loaded")
                 .font(BinMateTheme.Typography.heading3)
                 .foregroundColor(BinMateTheme.Colors.textPrimary)
@@ -246,20 +243,4 @@ struct HomeView: View {
         .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.md))
     }
 
-    // MARK: - Helpers
-
-    private var todayLabel: String {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE, d MMM"
-        return f.string(from: Date()).uppercased()
-    }
-
-    /// Strips "City of" / "Town of" / "Shire of" for compact display.
-    private func shortCouncilName(_ name: String) -> String {
-        let prefixes = ["City of ", "Town of ", "Shire of "]
-        for prefix in prefixes where name.hasPrefix(prefix) {
-            return String(name.dropFirst(prefix.count))
-        }
-        return name
-    }
 }

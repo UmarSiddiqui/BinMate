@@ -59,23 +59,30 @@ private struct MainTabView: View {
             HomeView()
                 .tabItem { Label("Home", systemImage: BinMateTheme.Symbols.home) }
                 .tag(Tab.home)
+                .brandTabBarBackground()
 
             CalendarView()
                 .tabItem { Label("Calendar", systemImage: BinMateTheme.Symbols.calendar) }
                 .tag(Tab.calendar)
+                .brandTabBarBackground()
 
             SitesView()
                 .tabItem { Label("Sites", systemImage: BinMateTheme.Symbols.sites) }
                 .tag(Tab.sites)
+                .brandTabBarBackground()
 
             SettingsView()
                 .tabItem { Label("Settings", systemImage: BinMateTheme.Symbols.settings) }
                 .tag(Tab.settings)
+                .brandTabBarBackground()
         }
         .tint(BinMateTheme.Colors.lime)
         .onReceive(NotificationCenter.default.publisher(for: .binMateNotificationTapped)) { _ in
             // Notification tap always opens the Home tab.
             selectedTab = .home
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .binMateShowCalendar)) { _ in
+            selectedTab = .calendar
         }
         .onReceive(NotificationCenter.default.publisher(for: .binMateNotificationDelivered)) { _ in
             appState.notificationReceivedCount += 1

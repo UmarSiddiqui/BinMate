@@ -29,13 +29,27 @@ struct HeroCollectionCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(BinMateTheme.Spacing.lg)
         .frame(minHeight: Metrics.cardMinimumHeight, alignment: .leading)
-        .background(isActive ? BinMateTheme.Colors.lime : BinMateTheme.Colors.bgRaised)
+        .background {
+            if isActive {
+                BinMateTheme.Gradients.heroActive
+            } else {
+                ZStack {
+                    BinMateTheme.Colors.bgRaised
+                    BinMateTheme.Gradients.cardSheen
+                }
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.card))
         .overlay {
             RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
                 .stroke(isActive ? BinMateTheme.Colors.bgBase.opacity(0.08)
                                   : BinMateTheme.Colors.borderSubtle)
         }
+        .shadow(
+            color: isActive ? BinMateTheme.Shadows.glowLimeColor : BinMateTheme.Shadows.cardColor,
+            radius: isActive ? BinMateTheme.Shadows.glowLimeRadius : BinMateTheme.Shadows.cardRadius,
+            y: isActive ? BinMateTheme.Shadows.glowLimeYOffset : BinMateTheme.Shadows.cardYOffset
+        )
     }
 
     // MARK: - Sub-views
@@ -63,8 +77,10 @@ struct HeroCollectionCard: View {
     private var typePills: some View {
         HStack(spacing: BinMateTheme.Spacing.sm) {
             ForEach(types, id: \.self) { type in
-                BinTypePill(type: type, inverted: isActive)
+                BinTypePill(type: type, inverted: isActive, showsLabel: true)
+                    .fixedSize()
             }
+            Spacer(minLength: 0)
         }
     }
 

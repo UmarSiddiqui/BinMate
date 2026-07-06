@@ -9,19 +9,45 @@ struct BinTypePill: View {
     /// When true (e.g. on the lime hero card) the pill renders dark-on-light.
     var inverted: Bool = false
 
+    /// When true, shows the bin name next to the icon (used on the hero card
+    /// where icon-only pills are too small to identify at a glance).
+    var showsLabel: Bool = false
+
+    private enum Metrics {
+        static let iconSize: CGFloat = 28
+        static let labeledIconSize: CGFloat = 32
+    }
+
     var body: some View {
-        Image(type.iconAssetName)
-            .resizable()
-            .renderingMode(.original)
-            .scaledToFit()
-            .frame(width: 28, height: 28)
-            .padding(BinMateTheme.Spacing.xs)
-            .background(backgroundColor)
-            .clipShape(Circle())
-            .accessibilityLabel(type.displayName)
+        HStack(spacing: BinMateTheme.Spacing.xs) {
+            Image(type.iconAssetName)
+                .resizable()
+                .renderingMode(.original)
+                .scaledToFit()
+                .frame(width: iconSize, height: iconSize)
+            if showsLabel {
+                Text(type.displayName)
+                    .font(BinMateTheme.Typography.bodySmall.weight(.semibold))
+                    .foregroundColor(labelColor)
+                    .lineLimit(1)
+            }
+        }
+        .padding(BinMateTheme.Spacing.xs)
+        .padding(.trailing, showsLabel ? BinMateTheme.Spacing.sm : 0)
+        .background(backgroundColor)
+        .clipShape(Capsule())
+        .accessibilityLabel(type.displayName)
     }
 
     // MARK: - Private
+
+    private var iconSize: CGFloat {
+        showsLabel ? Metrics.labeledIconSize : Metrics.iconSize
+    }
+
+    private var labelColor: Color {
+        inverted ? BinMateTheme.Colors.bgBase : BinMateTheme.Colors.textPrimary
+    }
 
     private var typeColor: Color {
         switch type {

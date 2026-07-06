@@ -22,6 +22,11 @@ struct UpcomingScheduleList: View {
             RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
                 .stroke(BinMateTheme.Colors.borderSubtle)
         }
+        .shadow(
+            color: BinMateTheme.Shadows.cardColor,
+            radius: BinMateTheme.Shadows.cardRadius,
+            y: BinMateTheme.Shadows.cardYOffset
+        )
     }
 
     private enum Metrics {

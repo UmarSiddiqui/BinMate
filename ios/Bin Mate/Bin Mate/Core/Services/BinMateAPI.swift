@@ -17,6 +17,13 @@ protocol BinMateAPIProtocol {
 
     /// Store or update the APNs push token for a user on the backend.
     func updatePushToken(userId: String, pushToken: String, notificationHour: Int?) async throws
+
+    /// Replace the full set of zones this device receives bin-day reminders for.
+    /// Returns the backend user ID so it can be persisted for later calls.
+    func syncUserZones(pushToken: String, userId: String?, zones: [UserZoneSyncEntry]) async throws -> String
+
+    /// Submit anonymous user feedback (missed bin, wrong data, UI, feature request).
+    func submitFeedback(category: String, message: String, zoneId: String?, appVersion: String?) async throws
 }
 
 // MARK: - Response types
@@ -26,6 +33,13 @@ struct RegisterAddressResponse: Decodable {
     let zoneId: String
     let councilName: String
     let nextCollections: [Collection]
+}
+
+/// One zone subscription sent to PUT /api/v1/user-zones.
+struct UserZoneSyncEntry: Encodable, Equatable {
+    let zoneId: String
+    let addressLabel: String
+    let isPrimary: Bool
 }
 
 // MARK: - Implementation
@@ -86,6 +100,28 @@ final class BinMateAPI: BinMateAPIProtocol {
         let _: OKResponse = try await put(
             path: "/api/v1/push-token",
             body: Body(userId: userId, pushToken: pushToken, notificationHour: notificationHour)
+        )
+    }
+
+    func syncUserZones(pushToken: String, userId: String?, zones: [UserZoneSyncEntry]) async throws -> String {
+        struct Body: Encodable { let pushToken: String; let userId: String?; let zones: [UserZoneSyncEntry] }
+        let response: SyncUserZonesResponse = try await put(
+            path: "/api/v1/user-zones",
+            body: Body(pushToken: pushToken, userId: userId, zones: zones)
+        )
+        return response.userId
+    }
+
+    func submitFeedback(category: String, message: String, zoneId: String?, appVersion: String?) async throws {
+        struct Body: Encodable {
+            let category: String
+            let message: String
+            let zoneId: String?
+            let appVersion: String?
+        }
+        let _: FeedbackResponse = try await post(
+            path: "/api/v1/feedback",
+            body: Body(category: category, message: message, zoneId: zoneId, appVersion: appVersion)
         )
     }
 
@@ -183,4 +219,14 @@ private struct ScheduleResponse: Decodable {
 
 private struct OKResponse: Decodable {
     let ok: Bool
+}
+
+private struct SyncUserZonesResponse: Decodable {
+    let ok: Bool
+    let userId: String
+}
+
+private struct FeedbackResponse: Decodable {
+    let ok: Bool
+    let id: String
 }

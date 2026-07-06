@@ -46,12 +46,16 @@ final class HomeViewModel: ObservableObject {
         }
     }
 
-    /// Kerbside collections shown in the upcoming list (everything after hero, up to 8 items).
+    /// Kerbside collections shown in the upcoming list — capped at 2 so the
+    /// dashboard chips stay visible without scrolling ("View all" opens Calendar).
     var listCollections: [Collection] {
         var all = kerbside
         if heroCollection != nil { all = Array(all.dropFirst()) }
-        return Array(all.prefix(8))
+        return Array(all.prefix(Self.upcomingListLimit))
     }
+
+    /// Maximum rows in the Home upcoming list.
+    private static let upcomingListLimit = 2
 
     /// Upcoming verge / bulk collection events.
     var vergeCollections: [Collection] {
@@ -81,7 +85,7 @@ final class HomeViewModel: ObservableObject {
     private let repository: ScheduleRepositoryProtocol
 
     private var kerbside: [Collection] {
-        collections.filter { $0.eventType == .kerbside }
+        collections.filter { $0.eventType == .kerbside && (daysUntil($0.date) ?? -1) >= 0 }
     }
 
     // MARK: - Init

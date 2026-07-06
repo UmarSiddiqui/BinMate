@@ -75,6 +75,36 @@ enum BinMateTheme {
         static let caption   = Font.custom("DM Sans", size: 11)
     }
 
+    // MARK: - Gradients
+
+    enum Gradients {
+        /// Lime hero card fill — light top-leading into deeper lime for depth.
+        static let heroActive = LinearGradient(
+            colors: [Color(hex: "#CDF876"), Colors.lime, Color(hex: "#A3DC3E")],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        /// Barely-there top sheen for dark raised cards.
+        static let cardSheen = LinearGradient(
+            colors: [Color.white.opacity(0.05), Color.white.opacity(0)],
+            startPoint: .top,
+            endPoint: .center
+        )
+    }
+
+    // MARK: - Shadows
+
+    enum Shadows {
+        /// Soft lime glow behind active/CTA surfaces.
+        static let glowLimeColor  = Colors.lime.opacity(0.28)
+        static let glowLimeRadius: CGFloat = 22
+        static let glowLimeYOffset: CGFloat = 10
+        /// Ambient depth for dark raised cards.
+        static let cardColor  = Color.black.opacity(0.35)
+        static let cardRadius: CGFloat = 14
+        static let cardYOffset: CGFloat = 6
+    }
+
     // MARK: - Spacing
 
     enum Spacing {

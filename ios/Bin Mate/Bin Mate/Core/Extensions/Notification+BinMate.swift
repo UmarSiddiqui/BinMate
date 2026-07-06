@@ -10,4 +10,8 @@ extension Notification.Name {
     /// Posted when a BinMate notification is delivered (foreground or background).
     /// Used to increment the notification count for the App Store review prompt.
     static let binMateNotificationDelivered = Notification.Name("app.binmate.notificationDelivered")
+
+    /// Posted when the user asks to see the full schedule (Home "View all").
+    /// Observed by MainTabView to switch to the Calendar tab.
+    static let binMateShowCalendar = Notification.Name("app.binmate.showCalendar")
 }

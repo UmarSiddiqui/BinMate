@@ -118,6 +118,7 @@ final class SettingsViewModel: ObservableObject {
         content.title     = "Bins out tonight"
         content.body      = "Your general waste and recycling bins go out tomorrow morning."
         content.sound     = .default
+        content.categoryIdentifier = NotificationService.binReminderCategory
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
         let request = UNNotificationRequest(
             identifier: "binmate.test.\(UUID().uuidString)",

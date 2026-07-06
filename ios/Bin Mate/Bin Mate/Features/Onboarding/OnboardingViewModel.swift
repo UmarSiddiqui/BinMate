@@ -73,7 +73,9 @@ final class OnboardingViewModel: ObservableObject {
         isResolvingAddress = true
         defer { isResolvingAddress = false }
 
-        resolvedSuburb = completion.subtitle.components(separatedBy: " ").first ?? ""
+        // Subtitle is "Wembley, WA, Australia" — take the suburb segment before the
+        // first comma so multi-word suburbs (e.g. "Mount Lawley") survive intact.
+        resolvedSuburb = (completion.subtitle.components(separatedBy: ",").first ?? "").sanitizedSuburb
 
         // Resolve the completion to precise MapKit coordinates so we avoid Nominatim
         // road-centroid issues (e.g. Stirling API uses point-in-polygon against parcels).

@@ -119,9 +119,15 @@ struct NotificationSetupView: View {
                 .foregroundColor(BinMateTheme.Colors.bgBase)
                 .frame(maxWidth: .infinity)
                 .padding(BinMateTheme.Spacing.md)
-                .background(BinMateTheme.Colors.lime)
+                .background(BinMateTheme.Gradients.heroActive)
                 .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.md))
+                .shadow(
+                    color: BinMateTheme.Shadows.glowLimeColor,
+                    radius: BinMateTheme.Shadows.glowLimeRadius,
+                    y: BinMateTheme.Shadows.glowLimeYOffset
+                )
             }
+            .buttonStyle(.pressableCard)
             .accessibilityLabel("Turn on bin day reminders")
 
             Button {

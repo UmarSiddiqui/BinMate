@@ -24,6 +24,10 @@ final class AppState: ObservableObject {
     @Published private(set) var primaryCouncilName: String?
     @Published private(set) var additionalAddresses: [SavedAddress]
 
+    /// Zones the user has muted bin reminders for. Muted zones stay saved and
+    /// switchable — they're just excluded from the backend reminder sync.
+    @Published private(set) var mutedZoneIds: Set<String>
+
     /// Incremented each time a notification is delivered. Used to trigger App Store review request.
     @Published var notificationReceivedCount: Int
 
@@ -35,8 +39,12 @@ final class AppState: ObservableObject {
         static let primarySuburb      = "appstate.suburb"
         static let primaryCouncilName = "appstate.council_name"
         static let additionalAddresses = "appstate.additional_addresses"
+        static let mutedZoneIds       = "appstate.muted_zone_ids"
         static let notificationCount  = "appstate.notification_count"
     }
+
+    /// Backend caps zone subscriptions per device (user_zones sync endpoint).
+    static let maxSavedAddresses = 5
 
     // MARK: - Init
 
@@ -47,6 +55,7 @@ final class AppState: ObservableObject {
         primarySuburb           = d.string(forKey: Keys.primarySuburb)
         primaryCouncilName      = d.string(forKey: Keys.primaryCouncilName)
         additionalAddresses     = Self.loadAdditionalAddresses(from: d)
+        mutedZoneIds            = Self.loadMutedZoneIds(from: d)
         notificationReceivedCount = d.integer(forKey: Keys.notificationCount)
     }
 
@@ -55,25 +64,30 @@ final class AppState: ObservableObject {
     /// Marks onboarding complete and persists the user's primary zone.
     /// Called by OnboardingView once all three steps finish.
     func completeOnboarding(zoneId: String, councilName: String, suburb: String) {
+        let cleanSuburb      = suburb.sanitizedSuburb
         primaryZoneId        = zoneId
         primaryCouncilName   = councilName
-        primarySuburb        = suburb
+        primarySuburb        = cleanSuburb
         isOnboardingComplete = true
         let d = UserDefaults.standard
-        d.set(zoneId,      forKey: Keys.primaryZoneId)
-        d.set(councilName, forKey: Keys.primaryCouncilName)
-        d.set(suburb,      forKey: Keys.primarySuburb)
+        d.set(zoneId,       forKey: Keys.primaryZoneId)
+        d.set(councilName,  forKey: Keys.primaryCouncilName)
+        d.set(cleanSuburb,  forKey: Keys.primarySuburb)
         d.set(true,        forKey: Keys.onboardingComplete)
         Logger.app.info("Onboarding complete — zone \(zoneId)")
+        ZoneSyncService.shared.requestSync()
     }
 
-    /// Saves an additional address zone. Existing zones are not duplicated.
+    /// Saves an additional address zone. Existing zones are not duplicated,
+    /// and the total is capped at `maxSavedAddresses` (backend sync limit).
     func addAdditionalAddress(zoneId: String, councilName: String, suburb: String) {
         guard zoneId != primaryZoneId else { return }
-        let address = SavedAddress(zoneId: zoneId, suburb: suburb, councilName: councilName)
+        guard additionalAddresses.count + 1 < Self.maxSavedAddresses else { return }
+        let address = SavedAddress(zoneId: zoneId, suburb: suburb.sanitizedSuburb, councilName: councilName)
         if !additionalAddresses.contains(address) {
             additionalAddresses.append(address)
             persistAdditionalAddresses()
+            ZoneSyncService.shared.requestSync()
         }
     }
 
@@ -90,12 +104,33 @@ final class AppState: ObservableObject {
         }
         persistPrimaryAddress()
         persistAdditionalAddresses()
+        ZoneSyncService.shared.requestSync()
     }
 
     /// Removes an additional saved address.
     func removeAdditionalAddress(_ address: SavedAddress) {
         additionalAddresses.removeAll { $0.zoneId == address.zoneId }
+        mutedZoneIds.remove(address.zoneId)
         persistAdditionalAddresses()
+        persistMutedZoneIds()
+        ZoneSyncService.shared.requestSync()
+    }
+
+    /// Returns whether bin reminders are on for a zone.
+    func remindersEnabled(forZone zoneId: String) -> Bool {
+        !mutedZoneIds.contains(zoneId)
+    }
+
+    /// Mutes or unmutes bin reminders for one saved house and re-syncs the backend.
+    func setReminders(enabled: Bool, forZone zoneId: String) {
+        if enabled {
+            mutedZoneIds.remove(zoneId)
+        } else {
+            mutedZoneIds.insert(zoneId)
+        }
+        persistMutedZoneIds()
+        ZoneSyncService.shared.requestSync()
+        Logger.app.info("Reminders \(enabled ? "enabled" : "muted") for zone \(zoneId)")
     }
 
     /// Clears address data and restarts onboarding flow. Called from Settings "Change address".
@@ -104,20 +139,43 @@ final class AppState: ObservableObject {
         primarySuburb        = nil
         primaryCouncilName   = nil
         additionalAddresses  = []
+        mutedZoneIds         = []
         isOnboardingComplete = false
         let d = UserDefaults.standard
         d.removeObject(forKey: Keys.primaryZoneId)
         d.removeObject(forKey: Keys.primarySuburb)
         d.removeObject(forKey: Keys.primaryCouncilName)
         d.removeObject(forKey: Keys.additionalAddresses)
+        d.removeObject(forKey: Keys.mutedZoneIds)
         d.removeObject(forKey: Keys.onboardingComplete)
         Logger.app.info("Address reset — returning to onboarding")
+        ZoneSyncService.shared.requestSync()
     }
 
     /// Increments the notification received count and persists it.
     func recordNotificationReceived() {
         notificationReceivedCount += 1
         UserDefaults.standard.set(notificationReceivedCount, forKey: Keys.notificationCount)
+    }
+
+    // MARK: - Zone sync source
+
+    /// Zone entries for backend reminder sync, built from persisted state so
+    /// ZoneSyncService can run even before an AppState instance exists
+    /// (e.g. when the APNs token arrives at launch). Primary zone comes first;
+    /// muted zones are excluded so the cron never notifies them.
+    static func persistedZoneSyncEntries() -> [UserZoneSyncEntry] {
+        let d = UserDefaults.standard
+        let muted = loadMutedZoneIds(from: d)
+        var entries: [UserZoneSyncEntry] = []
+        if let zoneId = d.string(forKey: Keys.primaryZoneId) {
+            let label = d.string(forKey: Keys.primarySuburb) ?? "Home"
+            entries.append(UserZoneSyncEntry(zoneId: zoneId, addressLabel: label, isPrimary: true))
+        }
+        entries += loadAdditionalAddresses(from: d).map {
+            UserZoneSyncEntry(zoneId: $0.zoneId, addressLabel: $0.suburb, isPrimary: false)
+        }
+        return entries.filter { !muted.contains($0.zoneId) }
     }
 
     // MARK: - Persistence
@@ -147,5 +205,18 @@ final class AppState: ObservableObject {
             return []
         }
         return addresses
+    }
+
+    private func persistMutedZoneIds() {
+        guard let data = try? JSONEncoder().encode(Array(mutedZoneIds)) else { return }
+        UserDefaults.standard.set(data, forKey: Keys.mutedZoneIds)
+    }
+
+    private static func loadMutedZoneIds(from defaults: UserDefaults) -> Set<String> {
+        guard let data = defaults.data(forKey: Keys.mutedZoneIds),
+              let ids = try? JSONDecoder().decode([String].self, from: data) else {
+            return []
+        }
+        return Set(ids)
     }
 }

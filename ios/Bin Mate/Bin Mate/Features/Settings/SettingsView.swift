@@ -9,6 +9,7 @@ struct SettingsView: View {
     @State private var showResetConfirm   = false
     @State private var showBinGuide       = false
     @State private var showAddAddress     = false
+    @State private var showFeedback       = false
 
     var body: some View {
         NavigationStack {
@@ -36,6 +37,7 @@ struct SettingsView: View {
             }
         }
         .sheet(isPresented: $showBinGuide) { NavigationStack { BinGuideView() } }
+        .sheet(isPresented: $showFeedback) { FeedbackSheet() }
         .sheet(isPresented: $showAddAddress) {
             AdditionalAddressSheet { result in
                 appState.addAdditionalAddress(
@@ -52,14 +54,19 @@ struct SettingsView: View {
     private var addressSection: some View {
         Section("Address") {
             if let suburb = appState.primarySuburb,
-               let council = appState.primaryCouncilName {
-                VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
-                    Text(suburb)
-                        .font(BinMateTheme.Typography.body)
-                        .foregroundStyle(BinMateTheme.Colors.textPrimary)
-                    Text(council)
-                        .font(BinMateTheme.Typography.bodySmall)
-                        .foregroundStyle(BinMateTheme.Colors.textSecondary)
+               let council = appState.primaryCouncilName,
+               let zoneId = appState.primaryZoneId {
+                HStack {
+                    VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
+                        Text(suburb)
+                            .font(BinMateTheme.Typography.body)
+                            .foregroundStyle(BinMateTheme.Colors.textPrimary)
+                        Text(council)
+                            .font(BinMateTheme.Typography.bodySmall)
+                            .foregroundStyle(BinMateTheme.Colors.textSecondary)
+                    }
+                    Spacer()
+                    reminderToggle(zoneId: zoneId, suburb: suburb)
                 }
                 .padding(.vertical, BinMateTheme.Spacing.xs)
             } else {
@@ -71,25 +78,49 @@ struct SettingsView: View {
         }
     }
 
+    /// Bell toggle controlling reminders for one house. Muted zones are dropped
+    /// from the backend sync, so the nightly cron skips them.
+    private func reminderToggle(zoneId: String, suburb: String) -> some View {
+        let isOn = appState.remindersEnabled(forZone: zoneId)
+        return HStack(spacing: BinMateTheme.Spacing.sm) {
+            Image(systemName: isOn ? BinMateTheme.Symbols.bell : "bell.slash")
+                .font(BinMateTheme.Typography.bodySmall)
+                .foregroundStyle(isOn ? BinMateTheme.Colors.lime : BinMateTheme.Colors.textMuted)
+                .accessibilityHidden(true)
+            Toggle(isOn: Binding(
+                get: { appState.remindersEnabled(forZone: zoneId) },
+                set: { appState.setReminders(enabled: $0, forZone: zoneId) }
+            )) { EmptyView() }
+            .labelsHidden()
+            .tint(BinMateTheme.Colors.lime)
+        }
+        .accessibilityLabel("Bin reminders for \(suburb)")
+    }
+
     // MARK: - Additional addresses
 
     private var additionalAddressesSection: some View {
         Section {
             ForEach(appState.additionalAddresses) { address in
-                Button {
-                    appState.makePrimary(address)
-                } label: {
-                    VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
-                        Text(address.suburb)
-                            .font(BinMateTheme.Typography.body)
-                            .foregroundStyle(BinMateTheme.Colors.textPrimary)
-                        Text(address.councilName)
-                            .font(BinMateTheme.Typography.bodySmall)
-                            .foregroundStyle(BinMateTheme.Colors.textSecondary)
-                        Text("Tap to make primary")
-                            .font(BinMateTheme.Typography.label)
-                            .foregroundStyle(BinMateTheme.Colors.lime)
+                HStack {
+                    Button {
+                        appState.makePrimary(address)
+                    } label: {
+                        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
+                            Text(address.suburb)
+                                .font(BinMateTheme.Typography.body)
+                                .foregroundStyle(BinMateTheme.Colors.textPrimary)
+                            Text(address.councilName)
+                                .font(BinMateTheme.Typography.bodySmall)
+                                .foregroundStyle(BinMateTheme.Colors.textSecondary)
+                            Text("Tap to switch")
+                                .font(BinMateTheme.Typography.label)
+                                .foregroundStyle(BinMateTheme.Colors.lime)
+                        }
                     }
+                    .buttonStyle(.plain)
+                    Spacer()
+                    reminderToggle(zoneId: address.zoneId, suburb: address.suburb)
                 }
                 .swipeActions {
                     Button("Remove", role: .destructive) {
@@ -98,14 +129,16 @@ struct SettingsView: View {
                 }
             }
 
-            Button { showAddAddress = true } label: {
-                Label("Add address", systemImage: "plus.circle")
-                    .foregroundStyle(BinMateTheme.Colors.lime)
+            if appState.additionalAddresses.count + 1 < AppState.maxSavedAddresses {
+                Button { showAddAddress = true } label: {
+                    Label("Add address", systemImage: "plus.circle")
+                        .foregroundStyle(BinMateTheme.Colors.lime)
+                }
             }
         } header: {
             Text("Additional Addresses")
         } footer: {
-            Text("Only suburb, council, and zone are saved. Street addresses are not stored.")
+            Text("Use the bell to mute reminders per address (max \(AppState.maxSavedAddresses) addresses). Only suburb, council, and zone are saved — street addresses are not stored.")
         }
     }
 
@@ -175,6 +208,10 @@ struct SettingsView: View {
         Section("About") {
             Button { showBinGuide = true } label: {
                 Label("Bin guide", systemImage: "info.circle")
+                    .foregroundStyle(BinMateTheme.Colors.textPrimary)
+            }
+            Button { showFeedback = true } label: {
+                Label("Send feedback", systemImage: "bubble.left.and.exclamationmark.bubble.right")
                     .foregroundStyle(BinMateTheme.Colors.textPrimary)
             }
             LabeledContent(
