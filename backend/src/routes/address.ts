@@ -15,6 +15,10 @@ const REGISTER_ADDRESS_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RegisterBody = z.object({
   address: z.string().min(5).max(200),
   pushToken: z.string().optional(),
+  /** MapKit-resolved coordinates. When present the backend skips Nominatim geocoding,
+   *  which avoids road-centroid precision issues for councils using point-in-polygon. */
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
 });
 
 /**
@@ -43,8 +47,9 @@ export function createAddressRouter(): Router {
         return;
       }
 
-      const { address, pushToken } = parsed.data;
-      const resolution = await resolveAddress(address);
+      const { address, pushToken, lat, lng } = parsed.data;
+      const coordinate = lat !== undefined && lng !== undefined ? { lat, lng } : undefined;
+      const resolution = await resolveAddress(address, coordinate);
       if ('error' in resolution) {
         const status = resolution.error === 'council_not_supported' ? 422 : 400;
         res.status(status).json({ error: resolution.message });

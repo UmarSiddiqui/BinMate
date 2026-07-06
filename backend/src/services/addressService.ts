@@ -1,4 +1,4 @@
-import { geocodeAddress } from './geocoding';
+import { geocodeAddress, reverseGeocode } from './geocoding';
 import { findCachedAddress, cacheAddress } from '../repositories/addressRepository';
 import { findZonesByCouncil, findZoneByCode } from '../repositories/zoneRepository';
 import prisma from '../utils/prisma';
@@ -90,7 +90,10 @@ async function matchZone(
  *   4. Generic council name match — fallback for councils without a scraper yet
  */
 export async function resolveAddress(
-  address: string
+  address: string,
+  /** MapKit-resolved coordinates. When provided, Nominatim geocoding is skipped entirely,
+   *  which prevents road-centroid imprecision for councils using point-in-polygon lookups. */
+  clientCoordinate?: { lat: number; lng: number }
 ): Promise<AddressResolution | AddressError> {
   // 1. Cache hit
   const cached = await findCachedAddress(address);
@@ -111,13 +114,28 @@ export async function resolveAddress(
     }
   }
 
-  // 2. Geocode
-  const geo = await geocodeAddress(address);
-  if (!geo) {
-    return { error: 'geocoding_failed', message: 'Could not geocode that address' };
-  }
-  if (!isInPerth(geo.lat, geo.lng)) {
-    return { error: 'address_not_found', message: 'Address is outside the Perth metro area' };
+  // 2. Geocode — use client-supplied MapKit coordinates when available to avoid
+  //    Nominatim road-centroid imprecision (critical for Stirling point-in-polygon).
+  let geo: { lat: number; lng: number; suburb: string } | null = null;
+  if (clientCoordinate) {
+    if (!isInPerth(clientCoordinate.lat, clientCoordinate.lng)) {
+      return { error: 'address_not_found', message: 'Address is outside the Perth metro area' };
+    }
+    const rev = await reverseGeocode(clientCoordinate.lat, clientCoordinate.lng);
+    geo = {
+      lat: clientCoordinate.lat,
+      lng: clientCoordinate.lng,
+      suburb: rev?.suburb ?? address.split(',')[1]?.trim() ?? '',
+    };
+  } else {
+    const nominatim = await geocodeAddress(address);
+    if (!nominatim) {
+      return { error: 'geocoding_failed', message: 'Could not geocode that address' };
+    }
+    if (!isInPerth(nominatim.lat, nominatim.lng)) {
+      return { error: 'address_not_found', message: 'Address is outside the Perth metro area' };
+    }
+    geo = nominatim;
   }
 
   // 3. Scraper-based resolution — check each registered scraper
@@ -125,8 +143,9 @@ export async function resolveAddress(
   for (const [councilSlug, entry] of Object.entries(SCRAPER_REGISTRY)) {
     if (!entry.canHandle(suburbLower)) continue;
 
-    // Scraper claims this suburb — call it for the definitive zone code
-    const resolution = await entry.scraper.resolveAddress(address);
+    // Scraper claims this suburb — call it for the definitive zone code.
+    // Forward client coordinates so scrapers that geocode internally can skip Nominatim.
+    const resolution = await entry.scraper.resolveAddress(address, clientCoordinate);
     if (resolution.error || !resolution.zoneCode) {
       logger.warn('Scraper canHandle=true but resolveAddress failed', {
         councilSlug,

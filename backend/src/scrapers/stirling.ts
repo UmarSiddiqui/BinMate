@@ -221,16 +221,21 @@ class StirlingScaper implements CouncilScraper {
    * misses all property polygons, the API returns empty and this method returns
    * an error. House numbers on residential streets resolve reliably.
    */
-  async resolveAddress(address: string): Promise<ZoneResolution> {
+  async resolveAddress(
+    address: string,
+    coordinate?: { lat: number; lng: number },
+  ): Promise<ZoneResolution> {
     try {
-      const geo = await geocodeAddress(address);
-      if (!geo) {
+      // Use client-supplied MapKit coordinates when available — avoids the Nominatim
+      // road-centroid problem for addresses on major roads (e.g. Herdsman Parade).
+      const coords = coordinate ?? await geocodeAddress(address);
+      if (!coords) {
         return {
           zoneCode: '', zoneName: '', councilSlug: this.councilSlug,
           error: 'Could not geocode address',
         };
       }
-      return stirlingResolveCoordinates(geo.lat, geo.lng);
+      return stirlingResolveCoordinates(coords.lat, coords.lng);
     } catch (err) {
       logger.error('Stirling resolveAddress error', { err });
       return {

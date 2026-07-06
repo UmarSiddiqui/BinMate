@@ -30,8 +30,9 @@ export interface CouncilScraper {
   readonly councilSlug: string;
   readonly councilName: string;
 
-  /** Resolve a street address to a collection zone. Never throws — errors in ZoneResolution.error. */
-  resolveAddress(address: string): Promise<ZoneResolution>;
+  /** Resolve a street address to a collection zone. Never throws — errors in ZoneResolution.error.
+   *  Pass `coordinate` (MapKit-resolved) to bypass internal Nominatim geocoding. */
+  resolveAddress(address: string, coordinate?: { lat: number; lng: number }): Promise<ZoneResolution>;
 
   /** Return the full schedule data for a zone by its zone code. */
   fetchSchedule(zoneCode: string): Promise<ZoneScheduleData>;

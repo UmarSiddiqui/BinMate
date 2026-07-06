@@ -1,0 +1,8 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Green waste bin icon">
+  <rect x="36" y="34" width="56" height="10" rx="5" fill="#4CAF50"/>
+  <rect x="40" y="44" width="48" height="60" rx="8" fill="#16331A" stroke="#4CAF50" stroke-width="4"/>
+  <circle cx="50" cy="106" r="6" fill="#4CAF50"/>
+  <circle cx="78" cy="106" r="6" fill="#4CAF50"/>
+  <path d="M64 85c13 0 20-8 20-18-10 0-17 3-20 9-3-6-10-9-20-9 0 10 7 18 20 18z" fill="#4CAF50"/>
+  <path d="M64 62v24" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"/>
+</svg>
