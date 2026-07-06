@@ -11,7 +11,7 @@ services:
     # Backend lives in backend/ subdirectory
     rootDir: backend
 
-    buildCommand: npm ci && npm run db:generate && ./node_modules/.bin/tsc --ignoreDeprecations 5.0
+    buildCommand: npm ci --include=dev && npm run db:generate && npm run build
     startCommand: npm run start:render
 
     healthCheckPath: /api/v1/health
