@@ -33,7 +33,7 @@ struct HeroCollectionCard: View {
 
     private var titleRow: some View {
         HStack {
-            Text(title.uppercased())
+            Text(title)
                 .font(BinMateTheme.Typography.heading2)
                 .foregroundColor(isActive
                                  ? BinMateTheme.Colors.bgBase

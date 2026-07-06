@@ -21,14 +21,10 @@ struct NotificationSetupView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            Text("STEP 3 OF 3")
-                .font(BinMateTheme.Typography.label)
-                .foregroundColor(BinMateTheme.Colors.lime)
-                .kerning(1.5)
             Text("Never miss a bin day.")
                 .font(BinMateTheme.Typography.heading1)
                 .foregroundColor(BinMateTheme.Colors.textPrimary)
-            Text("We'll remind you the evening before collection day.")
+            Text("Evening reminders, automatically adjusted for public holidays.")
                 .font(BinMateTheme.Typography.body)
                 .foregroundColor(BinMateTheme.Colors.textSecondary)
         }
@@ -78,31 +74,32 @@ struct NotificationSetupView: View {
         .accessibilityLabel("Example notification: Bins out tonight. General and Recycling due out by 6am tomorrow.")
     }
 
-    // MARK: - Feature bullets
+    // MARK: - Feature icons
 
     private var explanation: some View {
-        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            featureBullet(icon: "clock.fill",
-                          text: "Reminder at 6pm the evening before — adjust anytime in Settings.")
-            featureBullet(icon: "calendar.badge.exclamationmark",
-                          text: "Automatically adjusts for WA public holidays.")
-            featureBullet(icon: "bell.slash",
-                          text: "No spam. One notification per collection day, nothing else.")
+        HStack(spacing: BinMateTheme.Spacing.lg) {
+            featureIcon(icon: "clock.fill", label: "6pm reminder")
+            featureIcon(icon: "calendar.badge.exclamationmark", label: "Holiday aware")
+            featureIcon(icon: "bell.slash", label: "No spam")
         }
+        .frame(maxWidth: .infinity)
+        .padding(BinMateTheme.Spacing.md)
+        .background(BinMateTheme.Colors.bgRaised)
+        .clipShape(RoundedRectangle(cornerRadius: BinMateTheme.Radius.lg))
     }
 
-    private func featureBullet(icon: String, text: String) -> some View {
-        HStack(alignment: .top, spacing: BinMateTheme.Spacing.sm) {
+    private func featureIcon(icon: String, label: String) -> some View {
+        VStack(spacing: BinMateTheme.Spacing.xs) {
             Image(systemName: icon)
+                .font(.title3)
                 .foregroundColor(BinMateTheme.Colors.lime)
-                .frame(width: 20)
-                .padding(.top, 1)
-                .accessibilityHidden(true)
-            Text(text)
-                .font(BinMateTheme.Typography.body)
+                .frame(width: 32, height: 32)
+            Text(label)
+                .font(BinMateTheme.Typography.caption)
                 .foregroundColor(BinMateTheme.Colors.textSecondary)
-                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.center)
         }
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Actions

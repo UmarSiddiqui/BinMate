@@ -10,21 +10,15 @@ struct BinTypePill: View {
     var inverted: Bool = false
 
     var body: some View {
-        HStack(spacing: BinMateTheme.Spacing.xs) {
-            Image(type.iconAssetName)
-                .resizable()
-                .renderingMode(.original)
-                .scaledToFit()
-                .frame(width: 20, height: 20)
-            Text(type.displayName)
-                .font(BinMateTheme.Typography.label)
-                .kerning(0.5)
-        }
-        .foregroundColor(foregroundColor)
-        .padding(.horizontal, BinMateTheme.Spacing.sm)
-        .padding(.vertical, BinMateTheme.Spacing.xs)
-        .background(backgroundColor)
-        .clipShape(Capsule())
+        Image(type.iconAssetName)
+            .resizable()
+            .renderingMode(.original)
+            .scaledToFit()
+            .frame(width: 28, height: 28)
+            .padding(BinMateTheme.Spacing.xs)
+            .background(backgroundColor)
+            .clipShape(Circle())
+            .accessibilityLabel(type.displayName)
     }
 
     // MARK: - Private
@@ -36,10 +30,6 @@ struct BinTypePill: View {
         case .greenWaste: return BinMateTheme.Colors.binGreen
         case .fogo:       return BinMateTheme.Colors.lime
         }
-    }
-
-    private var foregroundColor: Color {
-        inverted ? BinMateTheme.Colors.bgBase : typeColor
     }
 
     private var backgroundColor: Color {

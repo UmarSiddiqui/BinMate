@@ -22,15 +22,9 @@ struct CouncilConfirmView: View {
     // MARK: - Header
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            Text("STEP 2 OF 3")
-                .font(BinMateTheme.Typography.label)
-                .foregroundColor(BinMateTheme.Colors.lime)
-                .kerning(1.5)
-            Text("Is this your council?")
-                .font(BinMateTheme.Typography.heading1)
-                .foregroundColor(BinMateTheme.Colors.textPrimary)
-        }
+        Text("Is this your council?")
+            .font(BinMateTheme.Typography.heading1)
+            .foregroundColor(BinMateTheme.Colors.textPrimary)
     }
 
     // MARK: - Council card
@@ -77,11 +71,6 @@ struct CouncilConfirmView: View {
 
     private func nextCollectionCard(_ collection: Collection) -> some View {
         VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            Text("NEXT COLLECTION")
-                .font(BinMateTheme.Typography.label)
-                .foregroundColor(BinMateTheme.Colors.textMuted)
-                .kerning(1.5)
-
             HStack(spacing: BinMateTheme.Spacing.sm) {
                 VStack(alignment: .leading, spacing: BinMateTheme.Spacing.xs) {
                     Text(formattedDate(collection.date))
@@ -96,7 +85,7 @@ struct CouncilConfirmView: View {
 
                 HStack(spacing: BinMateTheme.Spacing.xs) {
                     ForEach(collection.types, id: \.self) { type in
-                        binTypePill(type)
+                        BinTypePill(type: type)
                     }
                 }
             }
@@ -107,26 +96,6 @@ struct CouncilConfirmView: View {
         .overlay {
             RoundedRectangle(cornerRadius: BinMateTheme.Radius.card)
                 .stroke(BinMateTheme.Colors.borderSubtle)
-        }
-    }
-
-    private func binTypePill(_ type: BinType) -> some View {
-        Text(type.displayName)
-            .font(BinMateTheme.Typography.label)
-            .foregroundColor(binColor(type))
-            .kerning(0.5)
-            .padding(.horizontal, BinMateTheme.Spacing.sm)
-            .padding(.vertical, BinMateTheme.Spacing.xs)
-            .background(binColor(type).opacity(0.12))
-            .clipShape(Capsule())
-    }
-
-    private func binColor(_ type: BinType) -> Color {
-        switch type {
-        case .general:    return BinMateTheme.Colors.binRed
-        case .recycling:  return BinMateTheme.Colors.binYellow
-        case .greenWaste: return BinMateTheme.Colors.binGreen
-        case .fogo:       return BinMateTheme.Colors.lime
         }
     }
 

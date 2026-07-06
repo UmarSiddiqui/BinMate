@@ -7,11 +7,6 @@ struct UpcomingScheduleList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: BinMateTheme.Spacing.sm) {
-            Text("UPCOMING")
-                .font(BinMateTheme.Typography.label)
-                .foregroundColor(BinMateTheme.Colors.textMuted)
-                .kerning(1.5)
-
             VStack(spacing: 0) {
                 ForEach(Array(collections.enumerated()), id: \.offset) { index, collection in
                     CollectionRow(collection: collection)
