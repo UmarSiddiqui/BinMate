@@ -53,7 +53,7 @@ export async function getSchedule(
  * Used by the nightly notification cron.
  */
 export async function getZonesCollectingTomorrow(): Promise<
-  Array<{ zoneId: string; collections: Collection[] }>
+  Array<{ zoneId: string; councilName: string; collections: Collection[] }>
 > {
   const tomorrow = new Date();
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
@@ -67,12 +67,12 @@ export async function getZonesCollectingTomorrow(): Promise<
   // Fetch all zones and check each one — suitable for current zone count (<200)
   const zones = await listAllZones();
 
-  const result: Array<{ zoneId: string; collections: Collection[] }> = [];
+  const result: Array<{ zoneId: string; councilName: string; collections: Collection[] }> = [];
 
   for (const zone of zones) {
     const collections = computeSchedule(zone, holidays, tomorrow, 1, { councilSlug: zone.council.slug });
     if (collections.length > 0 && collections[0].date === tomorrow.toISOString().slice(0, 10)) {
-      result.push({ zoneId: zone.id, collections });
+      result.push({ zoneId: zone.id, councilName: zone.council.name, collections });
     }
   }
 

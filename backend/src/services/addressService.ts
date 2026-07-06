@@ -21,6 +21,24 @@ export interface AddressError {
   message: string;
 }
 
+// ─── Address normalisation ────────────────────────────────────────────────────
+
+/**
+ * Strip an Australian unit/apartment prefix before passing an address to a
+ * geocoder. Geocoders handle building-level addresses far more reliably than
+ * unit-level ones, and coordinates are the same for all units in a building.
+ *
+ * Examples:
+ *   "14S/125 Herdsman Pde, Wembley WA" → "125 Herdsman Pde, Wembley WA"
+ *   "Unit 5/42 Smith St, Perth WA"     → "42 Smith St, Perth WA"
+ */
+function stripUnitPrefix(address: string): string {
+  return address
+    .replace(/^\w+\//, '')                                                   // "14S/125..." → "125..."
+    .replace(/^(unit|apt|apartment|flat|lot|shop|suite|level)\s+\w+[,/\s]+/i, '') // "Unit 5, ..."
+    .trim();
+}
+
 // ─── Perth LGA bounding box (rough, for fast pre-filter) ─────────────────────
 
 const PERTH_BOUNDS = { latMin: -32.8, latMax: -31.4, lngMin: 115.6, lngMax: 116.3 };
@@ -122,13 +140,16 @@ export async function resolveAddress(
       return { error: 'address_not_found', message: 'Address is outside the Perth metro area' };
     }
     const rev = await reverseGeocode(clientCoordinate.lat, clientCoordinate.lng);
+    // Fallback suburb comes from the address string ("125 Herdsman Pde, Wembley WA 6014"
+    // → "Wembley"). Strip state/postcode so the registry's exact-match canHandle works.
+    const fallbackSuburb = address.split(',')[1]?.trim().replace(/\s+WA(\s+\d{4})?\s*$/i, '') ?? '';
     geo = {
       lat: clientCoordinate.lat,
       lng: clientCoordinate.lng,
-      suburb: rev?.suburb ?? address.split(',')[1]?.trim() ?? '',
+      suburb: rev?.suburb ?? fallbackSuburb,
     };
   } else {
-    const nominatim = await geocodeAddress(address);
+    const nominatim = await geocodeAddress(stripUnitPrefix(address));
     if (!nominatim) {
       return { error: 'geocoding_failed', message: 'Could not geocode that address' };
     }
@@ -144,8 +165,9 @@ export async function resolveAddress(
     if (!entry.canHandle(suburbLower)) continue;
 
     // Scraper claims this suburb — call it for the definitive zone code.
-    // Forward client coordinates so scrapers that geocode internally can skip Nominatim.
-    const resolution = await entry.scraper.resolveAddress(address, clientCoordinate);
+    // Always forward coordinates (MapKit or Nominatim-geocoded) so scrapers never
+    // re-geocode with the raw address, which may still contain a unit prefix.
+    const resolution = await entry.scraper.resolveAddress(address, clientCoordinate ?? { lat: geo.lat, lng: geo.lng });
     if (resolution.error || !resolution.zoneCode) {
       logger.warn('Scraper canHandle=true but resolveAddress failed', {
         councilSlug,

@@ -81,6 +81,18 @@ describe('stirlingScraper.resolveAddress', () => {
     expect(result.councilSlug).toBe('stirling');
   }, 30_000);
 
+  it('resolves an address on an arterial road using jitter fallback', async () => {
+    // 125 Herdsman Pde, Wembley — Herdsman Parade is a wide arterial road where
+    // geocoders (Nominatim and MapKit) can return road-centroid coordinates that
+    // miss Stirling's parcel polygon. The jitter fallback should find the parcel.
+    const result = await stirlingScraper.resolveAddress(
+      '125 Herdsman Pde, Wembley WA 6014',
+    );
+    expect(result.error).toBeUndefined();
+    expect(result.zoneCode).toMatch(/^STI-(MON|TUE|WED|THU|FRI)-(A|B)$/);
+    expect(result.councilSlug).toBe('stirling');
+  }, 30_000);
+
   it('returns an error for an address in a different council (Fremantle)', async () => {
     const result = await stirlingScraper.resolveAddress(
       '15 South Terrace Fremantle WA 6160',

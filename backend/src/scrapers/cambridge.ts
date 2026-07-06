@@ -134,7 +134,11 @@ function candidateMatchesInput(input: string, candidate: string): boolean {
 }
 
 async function searchAddress(address: string): Promise<SearchItem | null> {
-  const params = new URLSearchParams({ keywords: address, maxresults: '5' });
+  // Strip unit prefix from the search query — Cambridge's API resolves at building
+  // level ("125 Herdsman Pde"), not unit level ("14S/125"). The full address (with
+  // unit) is still passed to candidateMatchesInput for result validation.
+  const query = address.replace(/^\w+\//, '').trim();
+  const params = new URLSearchParams({ keywords: query, maxresults: '5' });
   const res = await cambridgeFetch(`${BASE_URL}/api/v1/myarea/searchfuzzy?${params}`);
   if (!res.ok) throw new Error(`Cambridge searchfuzzy HTTP ${res.status}`);
 

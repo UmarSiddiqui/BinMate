@@ -26,13 +26,13 @@ export async function runNotificationEngine(): Promise<void> {
   let totalSent = 0;
   let totalFailed = 0;
 
-  for (const { zoneId, collections } of zones) {
+  for (const { zoneId, councilName, collections } of zones) {
     const users = await findUsersForZone(zoneId);
     if (!users.length) continue;
 
     const binTypes = collections[0]?.types ?? [];
 
-    const payload = buildPayload(binTypes, collections[0].isHolidayShifted);
+    const payload = buildPayload(binTypes, councilName);
 
     for (const user of users) {
       try {
@@ -54,22 +54,25 @@ export async function runNotificationEngine(): Promise<void> {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Build APNs payload from bin types. Copy sourced from BRAND.md §7. */
+/**
+ * Build APNs payload from bin types. Copy sourced from BRAND.md §7
+ * ("Bin Collection — night before"): `{binTypes} bins. {councilName}. Out by 6am tomorrow.`
+ * Bin types render as lid colours per the BRAND.md example ("Yellow + Red bins. Stirling Council.").
+ */
 function buildPayload(
   types: BinType[],
-  isHolidayShifted: boolean
+  councilName: string
 ): { title: string; body: string } {
   const binLabels: Record<BinType, string> = {
-    general: 'General',
-    recycling: 'Recycling',
-    green_waste: 'Green Waste',
-    fogo: 'FOGO',
+    general: 'Red',
+    recycling: 'Yellow',
+    green_waste: 'Green',
+    fogo: 'Lime',
   };
 
-  const bins = types.map((t) => binLabels[t]).join(' & ');
-  const title = 'Bins out tonight 🗑️';
-  const base = bins ? `${bins} bin${types.length > 1 ? 's' : ''} go out tomorrow.` : 'Bins go out tomorrow.';
-  const body = isHolidayShifted ? `${base} (public holiday shift)` : base;
+  const bins = types.map((t) => binLabels[t]).join(' + ');
+  const title = 'Bins out tonight';
+  const body = `${bins} bin${types.length > 1 ? 's' : ''}. ${councilName}. Out by 6am tomorrow.`;
 
   return { title, body };
 }

@@ -169,41 +169,55 @@ function parseDateToWeek(dateStr: string): 'A' | 'B' | null {
 // ─── Coordinate-level resolution (exported for testing) ──────────────────────
 
 /**
+ * Attempt a single coordinate lookup against the Stirling API.
+ * Returns a ZoneResolution on success, or null if the API returns no usable data.
+ */
+async function tryCoordinate(lat: number, lng: number): Promise<ZoneResolution | null> {
+  const data  = await stirlingFetch(lat, lng);
+  const bins  = parseApiResponse(data);
+  const red    = bins.find((b) => b.type === 'Red');
+  const yellow = bins.find((b) => b.type === 'Yellow');
+  if (!red?.day || red.day === '' || !yellow || yellow.date === '-') return null;
+  const dayName   = red.day.toLowerCase();
+  const dayAbbrev = DAY_TO_ABBREV[dayName];
+  if (!dayAbbrev) return null;
+  const recyclingWeek = parseDateToWeek(yellow.date);
+  if (!recyclingWeek) return null;
+  const zoneCode = `STI-${dayAbbrev}-${recyclingWeek}`;
+  const dayLabel = dayName.charAt(0).toUpperCase() + dayName.slice(1);
+  return { zoneCode, zoneName: `City of Stirling — ${dayLabel} (recycling Week ${recyclingWeek})`, councilSlug: 'stirling' };
+}
+
+/**
  * Resolve a lat/lng coordinate pair to a Stirling collection zone.
  * This is the core lookup — used by both resolveAddress and healthCheck.
  * Exported so tests can bypass Nominatim with known-good coordinates.
+ *
+ * Jitter strategy: the Stirling API uses point-in-polygon against property
+ * parcel boundaries. Geocoders (including MapKit) sometimes return road-centroid
+ * coordinates for addresses on wide roads (e.g. Herdsman Parade) that miss the
+ * parcel. If the direct lookup returns nothing, we retry with ±0.0001° offsets
+ * (~11 m) in each cardinal direction to land inside the correct parcel.
  */
 export async function stirlingResolveCoordinates(
   lat: number, lng: number,
 ): Promise<ZoneResolution> {
-  const empty: ZoneResolution = { zoneCode: '', zoneName: '', councilSlug: 'stirling' };
-
-  const data = await stirlingFetch(lat, lng);
-  const bins = parseApiResponse(data);
-
-  const red    = bins.find((b) => b.type === 'Red');
-  const yellow = bins.find((b) => b.type === 'Yellow');
-
-  if (!red?.day || red.day === '' || !yellow || yellow.date === '-') {
-    return { ...empty, error: 'Address not found in Stirling collection database. Ensure the address is a residential property within the City of Stirling.' };
+  // Candidate coordinates: exact point first, then four ~11 m cardinal offsets.
+  const candidates: Array<[number, number]> = [
+    [lat,          lng],
+    [lat + 0.0001, lng],
+    [lat - 0.0001, lng],
+    [lat,          lng + 0.0001],
+    [lat,          lng - 0.0001],
+  ];
+  for (const [clat, clng] of candidates) {
+    const result = await tryCoordinate(clat, clng);
+    if (result) return result;
   }
-
-  const dayName   = red.day.toLowerCase();
-  const dayAbbrev = DAY_TO_ABBREV[dayName];
-  if (!dayAbbrev) {
-    return { ...empty, error: `Unexpected collection day from API: ${red.day}` };
-  }
-
-  const recyclingWeek = parseDateToWeek(yellow.date);
-  if (!recyclingWeek) {
-    return { ...empty, error: `Could not determine recycling week from date: ${yellow.date}` };
-  }
-
-  const zoneCode = `STI-${dayAbbrev}-${recyclingWeek}`;
-  const dayLabel = dayName.charAt(0).toUpperCase() + dayName.slice(1);
-  const zoneName = `City of Stirling — ${dayLabel} (recycling Week ${recyclingWeek})`;
-
-  return { zoneCode, zoneName, councilSlug: 'stirling' };
+  return {
+    zoneCode: '', zoneName: '', councilSlug: 'stirling',
+    error: 'Address not found in Stirling collection database. Ensure the address is a residential property within the City of Stirling.',
+  };
 }
 
 // ─── Scraper ──────────────────────────────────────────────────────────────────

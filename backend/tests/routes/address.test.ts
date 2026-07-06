@@ -60,7 +60,24 @@ describe('POST /api/v1/register-address', () => {
       userId: undefined,
       nextCollections: [],
     });
-    expect(resolveAddress).toHaveBeenCalledWith('1 Sandgate Street SOUTH PERTH WA 6151');
+    expect(resolveAddress).toHaveBeenCalledWith('1 Sandgate Street SOUTH PERTH WA 6151', undefined);
+  });
+
+  it('forwards MapKit coordinates to resolveAddress when provided', async () => {
+    const app = createTestApp();
+    const response = await request(app)
+      .post('/api/v1/register-address')
+      .send({
+        address: '1 Sandgate Street SOUTH PERTH WA 6151',
+        lat: -31.9836,
+        lng: 115.8672,
+      });
+
+    expect(response.status).toBe(200);
+    expect(resolveAddress).toHaveBeenCalledWith(
+      '1 Sandgate Street SOUTH PERTH WA 6151',
+      { lat: -31.9836, lng: 115.8672 },
+    );
   });
 
   it('rate limits repeated requests from the same client IP', async () => {

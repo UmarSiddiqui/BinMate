@@ -14,7 +14,7 @@
 | **Market** | Perth, Western Australia — 30 local government councils |
 | **Developer** | Umar Siddiqui — UMAZEN |
 | **Repo root** | `/BinMate` |
-| **Status** | Pre-build — greenfield |
+| **Status** | In development — backend deployed (Render), iOS feature-complete pending TestFlight |
 
 ---
 
