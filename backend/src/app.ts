@@ -3,6 +3,8 @@ import { logger } from './utils/logger';
 import { createAddressRouter } from './routes/address';
 import scheduleRouter from './routes/schedule';
 import userRouter from './routes/user';
+import userZonesRouter from './routes/userZones';
+import feedbackRouter from './routes/feedback';
 import { createCronRouter } from './routes/cron';
 import adminRouter from './admin/router';
 
@@ -42,6 +44,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/register-address', createAddressRouter());
   app.use('/api/v1/schedule', scheduleRouter);
   app.use('/api/v1/push-token', userRouter);
+  app.use('/api/v1/user-zones', userZonesRouter);
+  app.use('/api/v1/feedback', feedbackRouter);
   app.use('/api/v1/cron', createCronRouter());
   app.use('/admin', adminRouter);
 

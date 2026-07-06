@@ -51,6 +51,23 @@ export async function upsertUserZone(params: {
   });
 }
 
+/** Zone subscription entry used when replacing a user's saved addresses. */
+export interface UserZoneEntry {
+  zoneId: string;
+  addressLabel: string;
+  isPrimary: boolean;
+}
+
+/** Replace every zone subscription for a user in one transaction. */
+export async function replaceUserZones(userId: string, zones: UserZoneEntry[]): Promise<void> {
+  await prisma.$transaction([
+    prisma.userZone.deleteMany({ where: { userId } }),
+    ...(zones.length
+      ? [prisma.userZone.createMany({ data: zones.map((z) => ({ userId, ...z })) })]
+      : []),
+  ]);
+}
+
 /** Get all user IDs with a push token subscribed to a given zone. */
 export async function findUsersForZone(
   zoneId: string
