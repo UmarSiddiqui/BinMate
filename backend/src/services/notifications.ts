@@ -22,6 +22,8 @@ export interface PushPayload {
   title: string;
   body: string;
   data?: Record<string, string>;
+  /** APNs category — set to 'BIN_REMINDER' on bin day reminders so iOS shows the snooze action. */
+  category?: string;
 }
 
 export interface SendResult {

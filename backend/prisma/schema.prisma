@@ -106,6 +106,22 @@ model UserZone {
   @@map("user_zones")
 }
 
+// ─── Feedback ─────────────────────────────────────────────────────────────────
+
+// User-submitted feedback (missed bins, wrong data, UI, feature requests).
+// Deliberately anonymous — zoneId only, never a user id or address (privacy rules §9).
+model Feedback {
+  id         String   @id @default(uuid())
+  category   String // 'missed_bin'|'wrong_schedule'|'ui'|'feature_request'|'other'
+  message    String
+  zoneId     String?  @map("zone_id") // optional context — which zone the report concerns
+  appVersion String?  @map("app_version")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([category])
+  @@map("feedback")
+}
+
 // ─── WA Public Holidays ───────────────────────────────────────────────────────
 
 model WaPublicHoliday {
