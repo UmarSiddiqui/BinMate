@@ -25,12 +25,15 @@ struct BinMateApp: App {
 
 // MARK: - Root routing view
 
-/// Routes between Onboarding and the main tab bar based on AppState.
+/// Routes between Splash, Onboarding, and the main tab bar based on AppState.
 private struct RootView: View {
     @EnvironmentObject private var appState: AppState
+    @State private var splashDone = false
 
     var body: some View {
-        if appState.isOnboardingComplete {
+        if !splashDone {
+            SplashView { splashDone = true }
+        } else if appState.isOnboardingComplete {
             MainTabView()
         } else {
             OnboardingView()
@@ -42,7 +45,7 @@ private struct RootView: View {
 
 /// Tab indices — keep in sync with TabView order.
 private enum Tab: Int {
-    case home = 0, calendar, sites, settings
+    case home = 0, calendar, binGuide, sites, settings
 }
 
 private struct MainTabView: View {
@@ -65,6 +68,13 @@ private struct MainTabView: View {
                 .tabItem { Label("Calendar", systemImage: BinMateTheme.Symbols.calendar) }
                 .tag(Tab.calendar)
                 .brandTabBarBackground()
+
+            NavigationStack {
+                BinGuideView()
+            }
+            .tabItem { Label("Bin Guide", systemImage: BinMateTheme.Symbols.binGuide) }
+            .tag(Tab.binGuide)
+            .brandTabBarBackground()
 
             SitesView()
                 .tabItem { Label("Sites", systemImage: BinMateTheme.Symbols.sites) }

@@ -20,6 +20,7 @@ struct BinGuideView: View {
         VStack(spacing: 0) {
             searchBar
             if searchText.isEmpty {
+                hero
                 lidSelector
                 Divider().background(BinMateTheme.Colors.borderSubtle)
                 binContentList
@@ -30,6 +31,25 @@ struct BinGuideView: View {
         .navigationTitle("Bin Guide")
         .navigationBarTitleDisplayMode(.inline)
         .background(BinMateTheme.Colors.bgBase)
+    }
+
+    // MARK: - Hero
+
+    private var hero: some View {
+        Image("BinGuideHero")
+            .resizable()
+            .scaledToFill()
+            .frame(maxWidth: .infinity)
+            .frame(height: 180)
+            .clipped()
+            .overlay(
+                LinearGradient(
+                    colors: [.clear, BinMateTheme.Colors.bgBase],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .accessibilityHidden(true)
     }
 
     // MARK: - Search bar
@@ -138,11 +158,7 @@ struct BinGuideView: View {
 
     private func itemRow(_ text: String, accepted: Bool) -> some View {
         HStack(spacing: BinMateTheme.Spacing.sm) {
-            Image(systemName: accepted ? "checkmark" : "xmark")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(accepted ? BinMateTheme.Colors.lime : BinMateTheme.Colors.red)
-                .frame(width: 20)
-                .accessibilityHidden(true)
+            itemIcon(for: text, accepted: accepted)
             Text(text)
                 .font(BinMateTheme.Typography.body)
                 .foregroundStyle(BinMateTheme.Colors.textPrimary)
@@ -150,6 +166,51 @@ struct BinGuideView: View {
         }
         .padding(.vertical, BinMateTheme.Spacing.xs)
         .accessibilityLabel("\(text), \(accepted ? "accepted" : "not accepted")")
+    }
+
+    @ViewBuilder
+    private func itemIcon(for text: String, accepted: Bool) -> some View {
+        let lower = text.lowercased()
+        let assetName = Self.iconAssetName(for: lower)
+        if let name = assetName {
+            Image(name)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 28, height: 28)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityHidden(true)
+        } else {
+            Image(systemName: accepted ? "checkmark" : "xmark")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(accepted ? BinMateTheme.Colors.lime : BinMateTheme.Colors.red)
+                .frame(width: 28, height: 28)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private static func iconAssetName(for lower: String) -> String? {
+        let map: [(keywords: [String], asset: String)] = [
+            (["batter"],                              "bin_icon_batteries"),
+            (["food scrap", "food waste", "fruit and veg", "meat", "dairy", "bread", "cereal"], "bin_icon_food_scraps"),
+            (["cardboard", "newspaper", "magazine", "paper", "junk mail", "pizza box", "egg carton", "carton", "recyclable"], "bin_icon_cardboard"),
+            (["glass bottle", "glass jar", "broken glass"], "bin_icon_glass"),
+            (["rigid plastic", "plastic container", "plastic tub", "plastic bottle", "non-recyclable plastic", "packaging"], "bin_icon_plastic"),
+            (["soft plastic", "plastic bag", "cling", "greasy", "contaminated"], "bin_icon_soft_plastics"),
+            (["steel", "aluminium", "aerosol", "tin can", "bottle cap", "foil tray", "metal item", "metal can"], "bin_icon_cans"),
+            (["electronic", "e-waste", "ewaste", "circuit"],  "bin_icon_electronics"),
+            (["grass", "leaves", "leaf", "branch", "flower", "plant", "bark", "garden", "weed", "palm"], "bin_icon_garden"),
+            (["chemical", "paint", "oil", "liquid", "solvent"], "bin_icon_chemicals"),
+            (["napp", "hygiene", "sanitary", "sharps", "cotton pad", "vacuum cleaner"], "bin_icon_nappies"),
+            (["coffee", "tea bag", "egg shell"],               "bin_icon_coffee"),
+            (["polystyrene", "styrofoam", "foam"],             "bin_icon_polystyrene"),
+            (["pet waste", "kitty litter", "cat litter", "dog waste", "paw"], "bin_icon_pet_waste"),
+            (["clothing", "textile", "fabric", "t-shirt", "shirt", "sock"], "bin_icon_clothing"),
+            (["tyre", "tire", "rubber item"],                  "bin_icon_tyres"),
+            (["straw", "cutlery", "fork", "spoon", "knife"],   "bin_icon_straws"),
+            (["ceramic", "crockery", "porcelain", "plate", "cup"],  "bin_icon_ceramics"),
+            (["gas cylinder", "gas bottle", "cylinder"],       "bin_icon_gas"),
+        ]
+        return map.first { pair in pair.keywords.contains { lower.contains($0) } }?.asset
     }
 
     // MARK: - Search results

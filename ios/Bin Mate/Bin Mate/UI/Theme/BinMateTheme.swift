@@ -156,6 +156,7 @@ enum BinMateTheme {
         static let ewaste       = "bolt.circle"
         static let greenDrop    = "leaf.circle"
         static let sites        = "mappin.and.ellipse" // Drop-off sites tab
+        static let binGuide     = "checklist"           // Bin Guide tab
         static let directions   = "arrow.triangle.turn.up.right.circle.fill"
         static let externalLink = "arrow.up.right.square"
     }

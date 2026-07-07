@@ -5,6 +5,7 @@ struct HomeView: View {
 
     @EnvironmentObject private var appState: AppState
     @StateObject private var viewModel = HomeViewModel(repository: ScheduleRepository.shared)
+    @State private var showReminderSettings = false
     @State private var showAddAddress = false
 
     private enum Metrics {
@@ -12,7 +13,7 @@ struct HomeView: View {
         static let dashboardIconSize: CGFloat = 30
         static let dashboardSymbolSize: CGFloat = 13
         static let dashboardValueScale: CGFloat = 0.82
-        static let emptyStateArtHeight: CGFloat = 96
+        static let emptyStateArtHeight: CGFloat = 70
     }
 
     var body: some View {
@@ -34,7 +35,8 @@ struct HomeView: View {
                                 title: viewModel.heroTitle,
                                 subtitle: viewModel.heroSubtitle,
                                 types: viewModel.heroCollection?.types ?? [],
-                                isActive: viewModel.heroCollection != nil
+                                isActive: viewModel.heroCollection != nil,
+                                onBellTap: { showReminderSettings = true }
                             )
                         }
 
@@ -78,6 +80,11 @@ struct HomeView: View {
                         suburb: result.suburb
                     )
                 }
+            }
+            .sheet(isPresented: $showReminderSettings) {
+                ReminderSettingsSheet()
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
             }
         }
     }

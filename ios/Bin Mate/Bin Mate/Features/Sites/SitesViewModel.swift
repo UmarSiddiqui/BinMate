@@ -9,8 +9,10 @@ final class SitesViewModel: NSObject, ObservableObject {
 
     @Published var userLocation: CLLocation?
     @Published var locationDenied = false
+    @Published var isLocating = false
 
     private let locationManager = CLLocationManager()
+    private var locationTimeoutTask: Task<Void, Never>?
 
     override init() {
         super.init()
@@ -35,12 +37,29 @@ final class SitesViewModel: NSObject, ObservableObject {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
-            locationManager.requestLocation()
+            startLocating()
         case .denied, .restricted:
             locationDenied = true
         @unknown default:
             break
         }
+    }
+
+    private func startLocating() {
+        isLocating = true
+        locationManager.requestLocation()
+        locationTimeoutTask?.cancel()
+        locationTimeoutTask = Task {
+            try? await Task.sleep(nanoseconds: 10_000_000_000)
+            guard !Task.isCancelled else { return }
+            isLocating = false
+        }
+    }
+
+    private func stopLocating() {
+        isLocating = false
+        locationTimeoutTask?.cancel()
+        locationTimeoutTask = nil
     }
 }
 
@@ -53,9 +72,10 @@ extension SitesViewModel: CLLocationManagerDelegate {
             switch manager.authorizationStatus {
             case .authorizedWhenInUse, .authorizedAlways:
                 self.locationDenied = false
-                manager.requestLocation()
+                self.startLocating()
             case .denied, .restricted:
                 self.locationDenied = true
+                self.stopLocating()
             default:
                 break
             }
@@ -65,10 +85,14 @@ extension SitesViewModel: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         Task { @MainActor in
             self.userLocation = locations.last
+            self.stopLocating()
         }
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         Logger.app.error("SitesViewModel location error: \(error.localizedDescription)")
+        Task { @MainActor in
+            self.stopLocating()
+        }
     }
 }

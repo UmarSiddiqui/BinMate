@@ -5,6 +5,9 @@ import SwiftUI
 struct BinMateWidgetBundle: WidgetBundle {
     var body: some Widget {
         BinMateWidget()
+        if #available(iOSApplicationExtension 16.1, *) {
+            BinMateLiveActivity()
+        }
     }
 }
 

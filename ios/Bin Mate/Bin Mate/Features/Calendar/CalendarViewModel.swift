@@ -43,6 +43,19 @@ final class CalendarViewModel: ObservableObject {
         }
     }
 
+    /// Force-refreshes from the API, bypassing the cache.
+    func refresh(zoneId: String) async {
+        guard !zoneId.isEmpty else { return }
+        do {
+            let all = try await repository.refresh(for: zoneId, count: 200)
+            byDate = Dictionary(grouping: all, by: \.date)
+        } catch let err as BinMateError {
+            error = err
+        } catch {
+            self.error = .unknown(error)
+        }
+    }
+
     // MARK: - Date queries
 
     /// All collections on a given ISO date.

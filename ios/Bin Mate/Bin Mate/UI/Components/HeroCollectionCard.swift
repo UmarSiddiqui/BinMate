@@ -11,8 +11,11 @@ struct HeroCollectionCard: View {
     /// True when there is a collection today or tomorrow (drives lime vs dark style).
     let isActive: Bool
 
+    /// Called when the bell badge is tapped — opens reminder settings.
+    var onBellTap: (() -> Void)? = nil
+
     private enum Metrics {
-        static let cardMinimumHeight: CGFloat = 140
+        static let cardMinimumHeight: CGFloat = 168
         static let titleScale: CGFloat = 0.78
         static let iconSize: CGFloat = 46
         static let symbolSize: CGFloat = 20
@@ -64,13 +67,20 @@ struct HeroCollectionCard: View {
                 .lineLimit(2)
                 .minimumScaleFactor(Metrics.titleScale)
             Spacer()
-            BinMateIconBadge(
-                systemName: isActive ? BinMateTheme.Symbols.binsOut : BinMateTheme.Symbols.bins,
-                foreground: isActive ? BinMateTheme.Colors.bgBase.opacity(0.72) : BinMateTheme.Colors.textMuted,
-                background: isActive ? BinMateTheme.Colors.bgBase.opacity(0.12) : BinMateTheme.Colors.bgSurface,
-                size: Metrics.iconSize,
-                symbolSize: Metrics.symbolSize
-            )
+            Button {
+                onBellTap?()
+            } label: {
+                BinMateIconBadge(
+                    systemName: isActive ? BinMateTheme.Symbols.binsOut : BinMateTheme.Symbols.bins,
+                    foreground: isActive ? BinMateTheme.Colors.bgBase.opacity(0.72) : BinMateTheme.Colors.textMuted,
+                    background: isActive ? BinMateTheme.Colors.bgBase.opacity(0.12) : BinMateTheme.Colors.bgSurface,
+                    size: Metrics.iconSize,
+                    symbolSize: Metrics.symbolSize
+                )
+            }
+            .buttonStyle(.pressableCard)
+            .disabled(onBellTap == nil)
+            .accessibilityLabel("Reminder settings")
         }
     }
 

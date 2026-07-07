@@ -28,6 +28,10 @@ struct CalendarView: View {
                 .padding(.horizontal, BinMateTheme.Spacing.md)
                 .padding(.top, BinMateTheme.Spacing.md)
             }
+            .refreshable {
+                guard let zoneId = appState.primaryZoneId else { return }
+                await viewModel.refresh(zoneId: zoneId)
+            }
 
             if viewModel.isLoading {
                 ProgressView().tint(BinMateTheme.Colors.lime)

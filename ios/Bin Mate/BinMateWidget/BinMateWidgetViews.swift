@@ -258,7 +258,7 @@ private struct UpcomingRowView: View {
 
 // MARK: - Shared helpers
 
-private func dateLabel(_ isoDate: String) -> String {
+func dateLabel(_ isoDate: String) -> String {
     let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
     guard let date = f.date(from: isoDate) else { return isoDate }
     let cal = Calendar.current
@@ -268,14 +268,14 @@ private func dateLabel(_ isoDate: String) -> String {
     return d.string(from: date)
 }
 
-private func dayNumber(_ isoDate: String) -> String {
+func dayNumber(_ isoDate: String) -> String {
     let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
     guard let date = f.date(from: isoDate) else { return "" }
     let d = DateFormatter(); d.dateFormat = "d"
     return d.string(from: date)
 }
 
-private func dotColor(_ type: String) -> Color {
+func dotColor(_ type: String) -> Color {
     switch type {
     case "general":     return WidgetColors.binRed
     case "recycling":   return WidgetColors.binYellow
@@ -285,7 +285,7 @@ private func dotColor(_ type: String) -> Color {
     }
 }
 
-private func binLabel(_ types: [String], isVerge: Bool) -> String {
+func binLabel(_ types: [String], isVerge: Bool) -> String {
     var names = types.map { t -> String in
         switch t {
         case "general":     return "General"

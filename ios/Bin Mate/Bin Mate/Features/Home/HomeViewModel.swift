@@ -102,6 +102,14 @@ final class HomeViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             collections = try await repository.upcoming(for: zoneId, count: 20)
+            WidgetDataWriter.write(suburb: suburb, collections: collections)
+            await LiveActivityManager.sync(
+                collections: collections,
+                zoneId: zoneId,
+                suburb: suburb,
+                title: heroTitle,
+                subtitle: heroSubtitle
+            )
             Logger.app.debug("Loaded \(self.collections.count) collections for zone \(zoneId)")
         } catch let err as BinMateError {
             error = err
@@ -116,6 +124,14 @@ final class HomeViewModel: ObservableObject {
         defer { isLoading = false }
         do {
             collections = try await repository.refresh(for: zoneId, count: 20)
+            WidgetDataWriter.write(suburb: suburb, collections: collections)
+            await LiveActivityManager.sync(
+                collections: collections,
+                zoneId: zoneId,
+                suburb: suburb,
+                title: heroTitle,
+                subtitle: heroSubtitle
+            )
         } catch let err as BinMateError {
             error = err
         } catch {

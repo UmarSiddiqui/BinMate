@@ -60,7 +60,7 @@ struct SitesView: View {
             VStack(spacing: BinMateTheme.Spacing.sm) {
                 if viewModel.locationDenied {
                     locationDeniedBanner
-                } else if viewModel.userLocation == nil {
+                } else if viewModel.isLocating {
                     locationLoadingNote
                 }
 
