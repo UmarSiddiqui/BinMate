@@ -7,7 +7,7 @@ const router = Router();
 const ScheduleQuery = z.object({
   zoneId: z.string().uuid(),
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  count: z.coerce.number().int().min(1).max(100).default(20),
+  count: z.coerce.number().int().min(1).max(365).default(20),
 });
 
 /**
