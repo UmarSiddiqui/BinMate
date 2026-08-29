@@ -1,0 +1,30 @@
+name: Notification Cron
+
+on:
+  schedule:
+    # 17:00 AWST (UTC+8) every day.
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: notification-cron
+  cancel-in-progress: false
+
+jobs:
+  trigger-notifications:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Trigger BinMate notification engine
+        env:
+          CRON_SECRET: ${{ secrets.RENDER_CRON_SECRET }}
+        run: |
+          curl \
+            --fail-with-body \
+            --max-time 600 \
+            --retry 3 \
+            --retry-all-errors \
+            --retry-delay 20 \
+            --request POST \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            https://binmate-api.onrender.com/api/v1/cron/trigger-notifications

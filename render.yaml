@@ -26,6 +26,9 @@ services:
         sync: false
       - key: CRON_SECRET
         sync: false
+      # GitHub Actions triggers notification engine at 09:00 UTC.
+      - key: NOTIFICATION_CRON_ENABLED
+        value: "false"
       - key: SENTRY_DSN
         sync: false
       - key: GEOCODING_CONTACT_EMAIL

@@ -23,8 +23,10 @@ const PORT = parseInt(process.env.PORT ?? '3000', 10);
 app.listen(PORT, () => {
   logger.info(`BinMate API running on http://localhost:${PORT}`);
   logger.info(`Environment: ${process.env.NODE_ENV}`);
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV !== 'test' && process.env.NOTIFICATION_CRON_ENABLED !== 'false') {
     startNotificationCron();
+  } else if (process.env.NODE_ENV !== 'test') {
+    logger.info('In-process notification cron disabled; external scheduler active');
   }
 });
 
